@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>一个普通sre一天的工作记录 - n4mine&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="n4mine" />
+  <meta name="description" content="本文记录一个sre一天的工作
+背景交代：80后、单身
+职位：sre
+公司：规模不小但sre团队组建不久
+以下是正文
+" />
+
+  <meta name="keywords" content="n4mine, blog" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.36.1" />
+
+
+<link rel="canonical" href="http://n4mine.github.io/post/sre-diary/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.0.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="一个普通sre一天的工作记录" />
+<meta property="og:description" content="本文记录一个sre一天的工作
+背景交代：80后、单身
+职位：sre
+公司：规模不小但sre团队组建不久
+
+以下是正文
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://n4mine.github.io/post/sre-diary/" />
+
+
+
+<meta property="article:published_time" content="2015-03-05T20:49:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2015-03-05T20:49:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="一个普通sre一天的工作记录">
+<meta itemprop="description" content="本文记录一个sre一天的工作
+背景交代：80后、单身
+职位：sre
+公司：规模不小但sre团队组建不久
+
+以下是正文
+">
+
+
+<meta itemprop="datePublished" content="2015-03-05T20:49:00&#43;00:00" />
+<meta itemprop="dateModified" content="2015-03-05T20:49:00&#43;00:00" />
+<meta itemprop="wordCount" content="1956">
+
+
+
+<meta itemprop="keywords" content="生活," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="一个普通sre一天的工作记录"/>
+<meta name="twitter:description" content="本文记录一个sre一天的工作
+背景交代：80后、单身
+职位：sre
+公司：规模不小但sre团队组建不久
+
+以下是正文
+"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">n4mine&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">n4mine&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">一个普通sre一天的工作记录</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-03-05 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E7%94%9F%E6%B4%BB/"> 生活 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1956 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content">
+    
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>本文记录一个sre一天的工作<br />
+背景交代：80后、单身<br />
+职位：sre<br />
+公司：规模不小但sre团队组建不久</p>
+
+<p>以下是正文<br />
+</p>
+
+<p><code>6:16</code> 惊醒<br />
+最近总是做些关于以前的人和事的梦，难道是老了开始怀旧了？发条微博感慨下。<br />
+看了下短信、IM。昨晚有几条业务的报警，呃，电脑离得有点远，又舍不得温暖的被窝，一会儿再去看下</p>
+
+<p><code>6:20</code> 强迫症<br />
+手机里所有有提示的app，都打开一下以消灭右上角的红色数字。美拍里有个翻唱排行榜的用户，听起来很不错，听了几首</p>
+
+<p><code>6:40</code> 起床<br />
+去个洗手间，顺便洗把脸</p>
+
+<p><code>6:50</code> 电脑<br />
+扫一眼邮件，昨天我总结的case study有rd更新了一下，讲到接口meantime不稳定与其服务localcache增长导致gc抖动有关，在尝试从代码层解决，但我认为这可能不是根本原因，还是因为依赖层的服务挂掉的关联性更大一些</p>
+
+<p><code>6:55</code> 处理报警<br />
+先看昨天的x集群的swap使用情况，昨天x集群整体有个a服务swap瞬间疯长，为防止影响x集群自身服务，已通过批量重启a服务缓解，随便找出几台x集群的节点观察下，从graph上来看a服务没有发飙的迹象；<br />
+b服务thrift的一个接口，meantime在3:10的时候抖了一下，只是一个尖峰，其他节点没有报警，扫一下其他报警，看看有没有相关联的；<br />
+c服务的一个获取队列size的指标在1:40 - 2:20之间超过阈值，引起报警。其他graph暂时没有线索，发到IM上，告知RD一下；</p>
+
+<p><code>7:10</code> 微信<br />
+妹妹提醒，今天可以买5.3的回程票了。<br />
+好多年五一没回家了，今年正赶上父亲的祭日。2年的时间，过去的好快。<br />
+顺便发会儿呆，看看北京外面的高楼大厦。天气不怎么样。<br />
+和妹妹聊一会儿。她最近在搞自己的公司，我也帮不上什么忙，只能干看着。</p>
+
+<p><code>7:20</code> 行事历<br />
+下午有个rd串讲服务</p>
+
+<p><code>7:25</code> 微博<br />
+刷一刷，看看有什么感兴趣的内容。<br />
+嗯？有个相互关注的妹子发了条生日快乐的微博，这是过生日了？赞一下<br />
+嗯？都说Apple会出rMBA。关我鸟事！<br />
+嗯？jdk 7要end of life了。关我鸟事！<br />
+嗯？iPhone 6s据传升级到2G内存了。关我鸟事！反正我今年绝对不换手机了。<br />
+嗯？今天元宵节了。关我鸟事！嗯，记得一会儿给老妈打个电话</p>
+
+<p><code>7:40</code> 闹铃<br />
+人到了年龄，比闹铃都早，悲剧！</p>
+
+<p><code>8:00</code> 想法<br />
+突然有了一个想法，想把自己的一天用文字的形式记录下来。<br />
+恩，就这么干，先用wiz笔记简单记下来，无所谓格式了，晚上收工的时候发到blog上。</p>
+
+<p><code>8:16</code> 音乐<br />
+“繁星点点 - 庄心妍”，刚好放这首歌，很不错。</p>
+
+<p><code>8:25</code> IM、邮件<br />
+各种IM上看看<br />
+个人邮件收一收，其实没什么重要的事，就是想把它置为已读。:-D</p>
+
+<p><code>8:35</code> 洗漱</p>
+
+<p><code>8:50</code> 电影<br />
+看到复仇者联盟2的预告。嗯，可以去电影院看看那种。<br />
+本人看电影的分类就两种，值得去电影院的和在电脑上看就可以的。</p>
+
+<p><code>9:00</code> 准备上班<br />
+打算路上看看有什么吃的，胃有点不舒服。</p>
+
+<p><code>9:30</code> 班车<br />
+公司有班车，算是个福利。<br />
+半路买了个煎饼，当做早餐</p>
+
+<p><code>9:45</code> 公司<br />
+15分钟车程，到公司了<br />
+路上和老妈聊了一路。聊家里的事，聊我这边的事<br />
+有几条报警，一台nginx的flume堵了，应该问题不大，size在逐渐变少</p>
+
+<p><code>10:00</code> 报警报警报警<br />
+一个集群连接db出现问题，导致有2分钟的meantime抖动</p>
+
+<p><code>10:10</code> 沟通<br />
+凌晨的报警，rd回复，凌晨时有全量同步，消费不了就会触发报警<br />
+优化点 &amp;&amp; 报警策略调整点</p>
+
+<p><code>10:20</code> 优化<br />
+rd发来消息，问起某接口http调用公网改内网的资源准备进度，事实上已经准备ok了，rd会在今天上线。</p>
+
+<p><code>10:30</code> 资源<br />
+rd申请vm用于多机房部署，但b机房资源紧张，需要从线上挤出几台vm</p>
+
+<p><code>10:40</code> oom<br />
+一台hbase机器，有个Python程序占用大量mem和swap。机器归属人员不明<br />
+IM上询问，无人响应。<br />
+最后那个Python程序被oom了。。<br />
+看了下最近登录情况，只有我一个人登录。<br />
+机器调用关系链也没看到有业务机器连接，IM上打声招呼，开始准备下线了。</p>
+
+<p><code>11:20</code> idea<br />
+服务在应用层上的调用关系不明朗，决定将负责的服务都整理一下。<br />
+工具暂定为graphviz + Python<br />
+下午知道我们有同事在做这方面东西，直接使用，不造轮子了</p>
+
+<p><code>11:40</code> 沟通<br />
+和rd讨论了几个关于服务、资源的问题</p>
+
+<p><code>11:50</code> 学习<br />
+看了下淘宝的关于鹰眼的分享ppt</p>
+
+<p><code>12:00</code> 返程票<br />
+抢个返程票</p>
+
+<p><code>12:20</code> 午饭</p>
+
+<p><code>13:30</code> 休息</p>
+
+<p><code>15:00</code> 串讲<br />
+rd串讲了几个服务，thrift的http的都有。<br />
+边讲边讨论，6、7个服务，2个小时时间<br />
+谈了下如何整理接口关系和运维的手段</p>
+
+<p><code>17:00</code> 整理<br />
+看了下上面串讲那些服务的wiki描述、监控、现有一个半成品的类似taobao鹰眼的工具看了看调用关系</p>
+
+<p><code>18:50</code> 资源<br />
+上午提到的资源紧张问题，释放了我用于上报nginx状态的机器，这机器原来是用于线上测试的，配置较高，非常时期，又申请了一台低配节点完成原来的功能，前后花了10分钟不到。且包括了沟通的时间。<br />
+观察上报服务正常运行</p>
+
+<p><code>19:10</code> 下班。<br />
+回家叫个外卖</p>
+
+<p><code>20:00</code> shit<br />
+上面说的nginx状态上报服务，因新申请的vm配置太低，而网络请求又比较频繁，所以cpu sys time 100%。请同事升级下cpu。</p>
+
+<p><code>20:20</code> 计划<br />
+今日工作整理一下，再列一下明天的计划。<br />
+收工</p>
+
+<p><em>-EOF-</em></p>
+    </div>
+
+    
+    
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2015/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">2015</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/private-ip-or-not/">
+            <span class="next-text nav-default">lua判断是否是私有IP地址</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+
+  
+
+  
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/n4mine" class="iconfont icon-github" title="github"></a>
+      <a href="https://weibo.com/n4mine" class="iconfont icon-weibo" title="weibo"></a>
+  <a href="http://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2014 - 
+    2018
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">n4mine</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.0.0"></script>
+
+<script id="baidu_analytics">
+  var _hmt = _hmt || [];
+  (function() {
+    if (window.location.hostname === 'localhost') return;
+    var hm = document.createElement("script"); hm.async = true;
+    hm.src = "https://hm.baidu.com/hm.js?a0d9b192e8616a9fff384dfaa6e34871";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+
+
+
+
+
+</body>
+</html>

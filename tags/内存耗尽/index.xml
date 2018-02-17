@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>内存耗尽 on n4mine&#39;s blog</title>
+    <link>http://n4mine.github.io/tags/%E5%86%85%E5%AD%98%E8%80%97%E5%B0%BD/</link>
+    <description>Recent content in 内存耗尽 on n4mine&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 02 Jan 2015 10:22:31 +0000</lastBuildDate>
+    
+	<atom:link href="http://n4mine.github.io/tags/%E5%86%85%E5%AD%98%E8%80%97%E5%B0%BD/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>监控进程卡住导致内存耗尽</title>
+      <link>http://n4mine.github.io/post/run-out-of-memory/</link>
+      <pubDate>Fri, 02 Jan 2015 10:22:31 +0000</pubDate>
+      
+      <guid>http://n4mine.github.io/post/run-out-of-memory/</guid>
+      <description>&lt;h2 id=&#34;起因&#34;&gt;起因&lt;/h2&gt;
+
+&lt;p&gt;大早上收到报警，几台机器内存不足&lt;br /&gt;
+想上去查原因，已登录不上&lt;br /&gt;
+&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

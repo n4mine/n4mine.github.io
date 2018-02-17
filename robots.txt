@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: http://n4mine.github.io/sitemap.xml

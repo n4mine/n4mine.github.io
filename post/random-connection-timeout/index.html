@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>调用服务端随机性连接超时case一例 - n4mine&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="n4mine" />
+  <meta name="description" content="现象" />
+
+  <meta name="keywords" content="n4mine, blog" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.36.1" />
+
+
+<link rel="canonical" href="http://n4mine.github.io/post/random-connection-timeout/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.0.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="调用服务端随机性连接超时case一例" />
+<meta property="og:description" content="现象" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://n4mine.github.io/post/random-connection-timeout/" />
+
+
+
+<meta property="article:published_time" content="2016-10-05T09:47:13&#43;00:00"/>
+
+<meta property="article:modified_time" content="2016-10-05T09:47:13&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="调用服务端随机性连接超时case一例">
+<meta itemprop="description" content="现象">
+
+
+<meta itemprop="datePublished" content="2016-10-05T09:47:13&#43;00:00" />
+<meta itemprop="dateModified" content="2016-10-05T09:47:13&#43;00:00" />
+<meta itemprop="wordCount" content="1260">
+
+
+
+<meta itemprop="keywords" content="nginx,lvs,tcp,syn_cookie,listen_overflow," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="调用服务端随机性连接超时case一例"/>
+<meta name="twitter:description" content="现象"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">n4mine&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">n4mine&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">调用服务端随机性连接超时case一例</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-10-05 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1260 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#现象">现象</a></li>
+<li><a href="#环境">环境</a></li>
+<li><a href="#排查过程">排查过程</a>
+<ul>
+<li><a href="#测试命令">测试命令</a>
+<ul>
+<li><a href="#src表现如下">src表现如下</a></li>
+<li><a href="#相同tcp流-使用tcp-seq区分-dst-本处dst指lvs的某个backend-即其中一个nginx节点-表现如下">相同tcp流(使用tcp seq区分), dst(本处dst指lvs的某个backend,即其中一个nginx节点)表现如下</a></li>
+</ul></li>
+<li><a href="#抓包分析">抓包分析</a></li>
+<li><a href="#阶段性结论">阶段性结论</a></li>
+<li><a href="#猜测">猜测</a></li>
+<li><a href="#恢复">恢复</a></li>
+<li><a href="#疑惑">疑惑</a></li>
+</ul></li>
+<li><a href="#结论">结论</a></li>
+<li><a href="#题外1-关于tcp-abort-on-overflow">题外1 关于tcp_abort_on_overflow</a>
+<ul>
+<li><a href="#accept-queue满了的场景抓包">accept queue满了的场景抓包</a>
+<ul>
+<li><a href="#tcp-abort-on-overflow-0-default">tcp_abort_on_overflow=0（default）</a></li>
+<li><a href="#tcp-abort-on-overflow-1">tcp_abort_on_overflow=1</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#题外2-关于ss的recv-q">题外2 关于ss的Recv-Q</a>
+<ul>
+<li><a href="#状态为listen时">状态为Listen时</a></li>
+<li><a href="#状态为非listen时">状态为非Listen时</a></li>
+</ul></li>
+<li><a href="#参考">参考</a></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="现象">现象</h1>
+
+<p>业务同学反馈，A服务调用B服务有连接超时</p>
+
+<h1 id="环境">环境</h1>
+
+<ul>
+<li>src：A服务, 以下均用src代指<br /></li>
+<li>dst：B服务, 以下均用dst代指<br /></li>
+<li>B服务通过lvs + nginx的方式对外服务<br /></li>
+<li>A服务连接超时设置为500ms<br />
+</li>
+</ul>
+
+<h1 id="排查过程">排查过程</h1>
+
+<ol>
+<li>因src表现为大量连接超时，所以应用层（包括nginx和均无应用层日志），遂直接抓传输层的包。</li>
+<li>使用其它机器而非线上机器测试并抓包（效果相同）</li>
+</ol>
+
+<h2 id="测试命令">测试命令</h2>
+
+<ul>
+<li>src不断的tcp连接dst（此处dst特指lvs vip）的8000端口</li>
+<li>每次设置递增源端口</li>
+<li>设置3s超时</li>
+</ul>
+
+<pre><code>for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done
+</code></pre>
+
+<h3 id="src表现如下">src表现如下</h3>
+
+<p><img src="/img/src.png" alt="" /></p>
+
+<h3 id="相同tcp流-使用tcp-seq区分-dst-本处dst指lvs的某个backend-即其中一个nginx节点-表现如下">相同tcp流(使用tcp seq区分), dst(本处dst指lvs的某个backend,即其中一个nginx节点)表现如下</h3>
+
+<p><img src="/img/dst.png" alt="" /></p>
+
+<h2 id="抓包分析">抓包分析</h2>
+
+<ul>
+<li>14:39:38.043935, src发出syn</li>
+<li>14:39:38.069170, dst收到syn，但并未回syn,ack</li>
+<li>14:39:41.043515, src重传相同seq的syn</li>
+<li>14:39:41.068833, dst收到重传syn</li>
+<li>14:39:41.068842, dst发出syn,ack
+此时src已经到达超时时间，发rst</li>
+</ul>
+
+<h2 id="阶段性结论">阶段性结论</h2>
+
+<p>dst明明收到syn，<strong>却没有立即回复syn,ack</strong>，有异常。<br />
+这种现象一般发生在syn半连接队列满了才会发生。（其实未必，还有一种场景，见<sup>[3]</sup>）<br />
+但我们线上的syn队列的长度是4096，且打开了syn_cookie，理论上，syn半连的数量是足够用的。<sup>[1]</sup><br />
+而且重要是的，<strong>syn,ack是tcp/ip协议栈回复的</strong>。<br />
+既然syn队列不是问题，而与syn队列最相关的就是accept队列，所以查看accpet队列情况</p>
+
+<pre><code>$ netstat -s | grep -i listen
+    80694004 times the listen queue of a socket overflowed
+    88476387 SYNs to LISTEN sockets ignored
+</code></pre>
+
+<p>上述返回结果，inrouter00这台机器的overflowed数量明显比其它节点的结果要大（大一个数量级）。<br />
+而且，在执行测试命令后，overflowed的数量增长明显。<br />
+syn队列与accept队列的关系如下<br />
+<img src="/img/accept_q.png" alt="" /></p>
+
+<h2 id="猜测">猜测</h2>
+
+<p>到这里能判断与应用（tengine）有关了，但tengine的error log。包括系统的message，kernel log，均没有任何的异常。<br />
+所以只能尝试重启应用。</p>
+
+<h2 id="恢复">恢复</h2>
+
+<p>将nginx冷重启后，故障恢复。</p>
+
+<h2 id="疑惑">疑惑</h2>
+
+<ol>
+<li>诡异之处在于，不发syn,ack本应是syn队列满才有的行为，但发生在了一个syn队列不可能满的环境下！（这里其实不止一种场景，还是见<sup>[3]</sup>）</li>
+<li>在ss -nlt的结果对应nginx listen的端口，Recv-Q为0的情况下，accpet队列竟然一直overflow！（这里对Recv-Q的理解有误，见<sup>[4]</sup>）</li>
+</ol>
+
+<h1 id="结论">结论</h1>
+
+<p>如<sup>[3]</sup>源码所示，当accept队列满了的时候，如果inet_csk_reqsk_queue_young(sk) &gt; 1，那么该syn还是会被丢弃。</p>
+
+<h1 id="题外1-关于tcp-abort-on-overflow">题外1 关于tcp_abort_on_overflow</h1>
+
+<h2 id="accept-queue满了的场景抓包">accept queue满了的场景抓包</h2>
+
+<h3 id="tcp-abort-on-overflow-0-default">tcp_abort_on_overflow=0（default）</h3>
+
+<p><img src="/img/tcp_abort_on_overflow0.png" alt="" /></p>
+
+<h3 id="tcp-abort-on-overflow-1">tcp_abort_on_overflow=1</h3>
+
+<p><img src="/img/tcp_abort_on_overflow1.png" alt="" /></p>
+
+<h1 id="题外2-关于ss的recv-q">题外2 关于ss的Recv-Q</h1>
+
+<h2 id="状态为listen时">状态为Listen时</h2>
+
+<ul>
+<li>Recv-Q: 完成了3次握手，等待accept <sup>[4]</sup></li>
+<li>Send-Q: accept Queue的最大值</li>
+</ul>
+
+<h2 id="状态为非listen时">状态为非Listen时</h2>
+
+<ul>
+<li>字面含义</li>
+<li>2者均是在本地缓冲区</li>
+</ul>
+
+<h1 id="参考">参考</h1>
+
+<ol>
+<li><a href="https://zh.wikipedia.org/zh/SYN_cookie">SYN cookie</a></li>
+<li><a href="https://access.redhat.com/solutions/118233">Kernel dropping TCP connections due to LISTEN sockets buffer full in Red Hat Enterprise Linux</a></li>
+<li><a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_ipv4.c?v=2.6.32#L1210">Linux 2.6.32 tcp_ipv4.c about syn Queue and accept Queue</a></li>
+<li><a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_diag.c?v=2.6.32#L26">Linux 2.6.32 tcp_diag.c about &ldquo;Recv-Q&rdquo;</a></li>
+<li><a href="https://github.com/ton31337/tools/wiki/Is-net.ipv4.tcp_abort_on_overflow-good-or-not%3F">Is net.ipv4.tcp_abort_on_overflow good or not?</a></li>
+</ol>
+
+<p><em>-EOF-</em></p>
+    </div>
+
+    
+    
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/nginx/">nginx</a>
+          
+          <a href="/tags/lvs/">lvs</a>
+          
+          <a href="/tags/tcp/">tcp</a>
+          
+          <a href="/tags/syn_cookie/">syn_cookie</a>
+          
+          <a href="/tags/listen_overflow/">listen_overflow</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/organizing-golang-projects-and-dependencies/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">organizing golang projects and dependencies</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/fs-size-eta/">
+            <span class="next-text nav-default">动态监控磁盘分区使用ETA</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+
+  
+
+  
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/n4mine" class="iconfont icon-github" title="github"></a>
+      <a href="https://weibo.com/n4mine" class="iconfont icon-weibo" title="weibo"></a>
+  <a href="http://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2014 - 
+    2018
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">n4mine</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.0.0"></script>
+
+<script id="baidu_analytics">
+  var _hmt = _hmt || [];
+  (function() {
+    if (window.location.hostname === 'localhost') return;
+    var hm = document.createElement("script"); hm.async = true;
+    hm.src = "https://hm.baidu.com/hm.js?a0d9b192e8616a9fff384dfaa6e34871";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+
+
+
+
+
+</body>
+</html>

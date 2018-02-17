@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Lua on n4mine&#39;s blog</title>
+    <link>http://n4mine.github.io/tags/lua/</link>
+    <description>Recent content in Lua on n4mine&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 03 Feb 2015 08:24:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://n4mine.github.io/tags/lua/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>lua判断是否是私有IP地址</title>
+      <link>http://n4mine.github.io/post/private-ip-or-not/</link>
+      <pubDate>Tue, 03 Feb 2015 08:24:00 +0000</pubDate>
+      
+      <guid>http://n4mine.github.io/post/private-ip-or-not/</guid>
+      <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP</description>
+    </item>
+    
+    <item>
+      <title>nginx根据后端返回状态进行upstream</title>
+      <link>http://n4mine.github.io/post/nginx_route_by_upstream_status/</link>
+      <pubDate>Tue, 11 Nov 2014 11:08:42 +0000</pubDate>
+      
+      <guid>http://n4mine.github.io/post/nginx_route_by_upstream_status/</guid>
+      <description>&lt;h1 id=&#34;需求&#34;&gt;需求&lt;/h1&gt;
+
+&lt;p&gt;某系统，因为某些众所周知的原因。&lt;br /&gt;
+需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br /&gt;
+由于带宽、响应时间等原因，全球同步数据存在一系列问题。&lt;/p&gt;
+
+&lt;h1 id=&#34;问题&#34;&gt;问题&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个&lt;/li&gt;
+&lt;li&gt;nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;解决方案&#34;&gt;解决方案&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;nginx + lua + subrequest&lt;/li&gt;
+&lt;li&gt;要在content阶段完成&lt;/li&gt;
+&lt;li&gt;需在rewrite阶段做一点处理&lt;/li&gt;
+&lt;li&gt;GET和POST要区分对待&lt;/li&gt;
+&lt;li&gt;POST的body和GET的args、cookie等处理&lt;/li&gt;
+&lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;为什么是content阶段&#34;&gt;为什么是content阶段&lt;/h3&gt;
+
+&lt;p&gt;前期找了很多方案，目标就是在nginx upstream到后端的时候，将后端的响应拦截下来。然后根据响应的status code加以区分对待。&lt;br /&gt;
+上面&lt;code&gt;响应&lt;/code&gt;二字说明了问题。&lt;br /&gt;
+引用网上找来的关于content阶段的说明，&lt;code&gt;nginx 在content阶段生成产生响应，并返回给client。&lt;/code&gt;&lt;br /&gt;
+所以猜想着在这个处理阶段，拦截下来后端的status code。然后过完我们自己的逻辑之后再次进行proxy或者返回给client。（没错，就是&lt;code&gt;猜&lt;/code&gt;，只因水平太菜^_^）&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
