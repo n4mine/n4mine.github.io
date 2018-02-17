@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Golang on n4mine&#39;s blog</title>
-    <link>http://n4mine.github.io/tags/golang/</link>
+    <link>https://n4mine.github.io/tags/golang/</link>
     <description>Recent content in Golang on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sat, 04 Nov 2017 10:23:25 +0000</lastBuildDate>
     
-	<atom:link href="http://n4mine.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://n4mine.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>通过pprof获取golang gc信息</title>
-      <link>http://n4mine.github.io/post/get-golang-gc-info-by-pprof/</link>
+      <link>https://n4mine.github.io/post/get-golang-gc-info-by-pprof/</link>
       <pubDate>Sat, 04 Nov 2017 10:23:25 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/get-golang-gc-info-by-pprof/</guid>
-      <description>#!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &amp;quot;^# NumGC&amp;quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} - ${_lastNumGC} ] if ${_first}; then NumGC=0; _first=false; fi _lastNumGC=${_NumGC} PauseNs=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &#39;^# PauseNs&#39; | grep -Eo &#39;\[.*\]&#39; | sed -e &#39;s/\[//&#39; -e &#39;s/\]//&#39; | sed &#39;s/ /\n/g&#39; | awk &#39;{ sum+=$0; if ($0&amp;gt;0){count+=1} } END {printf &amp;quot;%.</description>
+      <guid>https://n4mine.github.io/post/get-golang-gc-info-by-pprof/</guid>
+      <description>背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &amp;quot;^# NumGC&amp;quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -</description>
     </item>
     
     <item>
       <title>organizing golang projects and dependencies</title>
-      <link>http://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</link>
+      <link>https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</link>
       <pubDate>Sun, 15 Jan 2017 14:49:18 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</guid>
+      <guid>https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
 
 &lt;p&gt;golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一&lt;br /&gt;
@@ -38,8 +38,9 @@
 &lt;li&gt;除基础包之外, 第三方包尽可能的自包含&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects
-&lt;/p&gt;</description>
+&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

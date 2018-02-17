@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on n4mine&#39;s blog</title>
-    <link>http://n4mine.github.io/post/</link>
+    <link>https://n4mine.github.io/post/</link>
     <description>Recent content in Posts on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sat, 04 Nov 2017 10:23:25 +0000</lastBuildDate>
     
-	<atom:link href="http://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>通过pprof获取golang gc信息</title>
-      <link>http://n4mine.github.io/post/get-golang-gc-info-by-pprof/</link>
+      <link>https://n4mine.github.io/post/get-golang-gc-info-by-pprof/</link>
       <pubDate>Sat, 04 Nov 2017 10:23:25 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/get-golang-gc-info-by-pprof/</guid>
-      <description>#!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &amp;quot;^# NumGC&amp;quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} - ${_lastNumGC} ] if ${_first}; then NumGC=0; _first=false; fi _lastNumGC=${_NumGC} PauseNs=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &#39;^# PauseNs&#39; | grep -Eo &#39;\[.*\]&#39; | sed -e &#39;s/\[//&#39; -e &#39;s/\]//&#39; | sed &#39;s/ /\n/g&#39; | awk &#39;{ sum+=$0; if ($0&amp;gt;0){count+=1} } END {printf &amp;quot;%.</description>
+      <guid>https://n4mine.github.io/post/get-golang-gc-info-by-pprof/</guid>
+      <description>背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &amp;quot;^# NumGC&amp;quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -</description>
     </item>
     
     <item>
       <title>使用iterm2的coprocess完成自动登录</title>
-      <link>http://n4mine.github.io/post/autologin-with-iterm2-coprocess/</link>
+      <link>https://n4mine.github.io/post/autologin-with-iterm2-coprocess/</link>
       <pubDate>Mon, 25 Sep 2017 18:10:41 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/autologin-with-iterm2-coprocess/</guid>
+      <guid>https://n4mine.github.io/post/autologin-with-iterm2-coprocess/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
 
 &lt;p&gt;日常工作中，经常需要通过跳板机登录线上机器。&lt;br /&gt;
@@ -40,10 +40,10 @@
     
     <item>
       <title>聊聊监控系统(02) 数据的采集</title>
-      <link>http://n4mine.github.io/post/monitor-system-02-data-collect/</link>
+      <link>https://n4mine.github.io/post/monitor-system-02-data-collect/</link>
       <pubDate>Thu, 21 Sep 2017 07:36:03 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/monitor-system-02-data-collect/</guid>
+      <guid>https://n4mine.github.io/post/monitor-system-02-data-collect/</guid>
       <description>&lt;h2 id=&#34;数据采集&#34;&gt;数据采集&lt;/h2&gt;
 
 &lt;p&gt;先来聊数据的源头，看官可能觉得不就是个agent么，搞好cpu、mem等基础指标的采集，上报上来不就好了，其实不然&lt;br /&gt;
@@ -57,10 +57,10 @@
     
     <item>
       <title>聊聊监控系统(01) overview</title>
-      <link>http://n4mine.github.io/post/monitor-system-01-overview/</link>
+      <link>https://n4mine.github.io/post/monitor-system-01-overview/</link>
       <pubDate>Sat, 15 Jul 2017 07:36:03 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/monitor-system-01-overview/</guid>
+      <guid>https://n4mine.github.io/post/monitor-system-01-overview/</guid>
       <description>&lt;h2 id=&#34;写在前面&#34;&gt;写在前面&lt;/h2&gt;
 
 &lt;p&gt;监控这个话题太大了，本文谨记录本人在参与我司监控系统重构开发过程中的一些思考。&lt;br /&gt;
@@ -71,10 +71,10 @@
     
     <item>
       <title>organizing golang projects and dependencies</title>
-      <link>http://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</link>
+      <link>https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</link>
       <pubDate>Sun, 15 Jan 2017 14:49:18 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</guid>
+      <guid>https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
 
 &lt;p&gt;golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一&lt;br /&gt;
@@ -87,25 +87,26 @@
 &lt;li&gt;除基础包之外, 第三方包尽可能的自包含&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects
-&lt;/p&gt;</description>
+&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>调用服务端随机性连接超时case一例</title>
-      <link>http://n4mine.github.io/post/random-connection-timeout/</link>
+      <link>https://n4mine.github.io/post/random-connection-timeout/</link>
       <pubDate>Wed, 05 Oct 2016 09:47:13 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/random-connection-timeout/</guid>
+      <guid>https://n4mine.github.io/post/random-connection-timeout/</guid>
       <description>&lt;h1 id=&#34;现象&#34;&gt;现象&lt;/h1&gt;</description>
     </item>
     
     <item>
       <title>动态监控磁盘分区使用ETA</title>
-      <link>http://n4mine.github.io/post/fs-size-eta/</link>
+      <link>https://n4mine.github.io/post/fs-size-eta/</link>
       <pubDate>Fri, 22 Jan 2016 12:43:29 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/fs-size-eta/</guid>
+      <guid>https://n4mine.github.io/post/fs-size-eta/</guid>
       <description>&lt;h2 id=&#34;名词解释&#34;&gt;名词解释&lt;/h2&gt;
 
 &lt;p&gt;eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。&lt;br /&gt;
@@ -122,62 +123,68 @@
     
     <item>
       <title>2015</title>
-      <link>http://n4mine.github.io/post/2015/</link>
+      <link>https://n4mine.github.io/post/2015/</link>
       <pubDate>Thu, 31 Dec 2015 22:43:29 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/2015/</guid>
+      <guid>https://n4mine.github.io/post/2015/</guid>
       <description>&lt;p&gt;又是一年终了时，又吸了一年的京霾，又老了一岁。&lt;br /&gt;
 年龄愈长，越觉时间过得快。&lt;br /&gt;
-毕业那刻，仿佛还在昨天，不过是梦一场，6年多的时间过去了。&lt;br /&gt;
-&lt;/p&gt;</description>
+毕业那刻，仿佛还在昨天，不过是梦一场，6年多的时间过去了。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>一个普通sre一天的工作记录</title>
-      <link>http://n4mine.github.io/post/sre-diary/</link>
+      <link>https://n4mine.github.io/post/sre-diary/</link>
       <pubDate>Thu, 05 Mar 2015 20:49:00 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/sre-diary/</guid>
+      <guid>https://n4mine.github.io/post/sre-diary/</guid>
       <description>&lt;p&gt;本文记录一个sre一天的工作&lt;br /&gt;
 背景交代：80后、单身&lt;br /&gt;
 职位：sre&lt;br /&gt;
 公司：规模不小但sre团队组建不久&lt;/p&gt;
 
-&lt;p&gt;以下是正文&lt;br /&gt;
-&lt;/p&gt;</description>
+&lt;p&gt;以下是正文&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>lua判断是否是私有IP地址</title>
-      <link>http://n4mine.github.io/post/private-ip-or-not/</link>
+      <link>https://n4mine.github.io/post/private-ip-or-not/</link>
       <pubDate>Tue, 03 Feb 2015 08:24:00 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/private-ip-or-not/</guid>
+      <guid>https://n4mine.github.io/post/private-ip-or-not/</guid>
       <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
 
 &lt;ul&gt;
-&lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP</description>
+&lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>监控进程卡住导致内存耗尽</title>
-      <link>http://n4mine.github.io/post/run-out-of-memory/</link>
+      <link>https://n4mine.github.io/post/run-out-of-memory/</link>
       <pubDate>Fri, 02 Jan 2015 10:22:31 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/run-out-of-memory/</guid>
+      <guid>https://n4mine.github.io/post/run-out-of-memory/</guid>
       <description>&lt;h2 id=&#34;起因&#34;&gt;起因&lt;/h2&gt;
 
 &lt;p&gt;大早上收到报警，几台机器内存不足&lt;br /&gt;
-想上去查原因，已登录不上&lt;br /&gt;
-&lt;/p&gt;</description>
+想上去查原因，已登录不上&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>nginx通过geo实现production/preview环境分离，限速/非限速IP分离</title>
-      <link>http://n4mine.github.io/post/nginx_geo/</link>
+      <link>https://n4mine.github.io/post/nginx_geo/</link>
       <pubDate>Thu, 13 Nov 2014 20:14:06 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/nginx_geo/</guid>
+      <guid>https://n4mine.github.io/post/nginx_geo/</guid>
       <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
 
 &lt;ul&gt;
@@ -189,15 +196,18 @@
 &lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
 
 &lt;ul&gt;
-&lt;li&gt;geo、map</description>
+&lt;li&gt;geo, map&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>nginx使用if实现多重判断case一例</title>
-      <link>http://n4mine.github.io/post/if_in_nginx/</link>
+      <link>https://n4mine.github.io/post/if_in_nginx/</link>
       <pubDate>Thu, 13 Nov 2014 17:53:55 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/if_in_nginx/</guid>
+      <guid>https://n4mine.github.io/post/if_in_nginx/</guid>
       <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
 
 &lt;ul&gt;
@@ -210,20 +220,22 @@
 &lt;ul&gt;
 &lt;li&gt;上面提到的参数可能重复出现&lt;/li&gt;
 &lt;li&gt;if不支持复杂的逻辑运算&lt;/li&gt;
-&lt;li&gt;if is evil</description>
+&lt;li&gt;if is evil&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>nginx根据后端返回状态进行upstream</title>
-      <link>http://n4mine.github.io/post/nginx_route_by_upstream_status/</link>
+      <link>https://n4mine.github.io/post/nginx_route_by_upstream_status/</link>
       <pubDate>Tue, 11 Nov 2014 11:08:42 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/nginx_route_by_upstream_status/</guid>
+      <guid>https://n4mine.github.io/post/nginx_route_by_upstream_status/</guid>
       <description>&lt;h1 id=&#34;需求&#34;&gt;需求&lt;/h1&gt;
 
-&lt;p&gt;某系统，因为某些众所周知的原因。&lt;br /&gt;
-需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br /&gt;
-由于带宽、响应时间等原因，全球同步数据存在一系列问题。&lt;/p&gt;
+&lt;p&gt;某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br /&gt;
+由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。&lt;/p&gt;
 
 &lt;h1 id=&#34;问题&#34;&gt;问题&lt;/h1&gt;
 
@@ -240,26 +252,20 @@
 &lt;li&gt;需在rewrite阶段做一点处理&lt;/li&gt;
 &lt;li&gt;GET和POST要区分对待&lt;/li&gt;
 &lt;li&gt;POST的body和GET的args、cookie等处理&lt;/li&gt;
-&lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家
-&lt;/li&gt;
+&lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;为什么是content阶段&#34;&gt;为什么是content阶段&lt;/h3&gt;
-
-&lt;p&gt;前期找了很多方案，目标就是在nginx upstream到后端的时候，将后端的响应拦截下来。然后根据响应的status code加以区分对待。&lt;br /&gt;
-上面&lt;code&gt;响应&lt;/code&gt;二字说明了问题。&lt;br /&gt;
-引用网上找来的关于content阶段的说明，&lt;code&gt;nginx 在content阶段生成产生响应，并返回给client。&lt;/code&gt;&lt;br /&gt;
-所以猜想着在这个处理阶段，拦截下来后端的status code。然后过完我们自己的逻辑之后再次进行proxy或者返回给client。（没错，就是&lt;code&gt;猜&lt;/code&gt;，只因水平太菜^_^）&lt;/p&gt;</description>
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>ansible安装JDK</title>
-      <link>http://n4mine.github.io/post/ansible_install_jdk/</link>
+      <link>https://n4mine.github.io/post/ansible_install_jdk/</link>
       <pubDate>Sat, 18 Oct 2014 20:53:49 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/ansible_install_jdk/</guid>
+      <guid>https://n4mine.github.io/post/ansible_install_jdk/</guid>
       <description>&lt;p&gt;JDK这东西，简单来说就是一个包，主要生效的还是环境变量。&lt;br /&gt;
-直接上实现：&lt;/p&gt;
+直接上实现&lt;/p&gt;
 
 &lt;h2 id=&#34;目录结构&#34;&gt;目录结构&lt;/h2&gt;
 
@@ -276,14 +282,14 @@
     
     <item>
       <title>开篇流水</title>
-      <link>http://n4mine.github.io/post/first/</link>
+      <link>https://n4mine.github.io/post/first/</link>
       <pubDate>Thu, 24 Jul 2014 23:02:08 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/first/</guid>
+      <guid>https://n4mine.github.io/post/first/</guid>
       <description>&lt;h2 id=&#34;始&#34;&gt;始&lt;/h2&gt;
 
-&lt;p&gt;其实一、两年前就打算搞个blog，但一直忙（其实就是懒），所以断断续续的，最后也没完成。&lt;br /&gt;
-但愿这个能坚持下去吧！&lt;/p&gt;
+&lt;p&gt;其实一、两年前就打算搞个blog，但一直&lt;del&gt;忙&lt;/del&gt;懒，所以断断续续的，最后也没完成。&lt;br /&gt;
+但愿这个能坚持下去！&lt;/p&gt;
 
 &lt;p&gt;&lt;/p&gt;</description>
     </item>

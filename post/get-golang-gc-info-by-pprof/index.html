@@ -17,7 +17,7 @@
 
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="#!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &amp;quot;^# NumGC&amp;quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} - ${_lastNumGC} ] if ${_first}; then NumGC=0; _first=false; fi _lastNumGC=${_NumGC} PauseNs=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &#39;^# PauseNs&#39; | grep -Eo &#39;\[.*\]&#39; | sed -e &#39;s/\[//&#39; -e &#39;s/\]//&#39; | sed &#39;s/ /\n/g&#39; | awk &#39;{ sum&#43;=$0; if ($0&amp;gt;0){count&#43;=1} } END {printf &amp;quot;%." />
+  <meta name="description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &amp;quot;^# NumGC&amp;quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -" />
 
   <meta name="keywords" content="n4mine, blog" />
 
@@ -29,7 +29,7 @@
 <meta name="generator" content="Hugo 0.36.1" />
 
 
-<link rel="canonical" href="http://n4mine.github.io/post/get-golang-gc-info-by-pprof/" />
+<link rel="canonical" href="https://n4mine.github.io/post/get-golang-gc-info-by-pprof/" />
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -50,9 +50,9 @@
 
 
 <meta property="og:title" content="通过pprof获取golang gc信息" />
-<meta property="og:description" content="#!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} - ${_lastNumGC} ] if ${_first}; then NumGC=0; _first=false; fi _lastNumGC=${_NumGC} PauseNs=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &#39;^# PauseNs&#39; | grep -Eo &#39;\[.*\]&#39; | sed -e &#39;s/\[//&#39; -e &#39;s/\]//&#39; | sed &#39;s/ /\n/g&#39; | awk &#39;{ sum&#43;=$0; if ($0&gt;0){count&#43;=1} } END {printf &quot;%." />
+<meta property="og:description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://n4mine.github.io/post/get-golang-gc-info-by-pprof/" />
+<meta property="og:url" content="https://n4mine.github.io/post/get-golang-gc-info-by-pprof/" />
 
 
 
@@ -71,19 +71,19 @@
 
 
 <meta itemprop="name" content="通过pprof获取golang gc信息">
-<meta itemprop="description" content="#!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} - ${_lastNumGC} ] if ${_first}; then NumGC=0; _first=false; fi _lastNumGC=${_NumGC} PauseNs=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &#39;^# PauseNs&#39; | grep -Eo &#39;\[.*\]&#39; | sed -e &#39;s/\[//&#39; -e &#39;s/\]//&#39; | sed &#39;s/ /\n/g&#39; | awk &#39;{ sum&#43;=$0; if ($0&gt;0){count&#43;=1} } END {printf &quot;%.">
+<meta itemprop="description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -">
 
 
 <meta itemprop="datePublished" content="2017-11-04T10:23:25&#43;00:00" />
 <meta itemprop="dateModified" content="2017-11-04T10:23:25&#43;00:00" />
-<meta itemprop="wordCount" content="83">
+<meta itemprop="wordCount" content="124">
 
 
 
 <meta itemprop="keywords" content="golang," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="通过pprof获取golang gc信息"/>
-<meta name="twitter:description" content="#!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} - ${_lastNumGC} ] if ${_first}; then NumGC=0; _first=false; fi _lastNumGC=${_NumGC} PauseNs=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &#39;^# PauseNs&#39; | grep -Eo &#39;\[.*\]&#39; | sed -e &#39;s/\[//&#39; -e &#39;s/\]//&#39; | sed &#39;s/ /\n/g&#39; | awk &#39;{ sum&#43;=$0; if ($0&gt;0){count&#43;=1} } END {printf &quot;%."/>
+<meta name="twitter:description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -159,7 +159,7 @@
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 83 字 </span>
+        <span class="more-meta"> 约 124 字 </span>
         <span class="more-meta"> 预计阅读 1 分钟 </span>
         
       </div>
@@ -171,13 +171,26 @@
   <h2 class="post-toc-title">文章目录</h2>
   
   <div class="post-toc-content">
-    
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#背景">背景</a></li>
+<li><a href="#实现">实现</a></li>
+</ul>
+</nav>
   </div>
 </div>
 
     
     <div class="post-content">
-      <pre><code>#!/bin/bash
+      
+
+<h1 id="背景">背景</h1>
+
+<p>服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况</p>
+
+<h1 id="实现">实现</h1>
+
+<pre><code>#!/bin/bash
 
 _lastNumGC=0
 _first=true
@@ -242,7 +255,7 @@ done
       <div class="social-links">
       <a href="https://github.com/n4mine" class="iconfont icon-github" title="github"></a>
       <a href="https://weibo.com/n4mine" class="iconfont icon-weibo" title="weibo"></a>
-  <a href="http://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="https://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">

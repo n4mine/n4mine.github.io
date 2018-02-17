@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Iterm2 on n4mine&#39;s blog</title>
-    <link>http://n4mine.github.io/tags/iterm2/</link>
+    <link>https://n4mine.github.io/tags/iterm2/</link>
     <description>Recent content in Iterm2 on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Mon, 25 Sep 2017 18:10:41 +0000</lastBuildDate>
     
-	<atom:link href="http://n4mine.github.io/tags/iterm2/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://n4mine.github.io/tags/iterm2/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>使用iterm2的coprocess完成自动登录</title>
-      <link>http://n4mine.github.io/post/autologin-with-iterm2-coprocess/</link>
+      <link>https://n4mine.github.io/post/autologin-with-iterm2-coprocess/</link>
       <pubDate>Mon, 25 Sep 2017 18:10:41 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/autologin-with-iterm2-coprocess/</guid>
+      <guid>https://n4mine.github.io/post/autologin-with-iterm2-coprocess/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
 
 &lt;p&gt;日常工作中，经常需要通过跳板机登录线上机器。&lt;br /&gt;

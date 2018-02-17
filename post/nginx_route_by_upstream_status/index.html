@@ -17,13 +17,9 @@
 
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="需求 某系统，因为某些众所周知的原因。
-需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
-由于带宽、响应时间等原因，全球同步数据存在一系列问题。
-问题  放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个 nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识  解决方案  nginx &#43; lua &#43; subrequest 要在content阶段完成 需在rewrite阶段做一点处理 GET和POST要区分对待 POST的body和GET的args、cookie等处理 nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家   为什么是content阶段 前期找了很多方案，目标就是在nginx upstream到后端的时候，将后端的响应拦截下来。然后根据响应的status code加以区分对待。
-上面响应二字说明了问题。
-引用网上找来的关于content阶段的说明，nginx 在content阶段生成产生响应，并返回给client。
-所以猜想着在这个处理阶段，拦截下来后端的status code。然后过完我们自己的逻辑之后再次进行proxy或者返回给client。（没错，就是猜，只因水平太菜^_^）
+  <meta name="description" content="需求 某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
+由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。
+问题  放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个 nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识  解决方案  nginx &#43; lua &#43; subrequest 要在content阶段完成 需在rewrite阶段做一点处理 GET和POST要区分对待 POST的body和GET的args、cookie等处理 nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家  
 " />
 
   <meta name="keywords" content="n4mine, blog" />
@@ -36,7 +32,7 @@
 <meta name="generator" content="Hugo 0.36.1" />
 
 
-<link rel="canonical" href="http://n4mine.github.io/post/nginx_route_by_upstream_status/" />
+<link rel="canonical" href="https://n4mine.github.io/post/nginx_route_by_upstream_status/" />
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -59,9 +55,8 @@
 <meta property="og:title" content="nginx根据后端返回状态进行upstream" />
 <meta property="og:description" content="需求
 
-某系统，因为某些众所周知的原因。
-需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
-由于带宽、响应时间等原因，全球同步数据存在一系列问题。
+某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
+由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。
 
 问题
 
@@ -81,15 +76,9 @@ POST的body和GET的args、cookie等处理
 nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家
 
 
-
-为什么是content阶段
-
-前期找了很多方案，目标就是在nginx upstream到后端的时候，将后端的响应拦截下来。然后根据响应的status code加以区分对待。
-上面响应二字说明了问题。
-引用网上找来的关于content阶段的说明，nginx 在content阶段生成产生响应，并返回给client。
-所以猜想着在这个处理阶段，拦截下来后端的status code。然后过完我们自己的逻辑之后再次进行proxy或者返回给client。（没错，就是猜，只因水平太菜^_^）" />
+" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://n4mine.github.io/post/nginx_route_by_upstream_status/" />
+<meta property="og:url" content="https://n4mine.github.io/post/nginx_route_by_upstream_status/" />
 
 
 
@@ -110,9 +99,8 @@ nginx根据后端的不同返回status code，进行逻辑判断，是直接返�
 <meta itemprop="name" content="nginx根据后端返回状态进行upstream">
 <meta itemprop="description" content="需求
 
-某系统，因为某些众所周知的原因。
-需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
-由于带宽、响应时间等原因，全球同步数据存在一系列问题。
+某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
+由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。
 
 问题
 
@@ -132,18 +120,12 @@ POST的body和GET的args、cookie等处理
 nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家
 
 
-
-为什么是content阶段
-
-前期找了很多方案，目标就是在nginx upstream到后端的时候，将后端的响应拦截下来。然后根据响应的status code加以区分对待。
-上面响应二字说明了问题。
-引用网上找来的关于content阶段的说明，nginx 在content阶段生成产生响应，并返回给client。
-所以猜想着在这个处理阶段，拦截下来后端的status code。然后过完我们自己的逻辑之后再次进行proxy或者返回给client。（没错，就是猜，只因水平太菜^_^）">
+">
 
 
 <meta itemprop="datePublished" content="2014-11-11T11:08:42&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-11T11:08:42&#43;00:00" />
-<meta itemprop="wordCount" content="1624">
+<meta itemprop="wordCount" content="1621">
 
 
 
@@ -152,9 +134,8 @@ nginx根据后端的不同返回status code，进行逻辑判断，是直接返�
 <meta name="twitter:title" content="nginx根据后端返回状态进行upstream"/>
 <meta name="twitter:description" content="需求
 
-某系统，因为某些众所周知的原因。
-需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
-由于带宽、响应时间等原因，全球同步数据存在一系列问题。
+某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
+由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。
 
 问题
 
@@ -174,13 +155,7 @@ POST的body和GET的args、cookie等处理
 nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家
 
 
-
-为什么是content阶段
-
-前期找了很多方案，目标就是在nginx upstream到后端的时候，将后端的响应拦截下来。然后根据响应的status code加以区分对待。
-上面响应二字说明了问题。
-引用网上找来的关于content阶段的说明，nginx 在content阶段生成产生响应，并返回给client。
-所以猜想着在这个处理阶段，拦截下来后端的status code。然后过完我们自己的逻辑之后再次进行proxy或者返回给client。（没错，就是猜，只因水平太菜^_^）"/>
+"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -256,7 +231,7 @@ nginx根据后端的不同返回status code，进行逻辑判断，是直接返�
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 1624 字 </span>
+        <span class="more-meta"> 约 1621 字 </span>
         <span class="more-meta"> 预计阅读 4 分钟 </span>
         
       </div>
@@ -291,9 +266,8 @@ nginx根据后端的不同返回status code，进行逻辑判断，是直接返�
     <div class="post-content">
       <h1 id="需求">需求</h1>
 
-<p>某系统，因为某些众所周知的原因。<br />
-需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。<br />
-由于带宽、响应时间等原因，全球同步数据存在一系列问题。</p>
+<p>某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。<br />
+由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。</p>
 
 <h1 id="问题">问题</h1>
 
@@ -310,9 +284,10 @@ nginx根据后端的不同返回status code，进行逻辑判断，是直接返�
 <li>需在rewrite阶段做一点处理</li>
 <li>GET和POST要区分对待</li>
 <li>POST的body和GET的args、cookie等处理</li>
-<li>nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家
-</li>
+<li>nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家</li>
 </ul>
+
+<p></p>
 
 <h3 id="为什么是content阶段">为什么是content阶段</h3>
 
@@ -433,7 +408,7 @@ end
       <div class="social-links">
       <a href="https://github.com/n4mine" class="iconfont icon-github" title="github"></a>
       <a href="https://weibo.com/n4mine" class="iconfont icon-weibo" title="weibo"></a>
-  <a href="http://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="https://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">

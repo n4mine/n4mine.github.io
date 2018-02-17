@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ansible on n4mine&#39;s blog</title>
-    <link>http://n4mine.github.io/tags/ansible/</link>
+    <link>https://n4mine.github.io/tags/ansible/</link>
     <description>Recent content in Ansible on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sat, 18 Oct 2014 20:53:49 +0000</lastBuildDate>
     
-	<atom:link href="http://n4mine.github.io/tags/ansible/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://n4mine.github.io/tags/ansible/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>ansible安装JDK</title>
-      <link>http://n4mine.github.io/post/ansible_install_jdk/</link>
+      <link>https://n4mine.github.io/post/ansible_install_jdk/</link>
       <pubDate>Sat, 18 Oct 2014 20:53:49 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/ansible_install_jdk/</guid>
+      <guid>https://n4mine.github.io/post/ansible_install_jdk/</guid>
       <description>&lt;p&gt;JDK这东西，简单来说就是一个包，主要生效的还是环境变量。&lt;br /&gt;
-直接上实现：&lt;/p&gt;
+直接上实现&lt;/p&gt;
 
 &lt;h2 id=&#34;目录结构&#34;&gt;目录结构&lt;/h2&gt;
 

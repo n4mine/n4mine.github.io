@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Zabbix on n4mine&#39;s blog</title>
-    <link>http://n4mine.github.io/tags/zabbix/</link>
+    <link>https://n4mine.github.io/tags/zabbix/</link>
     <description>Recent content in Zabbix on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 22 Jan 2016 12:43:29 +0000</lastBuildDate>
     
-	<atom:link href="http://n4mine.github.io/tags/zabbix/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://n4mine.github.io/tags/zabbix/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>动态监控磁盘分区使用ETA</title>
-      <link>http://n4mine.github.io/post/fs-size-eta/</link>
+      <link>https://n4mine.github.io/post/fs-size-eta/</link>
       <pubDate>Fri, 22 Jan 2016 12:43:29 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/fs-size-eta/</guid>
+      <guid>https://n4mine.github.io/post/fs-size-eta/</guid>
       <description>&lt;h2 id=&#34;名词解释&#34;&gt;名词解释&lt;/h2&gt;
 
 &lt;p&gt;eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。&lt;br /&gt;

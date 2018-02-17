@@ -29,7 +29,7 @@
 <meta name="generator" content="Hugo 0.36.1" />
 
 
-<link rel="canonical" href="http://n4mine.github.io/post/random-connection-timeout/" />
+<link rel="canonical" href="https://n4mine.github.io/post/random-connection-timeout/" />
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -52,7 +52,7 @@
 <meta property="og:title" content="调用服务端随机性连接超时case一例" />
 <meta property="og:description" content="现象" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://n4mine.github.io/post/random-connection-timeout/" />
+<meta property="og:url" content="https://n4mine.github.io/post/random-connection-timeout/" />
 
 
 
@@ -76,7 +76,7 @@
 
 <meta itemprop="datePublished" content="2016-10-05T09:47:13&#43;00:00" />
 <meta itemprop="dateModified" content="2016-10-05T09:47:13&#43;00:00" />
-<meta itemprop="wordCount" content="1260">
+<meta itemprop="wordCount" content="1256">
 
 
 
@@ -159,7 +159,7 @@
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 1260 字 </span>
+        <span class="more-meta"> 约 1256 字 </span>
         <span class="more-meta"> 预计阅读 3 分钟 </span>
         
       </div>
@@ -180,7 +180,7 @@
 <li><a href="#测试命令">测试命令</a>
 <ul>
 <li><a href="#src表现如下">src表现如下</a></li>
-<li><a href="#相同tcp流-使用tcp-seq区分-dst-本处dst指lvs的某个backend-即其中一个nginx节点-表现如下">相同tcp流(使用tcp seq区分), dst(本处dst指lvs的某个backend,即其中一个nginx节点)表现如下</a></li>
+<li><a href="#dst表现如下">dst表现如下</a></li>
 </ul></li>
 <li><a href="#抓包分析">抓包分析</a></li>
 <li><a href="#阶段性结论">阶段性结论</a></li>
@@ -246,7 +246,12 @@
 
 <p><img src="/img/src.png" alt="" /></p>
 
-<h3 id="相同tcp流-使用tcp-seq区分-dst-本处dst指lvs的某个backend-即其中一个nginx节点-表现如下">相同tcp流(使用tcp seq区分), dst(本处dst指lvs的某个backend,即其中一个nginx节点)表现如下</h3>
+<h3 id="dst表现如下">dst表现如下</h3>
+
+<ul>
+<li>如何判断相同tcp流: 使用tcp seq</li>
+<li>本处dst指lvs的某个backend, 即其中一个nginx节点</li>
+</ul>
 
 <p><img src="/img/dst.png" alt="" /></p>
 
@@ -257,9 +262,10 @@
 <li>14:39:38.069170, dst收到syn，但并未回syn,ack</li>
 <li>14:39:41.043515, src重传相同seq的syn</li>
 <li>14:39:41.068833, dst收到重传syn</li>
-<li>14:39:41.068842, dst发出syn,ack
-此时src已经到达超时时间，发rst</li>
+<li>14:39:41.068842, dst发出syn,ack</li>
 </ul>
+
+<p>此时src已经到达超时时间，发rst</p>
 
 <h2 id="阶段性结论">阶段性结论</h2>
 
@@ -276,8 +282,9 @@
 
 <p>上述返回结果，inrouter00这台机器的overflowed数量明显比其它节点的结果要大（大一个数量级）。<br />
 而且，在执行测试命令后，overflowed的数量增长明显。<br />
-syn队列与accept队列的关系如下<br />
-<img src="/img/accept_q.png" alt="" /></p>
+syn队列与accept队列的关系如下</p>
+
+<p><img src="/img/accept_q.png" alt="" /></p>
 
 <h2 id="猜测">猜测</h2>
 
@@ -392,7 +399,7 @@ syn队列与accept队列的关系如下<br />
       <div class="social-links">
       <a href="https://github.com/n4mine" class="iconfont icon-github" title="github"></a>
       <a href="https://weibo.com/n4mine" class="iconfont icon-weibo" title="weibo"></a>
-  <a href="http://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="https://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">

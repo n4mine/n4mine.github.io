@@ -28,9 +28,9 @@
 <meta name="generator" content="Hugo 0.36.1" />
 
 
-<link rel="canonical" href="http://n4mine.github.io/" />
-<link href="http://n4mine.github.io/index.xml" rel="alternate" type="application/rss+xml" title="n4mine&#39;s blog" />
-  <link href="http://n4mine.github.io/index.xml" rel="feed" type="application/rss+xml" title="n4mine&#39;s blog" />
+<link rel="canonical" href="https://n4mine.github.io/" />
+<link href="https://n4mine.github.io/index.xml" rel="alternate" type="application/rss+xml" title="n4mine&#39;s blog" />
+  <link href="https://n4mine.github.io/index.xml" rel="feed" type="application/rss+xml" title="n4mine&#39;s blog" />
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -53,7 +53,7 @@
 <meta property="og:title" content="n4mine&#39;s blog" />
 <meta property="og:description" content="n4mine&#39;s blog" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="http://n4mine.github.io/" />
+<meta property="og:url" content="https://n4mine.github.io/" />
 
 
 
@@ -152,14 +152,14 @@
             <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
           
         </div>
-      <span class="more-meta"> 约 83 字 </span>
+      <span class="more-meta"> 约 124 字 </span>
       <span class="more-meta"> 预计阅读 1 分钟 </span>
     </div>
   </header>
   
   <div class="post-content">
     <div class="post-summary">
-      #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed 's/#/\n#/g' | grep &quot;^# NumGC&quot; | awk '{print $NF}') NumGC=$[ ${_NumGC} - ${_lastNumGC} ] if ${_first}; then NumGC=0; _first=false; fi _lastNumGC=${_NumGC} PauseNs=$(echo $r | sed 's/#/\n#/g' | grep '^# PauseNs' | grep -Eo '\[.*\]' | sed -e 's/\[//' -e 's/\]//' | sed 's/ /\n/g' | awk '{ sum+=$0; if ($0&gt;0){count+=1} } END {printf &quot;%.
+      背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed 's/#/\n#/g' | grep &quot;^# NumGC&quot; | awk '{print $NF}') NumGC=$[ ${_NumGC} -
     </div>
     <div class="read-more">
       <a href="/post/get-golang-gc-info-by-pprof/" class="read-more-link">阅读更多</a>
@@ -213,7 +213,7 @@
             <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
           
         </div>
-      <span class="more-meta"> 约 1237 字 </span>
+      <span class="more-meta"> 约 1235 字 </span>
       <span class="more-meta"> 预计阅读 3 分钟 </span>
     </div>
   </header>
@@ -297,8 +297,9 @@
 <li>除基础包之外, 第三方包尽可能的自包含</li>
 </ol>
 
-<p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects
-</p>
+<p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects</p>
+
+<p></p>
     </div>
     <div class="read-more">
       <a href="/post/organizing-golang-projects-and-dependencies/" class="read-more-link">阅读更多</a>
@@ -327,7 +328,7 @@
       <div class="social-links">
       <a href="https://github.com/n4mine" class="iconfont icon-github" title="github"></a>
       <a href="https://weibo.com/n4mine" class="iconfont icon-weibo" title="weibo"></a>
-  <a href="http://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="https://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">

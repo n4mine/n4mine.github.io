@@ -17,7 +17,8 @@
 
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="场景  根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&amp;hellip;，有则upstream到指定backend 根据来源IP区分production环境和preview环境  问题  上面提到的参数可能重复出现 if不支持复杂的逻辑运算 if is evil" />
+  <meta name="description" content="场景  根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&amp;hellip;，有则upstream到指定backend 根据来源IP区分production环境和preview环境  问题  上面提到的参数可能重复出现 if不支持复杂的逻辑运算 if is evil  
+" />
 
   <meta name="keywords" content="n4mine, blog" />
 
@@ -29,7 +30,7 @@
 <meta name="generator" content="Hugo 0.36.1" />
 
 
-<link rel="canonical" href="http://n4mine.github.io/post/if_in_nginx/" />
+<link rel="canonical" href="https://n4mine.github.io/post/if_in_nginx/" />
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -62,9 +63,12 @@
 
 上面提到的参数可能重复出现
 if不支持复杂的逻辑运算
-if is evil" />
+if is evil
+
+
+" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://n4mine.github.io/post/if_in_nginx/" />
+<meta property="og:url" content="https://n4mine.github.io/post/if_in_nginx/" />
 
 
 
@@ -95,12 +99,15 @@ if is evil" />
 
 上面提到的参数可能重复出现
 if不支持复杂的逻辑运算
-if is evil">
+if is evil
+
+
+">
 
 
 <meta itemprop="datePublished" content="2014-11-13T17:53:55&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-13T17:53:55&#43;00:00" />
-<meta itemprop="wordCount" content="703">
+<meta itemprop="wordCount" content="699">
 
 
 
@@ -119,7 +126,10 @@ if is evil">
 
 上面提到的参数可能重复出现
 if不支持复杂的逻辑运算
-if is evil"/>
+if is evil
+
+
+"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -195,7 +205,7 @@ if is evil"/>
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 703 字 </span>
+        <span class="more-meta"> 约 699 字 </span>
         <span class="more-meta"> 预计阅读 2 分钟 </span>
         
       </div>
@@ -231,9 +241,10 @@ if is evil"/>
 <ul>
 <li>上面提到的参数可能重复出现</li>
 <li>if不支持复杂的逻辑运算</li>
-<li>if is evil
-</li>
+<li>if is evil</li>
 </ul>
+
+<p></p>
 
 <h1 id="方案">方案</h1>
 
@@ -259,12 +270,9 @@ if ( $address_type ~ &quot;lan&quot; ) {
 proxy_pass http://wan;
 </code></pre>
 
-<ul>
-<li>首先，nginx的set指令和if指令都工作在rewrite阶段。<br />
-<code>rewrite阶段的指令会按照config文件中的书写顺序依次执行</code></li>
-</ul>
+<p>nginx的set指令和if指令都工作在rewrite阶段。<code>rewrite阶段的指令会按照config文件中的书写顺序依次执行</code></p>
 
-<p>先从最简单实现开始，我最开始想到的是如下写法</p>
+<p>先从最简单实现开始，最开始想到的是如下写法</p>
 
 <pre><code>if ( $args ~ &quot;code=OVERSEA[^&amp;]*&quot; )  {
     proxy_pass http://oversea;
@@ -281,9 +289,7 @@ proxy_pass http://wan;
 如何解析args就成了问题。<br />
 据我实验<code>$arg_xxx</code>这种方式取到的值的应该是在参数列表中xxx第一次出现时的value。</p>
 
-<ul>
-<li>为防止多个CODE参数出现时直接打流量到oversea，写出了上述<code>最终实现</code>。逻辑很简单，相信看一遍就明白了。<br /></li>
-</ul>
+<p>为防止多个CODE参数出现时直接打流量到oversea，写出了上述<code>最终实现</code>。逻辑很简单，相信看一遍就明白了。</p>
 
 <p>为什么写成这个鸟德行。</p>
 
@@ -348,7 +354,7 @@ proxy_pass http://wan;
       <div class="social-links">
       <a href="https://github.com/n4mine" class="iconfont icon-github" title="github"></a>
       <a href="https://weibo.com/n4mine" class="iconfont icon-weibo" title="weibo"></a>
-  <a href="http://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="https://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">

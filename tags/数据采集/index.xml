@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>数据采集 on n4mine&#39;s blog</title>
-    <link>http://n4mine.github.io/tags/%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/</link>
+    <link>https://n4mine.github.io/tags/%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/</link>
     <description>Recent content in 数据采集 on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Thu, 21 Sep 2017 07:36:03 +0000</lastBuildDate>
     
-	<atom:link href="http://n4mine.github.io/tags/%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://n4mine.github.io/tags/%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>聊聊监控系统(02) 数据的采集</title>
-      <link>http://n4mine.github.io/post/monitor-system-02-data-collect/</link>
+      <link>https://n4mine.github.io/post/monitor-system-02-data-collect/</link>
       <pubDate>Thu, 21 Sep 2017 07:36:03 +0000</pubDate>
       
-      <guid>http://n4mine.github.io/post/monitor-system-02-data-collect/</guid>
+      <guid>https://n4mine.github.io/post/monitor-system-02-data-collect/</guid>
       <description>&lt;h2 id=&#34;数据采集&#34;&gt;数据采集&lt;/h2&gt;
 
 &lt;p&gt;先来聊数据的源头，看官可能觉得不就是个agent么，搞好cpu、mem等基础指标的采集，上报上来不就好了，其实不然&lt;br /&gt;
