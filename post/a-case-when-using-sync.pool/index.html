@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>lua判断是否是私有IP地址 - n4mine&#39;s blog</title>
+  <title>使用sync.Pool引起的case一例 - n4mine&#39;s blog</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -17,10 +17,11 @@
 
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="场景  ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP  
-" />
+  <meta name="description" content="背景 open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
 
-  <meta name="keywords" content="n4mine, blog" />
+" />
+<meta name="keywords" content="sync.Pool, golang" />
+
 
 
 
@@ -30,7 +31,7 @@
 <meta name="generator" content="Hugo 0.37" />
 
 
-<link rel="canonical" href="https://n4mine.github.io/post/private-ip-or-not/" />
+<link rel="canonical" href="https://n4mine.github.io/post/a-case-when-using-sync.pool/" />
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -50,26 +51,20 @@
 
 
 
-<meta property="og:title" content="lua判断是否是私有IP地址" />
-<meta property="og:description" content="场景
+<meta property="og:title" content="使用sync.Pool引起的case一例" />
+<meta property="og:description" content="背景
 
-
-ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP
-
+open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
 
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://n4mine.github.io/post/private-ip-or-not/" />
+<meta property="og:url" content="https://n4mine.github.io/post/a-case-when-using-sync.pool/" />
 
 
 
-<meta property="article:published_time" content="2015-02-03T08:24:00&#43;00:00"/>
+<meta property="article:published_time" content="2018-02-27T15:12:20&#43;08:00"/>
 
-<meta property="article:modified_time" content="2015-02-03T08:24:00&#43;00:00"/>
-
-
-
-
+<meta property="article:modified_time" content="2018-02-27T15:12:20&#43;08:00"/>
 
 
 
@@ -77,30 +72,30 @@ ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP
 
 
 
-<meta itemprop="name" content="lua判断是否是私有IP地址">
-<meta itemprop="description" content="场景
 
 
-ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP
 
+
+<meta itemprop="name" content="使用sync.Pool引起的case一例">
+<meta itemprop="description" content="背景
+
+open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
 
 ">
 
 
-<meta itemprop="datePublished" content="2015-02-03T08:24:00&#43;00:00" />
-<meta itemprop="dateModified" content="2015-02-03T08:24:00&#43;00:00" />
-<meta itemprop="wordCount" content="141">
+<meta itemprop="datePublished" content="2018-02-27T15:12:20&#43;08:00" />
+<meta itemprop="dateModified" content="2018-02-27T15:12:20&#43;08:00" />
+<meta itemprop="wordCount" content="662">
 
 
 
-<meta itemprop="keywords" content="lua," />
+<meta itemprop="keywords" content="golang,sync.Pool," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="lua判断是否是私有IP地址"/>
-<meta name="twitter:description" content="场景
+<meta name="twitter:title" content="使用sync.Pool引起的case一例"/>
+<meta name="twitter:description" content="背景
 
-
-ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP
-
+open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
 
 "/>
 
@@ -169,65 +164,111 @@ ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">lua判断是否是私有IP地址</h1>
+      <h1 class="post-title">使用sync.Pool引起的case一例</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2015-02-03 </span>
+        <span class="post-time"> 2018-02-27 </span>
         <div class="post-category">
             
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 141 字 </span>
-        <span class="more-meta"> 预计阅读 1 分钟 </span>
+        <span class="more-meta"> 约 662 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
         
       </div>
     </header>
 
     
     
-<div class="post-toc" id="post-toc">
-  <h2 class="post-toc-title">文章目录</h2>
-  
-  <div class="post-toc-content">
-    <nav id="TableOfContents">
-<ul>
-<li><a href="#场景">场景</a></li>
-<li><a href="#实现">实现</a></li>
-</ul>
-</nav>
-  </div>
-</div>
 
     
     <div class="post-content">
-      <h1 id="场景">场景</h1>
+      <h2 id="背景">背景</h2>
 
-<ul>
-<li>ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP</li>
-</ul>
+<p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
 
 <p></p>
 
-<h1 id="实现">实现</h1>
+<h2 id="过程">过程</h2>
 
-<pre><code>local current_remote_addr = &quot;192.168.1.1&quot;
+<pre><code>func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
+-       v := smodel.GraphItemPoint{}.New(item)
++       v := smodel.NewPointObjFromPool(item)
++       defer smodel.PutPointObjBack2Pool(v)
 
-local ip_decimal = 0
-local postion = 3
-for i in string.gmatch(current_remote_addr, [[%d+]]) do
-    ip_decimal = ip_decimal + math.pow(256, postion) * i
-    postion = postion - 1
-end
+...
 
-if ip_decimal &gt;= 0x7f000000 and ip_decimal &lt;= 0x7fffffff or -- 127.0.0.0 ~ 127.255.255.255
-    ip_decimal &gt;= 0x0a000000 and ip_decimal &lt;= 0x0affffff or -- 10.0.0.0 ~ 10.255.255.255
-    ip_decimal &gt;= 0xac100000 and ip_decimal &lt;= 0xac1fffff or -- 172.16.0.0 ~ 172.31.255.255
-    ip_decimal &gt;= 0xc0a80000 and ip_decimal &lt;= 0xc0a8ffff then   -- 192.168.0.0 ~ 192.168.255.255
-    print(current_remote_addr..&quot; is a private ip&quot;)
-else
-    print(current_remote_addr..&quot; is not a private ip&quot;)
-end
+    this.L.PushFront(v)
+</code></pre>
+
+<p>上述代码中, <code>PushFront</code>是每个点到来都需要操作的函数, 即每上报一个点, <code>smodel.GraphItemPoint{}.New(item)</code> 都需要执行一次<br />
+因为这里是一个临时对象，所以尝试使用对象池来优化(虽然后面证明优化无效，但整个过程值得分享)，以期望减少内存的分配及申请对象的次数，进而减少gc</p>
+
+<p>注意上面的<code>this.L.PushFront(v)</code>，这里是一个关键点</p>
+
+<p>另外为对象池增加了helper函数，方便进行对象的Get和Put操作，如下</p>
+
+<pre><code>+var pointObjPool = sync.Pool{New: func() interface{} { return &amp;GraphItemPoint{} }}
++
++func NewPointObjFromPool(item *cmodel.GraphItem) *GraphItemPoint {
++       ret := pointObjPool.Get().(*GraphItemPoint)
++       if item == nil {
++               return nil
++       }
++
++       ret.Timestamp = item.Timestamp
++       ret.Value = item.Value
++
++       return ret
++}
++
++func PutPointObjBack2Pool(p *GraphItemPoint) {
++       pointObjPool.Put(p)
++}
++
+</code></pre>
+
+<p>在这种场景下，使用sync.Pool对象池Get一个新的对象后，使用this.L.PushFront将对象的地址（因为返回的是一个指针），放在了内存cache中。</p>
+
+<p>当执行查询操作时，在内存cache中获取到的是一个地址，将这个地址解引用获取内容时，就会出现问题。</p>
+
+<p>因为这个对象地址是从对象池申请的，该地址在执行Put操作后，对于对象池而言就没什么用了。<br />
+而对象池的再次Get操作，很有可能分配出相同的地址。而在实际业务中，这个地址是有意义的，所以造成了从地址解引用实际内容时出现了问题。</p>
+
+<p>整个过程有些类似C里面野指针的概念。</p>
+
+<h2 id="解决">解决</h2>
+
+<p>如果从对象池获取值而非指针的话，那么这个问题就解了，如下</p>
+
+<pre><code>func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
+    if item == nil {
+        return
+    }
+    v := smodel.NewPointObjFromPool()
+
+
+...
+
+    v.Timestamp = item.Timestamp
+    v.Value = item.Value
+
+
+...
+
+    this.L.PushFront(&amp;v)
+    smodel.PutPointObjBack2Pool(v)
+</code></pre>
+
+<p>关于对象池的更改，如下</p>
+
+<pre><code>func NewPointObjFromPool() GraphItemPoint {
+    return pointObjPool.Get().(GraphItemPoint)
+}
+func PutPointObjBack2Pool(p GraphItemPoint) {
+    pointObjPool.Put(p)
+}
 </code></pre>
 
 <p><em>-EOF-</em></p>
@@ -242,21 +283,18 @@ end
     <footer class="post-footer">
       <div class="post-tags">
           
-          <a href="/tags/lua/">lua</a>
+          <a href="/tags/golang/">golang</a>
+          
+          <a href="/tags/sync.pool/">sync.Pool</a>
           
         </div>
 
       
       <nav class="post-nav">
         
-          <a class="prev" href="/post/sre-diary/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">一个普通sre一天的工作记录</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
         
-          <a class="next" href="/post/run-out-of-memory/">
-            <span class="next-text nav-default">监控进程卡住导致内存耗尽</span>
+          <a class="next" href="/post/get-golang-gc-info-by-pprof/">
+            <span class="next-text nav-default">通过pprof获取golang gc信息</span>
             <span class="prev-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>
@@ -265,11 +303,6 @@ end
   </article>
         </div>
         
-  
-
-  
-
-  
       </div>
     </main>
 

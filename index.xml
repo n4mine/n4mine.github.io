@@ -21,6 +21,19 @@
     </item>
     
     <item>
+      <title>使用sync.Pool引起的case一例</title>
+      <link>https://n4mine.github.io/post/a-case-when-using-sync.pool/</link>
+      <pubDate>Tue, 27 Feb 2018 15:12:20 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/a-case-when-using-sync.pool/</guid>
+      <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>通过pprof获取golang gc信息</title>
       <link>https://n4mine.github.io/post/get-golang-gc-info-by-pprof/</link>
       <pubDate>Sat, 04 Nov 2017 10:23:25 +0000</pubDate>

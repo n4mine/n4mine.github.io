@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.36.1" />
+<meta name="generator" content="Hugo 0.37" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -141,6 +141,36 @@
   <section id="posts" class="posts">
     
     
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/a-case-when-using-sync.pool/">使用sync.Pool引起的case一例</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-02-27 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 662 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h2 id="背景">背景</h2>
+
+<p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
+
+<p></p>
+    </div>
+    <div class="read-more">
+      <a href="/post/a-case-when-using-sync.pool/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     
       <article class="post">
   <header class="post-header">
@@ -263,46 +293,6 @@
     </div>
     <div class="read-more">
       <a href="/post/monitor-system-01-overview/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/organizing-golang-projects-and-dependencies/">organizing golang projects and dependencies</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2017-01-15 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 604 字 </span>
-      <span class="more-meta"> 预计阅读 2 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h1 id="背景">背景</h1>
-
-<p>golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一<br />
-而对于一个公司内部项目来讲, 主要的需求有以下几点</p>
-
-<ol>
-<li>方便的依赖包版本管理</li>
-<li>方便协同开发</li>
-<li>尽可能不依赖其编译所在环境</li>
-<li>除基础包之外, 第三方包尽可能的自包含</li>
-</ol>
-
-<p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects</p>
-
-<p></p>
-    </div>
-    <div class="read-more">
-      <a href="/post/organizing-golang-projects-and-dependencies/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>
