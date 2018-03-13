@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>使用sync.Pool引起的case一例 - n4mine&#39;s blog</title>
+  <title>Open-Falcon更换hash算法 - n4mine&#39;s blog</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -17,10 +17,14 @@
 
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="背景 open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
+  <meta name="description" content="背景 原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是github.com/stathat/consistent
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k&#43;。
+更换hash算法成为当务之急。
+我们将CRC32 &#43; 500虚拟节点，变成了murmur3 &#43; 10000虚拟节点, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼
 
 " />
-<meta name="keywords" content="sync.Pool, golang" />
+<meta name="keywords" content="open-falcon, 一致性哈希" />
 
 
 
@@ -31,7 +35,7 @@
 <meta name="generator" content="Hugo 0.37" />
 
 
-<link rel="canonical" href="https://n4mine.github.io/post/a-case-when-using-sync.pool/" />
+<link rel="canonical" href="https://n4mine.github.io/post/open-falcon-change-hash-algorithm/" />
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -51,24 +55,25 @@
 
 
 
-<meta property="og:title" content="使用sync.Pool引起的case一例" />
+<meta property="og:title" content="Open-Falcon更换hash算法" />
 <meta property="og:description" content="背景
 
-open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
+原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是github.com/stathat/consistent
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k&#43;。
+更换hash算法成为当务之急。
+
+我们将CRC32 &#43; 500虚拟节点，变成了murmur3 &#43; 10000虚拟节点, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼
 
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://n4mine.github.io/post/a-case-when-using-sync.pool/" />
+<meta property="og:url" content="https://n4mine.github.io/post/open-falcon-change-hash-algorithm/" />
 
 
 
-<meta property="article:published_time" content="2018-02-27T15:12:20&#43;08:00"/>
+<meta property="article:published_time" content="2018-03-10T17:06:29&#43;08:00"/>
 
-<meta property="article:modified_time" content="2018-02-27T15:12:20&#43;08:00"/>
-
-
-
-
+<meta property="article:modified_time" content="2018-03-10T17:06:29&#43;08:00"/>
 
 
 
@@ -76,26 +81,40 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
 
 
 
-<meta itemprop="name" content="使用sync.Pool引起的case一例">
+
+
+
+
+<meta itemprop="name" content="Open-Falcon更换hash算法">
 <meta itemprop="description" content="背景
 
-open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
+原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是github.com/stathat/consistent
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k&#43;。
+更换hash算法成为当务之急。
+
+我们将CRC32 &#43; 500虚拟节点，变成了murmur3 &#43; 10000虚拟节点, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼
 
 ">
 
 
-<meta itemprop="datePublished" content="2018-02-27T15:12:20&#43;08:00" />
-<meta itemprop="dateModified" content="2018-02-27T15:12:20&#43;08:00" />
-<meta itemprop="wordCount" content="662">
+<meta itemprop="datePublished" content="2018-03-10T17:06:29&#43;08:00" />
+<meta itemprop="dateModified" content="2018-03-10T17:06:29&#43;08:00" />
+<meta itemprop="wordCount" content="485">
 
 
 
-<meta itemprop="keywords" content="golang,sync.Pool," />
+<meta itemprop="keywords" content="open-falcon,一致性哈希," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="使用sync.Pool引起的case一例"/>
+<meta name="twitter:title" content="Open-Falcon更换hash算法"/>
 <meta name="twitter:description" content="背景
 
-open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
+原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是github.com/stathat/consistent
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k&#43;。
+更换hash算法成为当务之急。
+
+我们将CRC32 &#43; 500虚拟节点，变成了murmur3 &#43; 10000虚拟节点, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼
 
 "/>
 
@@ -164,17 +183,17 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">使用sync.Pool引起的case一例</h1>
+      <h1 class="post-title">Open-Falcon更换hash算法</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2018-02-27 </span>
+        <span class="post-time"> 2018-03-10 </span>
         <div class="post-category">
             
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 662 字 </span>
-        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        <span class="more-meta"> 约 485 字 </span>
+        <span class="more-meta"> 预计阅读 1 分钟 </span>
         
       </div>
     </header>
@@ -186,90 +205,30 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
     <div class="post-content">
       <h2 id="背景">背景</h2>
 
-<p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
+<p>原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是<a href="https://github.com/stathat/consistent">github.com/stathat/consistent</a><br />
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。<br />
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。<br />
+更换hash算法成为当务之急。</p>
+
+<p>我们将<code>CRC32 + 500虚拟节点</code>，变成了<code>murmur3 + 10000虚拟节点</code>, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼</p>
 
 <p></p>
 
-<h2 id="过程">过程</h2>
+<h2 id="方案">方案</h2>
 
-<pre><code>func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
--       v := smodel.GraphItemPoint{}.New(item)
-+       v := smodel.NewPointObjFromPool(item)
-+       defer smodel.PutPointObjBack2Pool(v)
+<p>得益于open-falcon的自动扩容(即graph的merge逻辑), 更换hash算法不过是另外一种意义上的扩容罢了，整个过程如下:</p>
 
-...
+<ol>
+<li>更改transfer和query的一致性哈希算法。graph merge逻辑部分的hash算法和虚拟节点个数保持不变<br /></li>
+<li>开启graph的merge开关<br /></li>
+<li>上线graph<br /></li>
+<li>同时上线transfer和query<br /></li>
+<li>关闭graph merge开关，重新上线graph<br /></li>
+</ol>
 
-    this.L.PushFront(v)
-</code></pre>
+<p>经统计，进到graph的点数速度标准差结果变为原来的1/10</p>
 
-<p>上述代码中, <code>PushFront</code>是每个点到来都需要操作的函数, 即每上报一个点, <code>smodel.GraphItemPoint{}.New(item)</code> 都需要执行一次<br />
-因为这里是一个临时对象，所以尝试使用对象池来优化(虽然后面证明优化无效，但整个过程值得分享)，以期望减少内存的分配及申请对象的次数，进而减少gc</p>
-
-<p>注意上面的<code>this.L.PushFront(v)</code>，这里是一个关键点</p>
-
-<p>另外为对象池增加了helper函数，方便进行对象的Get和Put操作，如下</p>
-
-<pre><code>+var pointObjPool = sync.Pool{New: func() interface{} { return &amp;GraphItemPoint{} }}
-+
-+func NewPointObjFromPool(item *cmodel.GraphItem) *GraphItemPoint {
-+       ret := pointObjPool.Get().(*GraphItemPoint)
-+       if item == nil {
-+               return nil
-+       }
-+
-+       ret.Timestamp = item.Timestamp
-+       ret.Value = item.Value
-+
-+       return ret
-+}
-+
-+func PutPointObjBack2Pool(p *GraphItemPoint) {
-+       pointObjPool.Put(p)
-+}
-+
-</code></pre>
-
-<p>在这种场景下，使用sync.Pool对象池Get一个新的对象后，使用this.L.PushFront将对象的地址（因为返回的是一个指针），放在了内存cache中。</p>
-
-<p>当执行查询操作时，在内存cache中获取到的是一个地址，将这个地址解引用获取内容时，就会出现问题。</p>
-
-<p>因为这个对象地址是从对象池申请的，该地址在执行Put操作后，对于对象池而言就没什么用了。<br />
-而对象池的再次Get操作，很有可能分配出相同的地址。而在实际业务中，这个地址是有意义的，所以造成了从地址解引用实际内容时出现了问题。</p>
-
-<p>整个过程有些类似C里面野指针的概念。</p>
-
-<h2 id="解决">解决</h2>
-
-<p>如果从对象池获取值而非指针的话，那么这个问题就解了，如下</p>
-
-<pre><code>func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
-    if item == nil {
-        return
-    }
-    v := smodel.NewPointObjFromPool()
-
-
-...
-
-    v.Timestamp = item.Timestamp
-    v.Value = item.Value
-
-
-...
-
-    this.L.PushFront(&amp;v)
-    smodel.PutPointObjBack2Pool(v)
-</code></pre>
-
-<p>关于对象池的更改，如下</p>
-
-<pre><code>func NewPointObjFromPool() GraphItemPoint {
-    return pointObjPool.Get().(GraphItemPoint)
-}
-func PutPointObjBack2Pool(p GraphItemPoint) {
-    pointObjPool.Put(p)
-}
-</code></pre>
+<p>完成了。</p>
 
 <p><em>-EOF-</em></p>
     </div>
@@ -283,23 +242,18 @@ func PutPointObjBack2Pool(p GraphItemPoint) {
     <footer class="post-footer">
       <div class="post-tags">
           
-          <a href="/tags/golang/">golang</a>
+          <a href="/tags/open-falcon/">open-falcon</a>
           
-          <a href="/tags/sync.pool/">sync.Pool</a>
+          <a href="/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/">一致性哈希</a>
           
         </div>
 
       
       <nav class="post-nav">
         
-          <a class="prev" href="/post/open-falcon-change-hash-algorithm/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Open-Falcon更换hash算法</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
         
-          <a class="next" href="/post/get-golang-gc-info-by-pprof/">
-            <span class="next-text nav-default">通过pprof获取golang gc信息</span>
+          <a class="next" href="/post/a-case-when-using-sync.pool/">
+            <span class="next-text nav-default">使用sync.Pool引起的case一例</span>
             <span class="prev-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>

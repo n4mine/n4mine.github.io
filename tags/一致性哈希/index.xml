@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>一致性哈希 on n4mine&#39;s blog</title>
+    <link>https://n4mine.github.io/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/</link>
+    <description>Recent content in 一致性哈希 on n4mine&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 10 Mar 2018 17:06:29 +0800</lastBuildDate>
+    
+	<atom:link href="https://n4mine.github.io/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Open-Falcon更换hash算法</title>
+      <link>https://n4mine.github.io/post/open-falcon-change-hash-algorithm/</link>
+      <pubDate>Sat, 10 Mar 2018 17:06:29 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/open-falcon-change-hash-algorithm/</guid>
+      <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是&lt;a href=&#34;https://github.com/stathat/consistent&#34;&gt;github.com/stathat/consistent&lt;/a&gt;&lt;br /&gt;
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。&lt;br /&gt;
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。&lt;br /&gt;
+更换hash算法成为当务之急。&lt;/p&gt;
+
+&lt;p&gt;我们将&lt;code&gt;CRC32 + 500虚拟节点&lt;/code&gt;，变成了&lt;code&gt;murmur3 + 10000虚拟节点&lt;/code&gt;, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

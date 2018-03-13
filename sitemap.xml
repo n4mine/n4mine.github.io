@@ -10,6 +10,13 @@
   </url>
   
   <url>
+    <loc>https://n4mine.github.io/post/open-falcon-change-hash-algorithm/</loc>
+    <lastmod>2018-03-10T17:06:29+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://n4mine.github.io/post/a-case-when-using-sync.pool/</loc>
     <lastmod>2018-02-27T15:12:20+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -184,8 +191,15 @@
   </url>
   
   <url>
+    <loc>https://n4mine.github.io/tags/open-falcon/</loc>
+    <lastmod>2018-03-10T17:06:29+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://n4mine.github.io/post/</loc>
-    <lastmod>2018-02-27T15:12:20+08:00</lastmod>
+    <lastmod>2018-03-10T17:06:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -233,6 +247,13 @@
   </url>
   
   <url>
+    <loc>https://n4mine.github.io/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/</loc>
+    <lastmod>2018-03-10T17:06:29+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://n4mine.github.io/tags/%E5%86%85%E5%AD%98%E8%80%97%E5%B0%BD/</loc>
     <lastmod>2015-01-02T10:22:31+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -241,7 +262,7 @@
   
   <url>
     <loc>https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/</loc>
-    <lastmod>2018-02-27T15:12:20+08:00</lastmod>
+    <lastmod>2018-03-10T17:06:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
