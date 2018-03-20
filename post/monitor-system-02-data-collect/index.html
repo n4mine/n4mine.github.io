@@ -98,7 +98,7 @@
 
 <meta itemprop="datePublished" content="2017-09-21T07:36:03&#43;00:00" />
 <meta itemprop="dateModified" content="2017-09-21T07:36:03&#43;00:00" />
-<meta itemprop="wordCount" content="1235">
+<meta itemprop="wordCount" content="1342">
 
 
 
@@ -189,7 +189,7 @@
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 1235 字 </span>
+        <span class="more-meta"> 约 1342 字 </span>
         <span class="more-meta"> 预计阅读 3 分钟 </span>
         
       </div>
@@ -206,7 +206,11 @@
 <li>
 <ul>
 <li><a href="#数据采集">数据采集</a></li>
-<li><a href="#仍然是数据采集">仍然是数据采集</a></li>
+<li><a href="#仍然是数据采集">仍然是数据采集</a>
+<ul>
+<li><a href="#白名单">白名单</a></li>
+<li><a href="#quota">quota</a></li>
+</ul></li>
 <li><a href="#数据上报">数据上报</a></li>
 </ul></li>
 </ul>
@@ -258,8 +262,15 @@
 md5的、sha1的、订单号的、公网盲扫进来的sql语句的、xxx.asp的（你说我们用世界上最好的语言写就的页面，你扫asp，这是在侮辱我们么^_^）<br />
 所以，如何过滤脏数据的上报，就是自定义数据最大的问题所在。</p>
 
+<h3 id="白名单">白名单</h3>
+
 <p>一个非常极端但也非常有效的做法就是，自定义上报，一律使用<code>白名单</code>的方式。<br />
 非白名单者，一律拦截在采集层，不再流向更远的数据链路。</p>
+
+<h3 id="quota">quota</h3>
+
+<p>而友好一些的方式，则是提供quota机制，例如节点+主机层面，限制多少个指标上报，节点+主机+指标层面，限制多少个tagk，一个tagk下面最多又允许多少个tagv。<br />
+quota做好了，对系统将是大有裨益的。</p>
 
 <h2 id="数据上报">数据上报</h2>
 
