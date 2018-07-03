@@ -57,7 +57,7 @@
 
 
 
-<meta property="og:updated_time" content="2015-03-05T20:49:00&#43;00:00"/>
+<meta property="og:updated_time" content="2015-02-03T08:24:00&#43;00:00"/>
 
 
 
@@ -141,39 +141,6 @@
   <section id="posts" class="posts">
     
     
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/sre-diary/">一个普通sre一天的工作记录</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-03-05 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E7%94%9F%E6%B4%BB/"> 生活 </a>
-          
-        </div>
-      <span class="more-meta"> 约 1956 字 </span>
-      <span class="more-meta"> 预计阅读 4 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>本文记录一个sre一天的工作<br />
-背景交代：80后、单身<br />
-职位：sre<br />
-公司：规模不小但sre团队组建不久</p>
-
-<p>以下是正文</p>
-
-<p></p>
-    </div>
-    <div class="read-more">
-      <a href="/post/sre-diary/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
     
       <article class="post">
   <header class="post-header">
@@ -314,6 +281,55 @@
     </div>
     <div class="read-more">
       <a href="/post/if_in_nginx/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/nginx_route_by_upstream_status/">nginx根据后端返回状态进行upstream</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-11-11 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 1621 字 </span>
+      <span class="more-meta"> 预计阅读 4 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h1 id="需求">需求</h1>
+
+<p>某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。<br />
+由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。</p>
+
+<h1 id="问题">问题</h1>
+
+<ul>
+<li>放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个</li>
+<li>nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识</li>
+</ul>
+
+<h1 id="解决方案">解决方案</h1>
+
+<ul>
+<li>nginx + lua + subrequest</li>
+<li>要在content阶段完成</li>
+<li>需在rewrite阶段做一点处理</li>
+<li>GET和POST要区分对待</li>
+<li>POST的body和GET的args、cookie等处理</li>
+<li>nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家</li>
+</ul>
+
+<p></p>
+    </div>
+    <div class="read-more">
+      <a href="/post/nginx_route_by_upstream_status/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

@@ -144,6 +144,50 @@
     
       <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/calculate-the-cpu-usage-of-a-process/">计算进程的CPU占用率</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-07-03 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 106 字 </span>
+      <span class="more-meta"> 预计阅读 1 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h2 id="基于-proc-pid-stat和-proc-stat计算指定进程的cpu利用率">基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率</h2>
+
+<pre><code>#!/bin/sh
+
+corenum=$(nproc --all)
+p=xxx
+pid=$(pidof $p)
+p_totaltime1=$(awk '{print $14+$15}' /proc/${pid}/stat)
+totaltime1=$(awk '{if($1==&quot;cpu&quot;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}' /proc/stat)
+sleep 3 # 为什么是3, 要得到与top相同的结果
+p_totaltime2=$(awk '{print $14+$15}' /proc/${pid}/stat)
+totaltime2=$(awk '{if($1==&quot;cpu&quot;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}' /proc/stat)
+
+res=$(awk 'BEGIN{print '&quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&quot;'}')
+
+echo $res
+</code></pre>
+
+<p></p>
+    </div>
+    <div class="read-more">
+      <a href="/post/calculate-the-cpu-usage-of-a-process/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/open-falcon-change-hash-algorithm/">Open-Falcon更换hash算法</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2018-03-10 </span>
@@ -263,40 +307,6 @@
     </div>
     <div class="read-more">
       <a href="/post/autologin-with-iterm2-coprocess/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/monitor-system-02-data-collect/">聊聊监控系统(02) 数据的采集</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2017-09-21 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 1342 字 </span>
-      <span class="more-meta"> 预计阅读 3 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h2 id="数据采集">数据采集</h2>
-
-<p>先来聊数据的源头，看官可能觉得不就是个agent么，搞好cpu、mem等基础指标的采集，上报上来不就好了，其实不然<br />
-首先，作为agent，一个最大的特点就是离中心太远了，远到无法很好的控制它。<br />
-尤其前期，不断的更新、迭代、修bug，当你有几十几百台机器时，都不是问题，什么ssh、ansible分分钟就搞定了。<br />
-但当你的规模成千上万的时候，就会发现，版本迭代是在是太痛苦了。<br />
-而且数量不是唯一的问题，例如你的上报中心地址变了，有网络分区了，有各种各样恶心的场景。</p>
-
-<p></p>
-    </div>
-    <div class="read-more">
-      <a href="/post/monitor-system-02-data-collect/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

@@ -6,38 +6,34 @@
     <description>Recent content in 监控 on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 21 Sep 2017 07:36:03 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 03 Jul 2018 11:28:34 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/tags/%E7%9B%91%E6%8E%A7/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>聊聊监控系统(02) 数据的采集</title>
-      <link>https://n4mine.github.io/post/monitor-system-02-data-collect/</link>
-      <pubDate>Thu, 21 Sep 2017 07:36:03 +0000</pubDate>
+      <title>计算进程的CPU占用率</title>
+      <link>https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/</link>
+      <pubDate>Tue, 03 Jul 2018 11:28:34 +0800</pubDate>
       
-      <guid>https://n4mine.github.io/post/monitor-system-02-data-collect/</guid>
-      <description>&lt;h2 id=&#34;数据采集&#34;&gt;数据采集&lt;/h2&gt;
+      <guid>https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/</guid>
+      <description>&lt;h2 id=&#34;基于-proc-pid-stat和-proc-stat计算指定进程的cpu利用率&#34;&gt;基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率&lt;/h2&gt;
 
-&lt;p&gt;先来聊数据的源头，看官可能觉得不就是个agent么，搞好cpu、mem等基础指标的采集，上报上来不就好了，其实不然&lt;br /&gt;
-首先，作为agent，一个最大的特点就是离中心太远了，远到无法很好的控制它。&lt;br /&gt;
-尤其前期，不断的更新、迭代、修bug，当你有几十几百台机器时，都不是问题，什么ssh、ansible分分钟就搞定了。&lt;br /&gt;
-但当你的规模成千上万的时候，就会发现，版本迭代是在是太痛苦了。&lt;br /&gt;
-而且数量不是唯一的问题，例如你的上报中心地址变了，有网络分区了，有各种各样恶心的场景。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#!/bin/sh
 
-&lt;p&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>聊聊监控系统(01) overview</title>
-      <link>https://n4mine.github.io/post/monitor-system-01-overview/</link>
-      <pubDate>Sat, 15 Jul 2017 07:36:03 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/monitor-system-01-overview/</guid>
-      <description>&lt;h2 id=&#34;写在前面&#34;&gt;写在前面&lt;/h2&gt;
+corenum=$(nproc --all)
+p=xxx
+pid=$(pidof $p)
+p_totaltime1=$(awk &#39;{print $14+$15}&#39; /proc/${pid}/stat)
+totaltime1=$(awk &#39;{if($1==&amp;quot;cpu&amp;quot;){for(i=2;i&amp;lt;=NF;i++){sum+=$i}}}END{print sum}&#39; /proc/stat)
+sleep 3 # 为什么是3, 要得到与top相同的结果
+p_totaltime2=$(awk &#39;{print $14+$15}&#39; /proc/${pid}/stat)
+totaltime2=$(awk &#39;{if($1==&amp;quot;cpu&amp;quot;){for(i=2;i&amp;lt;=NF;i++){sum+=$i}}}END{print sum}&#39; /proc/stat)
 
-&lt;p&gt;监控这个话题太大了，本文谨记录本人在参与我司监控系统重构开发过程中的一些思考。&lt;br /&gt;
-包括技术上、产品形态上的一些内容。&lt;/p&gt;
+res=$(awk &#39;BEGIN{print &#39;&amp;quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;quot;&#39;}&#39;)
+
+echo $res
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;/p&gt;</description>
     </item>
