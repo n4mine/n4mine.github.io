@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.37" />
+<meta name="generator" content="Hugo 0.48" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/get-golang-gc-info-by-pprof/" />
@@ -52,24 +52,8 @@
 <meta property="og:title" content="通过pprof获取golang gc信息" />
 <meta property="og:description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://n4mine.github.io/post/get-golang-gc-info-by-pprof/" />
-
-
-
-<meta property="article:published_time" content="2017-11-04T10:23:25&#43;00:00"/>
-
+<meta property="og:url" content="https://n4mine.github.io/post/get-golang-gc-info-by-pprof/" /><meta property="article:published_time" content="2017-11-04T10:23:25&#43;00:00"/>
 <meta property="article:modified_time" content="2017-11-04T10:23:25&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
 <meta itemprop="name" content="通过pprof获取golang gc信息">
 <meta itemprop="description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -">
 

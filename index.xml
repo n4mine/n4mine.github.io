@@ -48,6 +48,21 @@ echo $res
     </item>
     
     <item>
+      <title>监控系统构建实践-采集篇</title>
+      <link>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-collector/</link>
+      <pubDate>Mon, 30 Apr 2018 17:12:45 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-collector/</guid>
+      <description>&lt;h2 id=&#34;写在前面&#34;&gt;写在前面&lt;/h2&gt;
+
+&lt;p&gt;监控系统这个话题很大。&lt;br /&gt;
+但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。&lt;br /&gt;
+本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的&lt;del&gt;最佳实践&lt;/del&gt;解法，及本人对各个模块在实践中的一些思考。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Open-Falcon更换hash算法</title>
       <link>https://n4mine.github.io/post/open-falcon-change-hash-algorithm/</link>
       <pubDate>Sat, 10 Mar 2018 17:06:29 +0800</pubDate>
