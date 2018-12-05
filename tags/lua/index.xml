@@ -21,9 +21,7 @@
 
 &lt;ul&gt;
 &lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -53,9 +51,7 @@
 &lt;li&gt;GET和POST要区分对待&lt;/li&gt;
 &lt;li&gt;POST的body和GET的args、cookie等处理&lt;/li&gt;
 &lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
   </channel>

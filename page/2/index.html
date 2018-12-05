@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.48" />
+<meta name="generator" content="Hugo 0.52" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -54,7 +54,8 @@
 <meta property="og:description" content="n4mine&#39;s blog" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://n4mine.github.io/" />
-<meta property="og:updated_time" content="2017-09-25T18:10:41&#43;00:00"/>
+<meta property="og:updated_time" content="2017-11-04T10:23:25&#43;00:00"/>
+
 <meta itemprop="name" content="n4mine&#39;s blog">
 <meta itemprop="description" content="n4mine&#39;s blog">
 
@@ -131,6 +132,32 @@
     
       <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/get-golang-gc-info-by-pprof/">通过pprof获取golang gc信息</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2017-11-04 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 124 字 </span>
+      <span class="more-meta"> 预计阅读 1 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed 's/#/\n#/g' | grep &quot;^# NumGC&quot; | awk '{print $NF}') NumGC=$[ ${_NumGC} -
+    </div>
+    <div class="read-more">
+      <a href="/post/get-golang-gc-info-by-pprof/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/autologin-with-iterm2-coprocess/">使用iterm2的coprocess完成自动登录</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2017-09-25 </span>
@@ -154,8 +181,6 @@
 
 <p>作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。<br />
 什么是iterm2的coprocess，可参见其官方说明 <a href="https://www.iterm2.com/documentation-coprocesses.html">coprocesses</a></p>
-
-<p></p>
     </div>
     <div class="read-more">
       <a href="/post/autologin-with-iterm2-coprocess/" class="read-more-link">阅读更多</a>
@@ -194,8 +219,6 @@
 </ol>
 
 <p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects</p>
-
-<p></p>
     </div>
     <div class="read-more">
       <a href="/post/organizing-golang-projects-and-dependencies/" class="read-more-link">阅读更多</a>
@@ -222,6 +245,17 @@
   <div class="post-content">
     <div class="post-summary">
       <h1 id="现象">现象</h1>
+
+<p>业务同学反馈，A服务调用B服务有连接超时</p>
+
+<h1 id="环境">环境</h1>
+
+<ul>
+<li>src：A服务, 以下均用src代指<br /></li>
+<li>dst：B服务, 以下均用dst代指<br /></li>
+<li>B服务通过lvs + nginx的方式对外服务<br /></li>
+<li>A服务连接超时设置为500ms<br /></li>
+</ul>
     </div>
     <div class="read-more">
       <a href="/post/random-connection-timeout/" class="read-more-link">阅读更多</a>
@@ -257,41 +291,10 @@
 <p>为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？<br />
 原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。<br />
 而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。<br />
-数学上有很多求平均数的方法<sup>[1]</sup>，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。<br />
-</p>
+数学上有很多求平均数的方法<sup>[1]</sup>，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。</p>
     </div>
     <div class="read-more">
       <a href="/post/fs-size-eta/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015/">2015</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-12-31 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E7%94%9F%E6%B4%BB/"> 生活 </a>
-          
-        </div>
-      <span class="more-meta"> 约 649 字 </span>
-      <span class="more-meta"> 预计阅读 2 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>又是一年终了时，又吸了一年的京霾，又老了一岁。<br />
-年龄愈长，越觉时间过得快。<br />
-毕业那刻，仿佛还在昨天，不过是梦一场，6年多的时间过去了。</p>
-
-<p></p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2015/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

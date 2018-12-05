@@ -17,7 +17,18 @@
       <pubDate>Wed, 05 Oct 2016 09:47:13 +0000</pubDate>
       
       <guid>https://n4mine.github.io/post/random-connection-timeout/</guid>
-      <description>&lt;h1 id=&#34;现象&#34;&gt;现象&lt;/h1&gt;</description>
+      <description>&lt;h1 id=&#34;现象&#34;&gt;现象&lt;/h1&gt;
+
+&lt;p&gt;业务同学反馈，A服务调用B服务有连接超时&lt;/p&gt;
+
+&lt;h1 id=&#34;环境&#34;&gt;环境&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;src：A服务, 以下均用src代指&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;dst：B服务, 以下均用dst代指&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;B服务通过lvs + nginx的方式对外服务&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;A服务连接超时设置为500ms&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -38,9 +49,7 @@
 
 &lt;ul&gt;
 &lt;li&gt;geo, map&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -62,9 +71,7 @@
 &lt;li&gt;上面提到的参数可能重复出现&lt;/li&gt;
 &lt;li&gt;if不支持复杂的逻辑运算&lt;/li&gt;
 &lt;li&gt;if is evil&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -94,9 +101,7 @@
 &lt;li&gt;GET和POST要区分对待&lt;/li&gt;
 &lt;li&gt;POST的body和GET的args、cookie等处理&lt;/li&gt;
 &lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
   </channel>

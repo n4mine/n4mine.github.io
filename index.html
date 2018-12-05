@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.48" />
+<meta name="generator" content="Hugo 0.52" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -55,6 +55,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://n4mine.github.io/" />
 <meta property="og:updated_time" content="2014-07-23T07:41:43&#43;00:00"/>
+
 <meta itemprop="name" content="n4mine&#39;s blog">
 <meta itemprop="description" content="n4mine&#39;s blog">
 
@@ -131,6 +132,33 @@
     
       <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/the-practice-of-buiding-monitoring-system-transfer/">监控系统构建实践之传输篇</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-12-05 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 1125 字 </span>
+      <span class="more-meta"> 预计阅读 3 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。<br />
+本文结合我司在传输链路的建设，简述一下期间的一点思考。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/the-practice-of-buiding-monitoring-system-transfer/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/calculate-the-cpu-usage-of-a-process/">计算进程的CPU占用率</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2018-07-03 </span>
@@ -163,8 +191,6 @@ res=$(awk 'BEGIN{print '&quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$to
 
 echo $res
 </code></pre>
-
-<p></p>
     </div>
     <div class="read-more">
       <a href="/post/calculate-the-cpu-usage-of-a-process/" class="read-more-link">阅读更多</a>
@@ -195,8 +221,6 @@ echo $res
 <p>监控系统这个话题很大。<br />
 但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。<br />
 本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的<del>最佳实践</del>解法，及本人对各个模块在实践中的一些思考。</p>
-
-<p></p>
     </div>
     <div class="read-more">
       <a href="/post/the-practice-of-buiding-monitoring-system-collector/" class="read-more-link">阅读更多</a>
@@ -230,8 +254,6 @@ echo $res
 更换hash算法成为当务之急。</p>
 
 <p>我们将<code>CRC32 + 500虚拟节点</code>，变成了<code>murmur3 + 10000虚拟节点</code>, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼</p>
-
-<p></p>
     </div>
     <div class="read-more">
       <a href="/post/open-falcon-change-hash-algorithm/" class="read-more-link">阅读更多</a>
@@ -260,37 +282,9 @@ echo $res
       <h2 id="背景">背景</h2>
 
 <p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
-
-<p></p>
     </div>
     <div class="read-more">
       <a href="/post/a-case-when-using-sync.pool/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/get-golang-gc-info-by-pprof/">通过pprof获取golang gc信息</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2017-11-04 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 124 字 </span>
-      <span class="more-meta"> 预计阅读 1 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed 's/#/\n#/g' | grep &quot;^# NumGC&quot; | awk '{print $NF}') NumGC=$[ ${_NumGC} -
-    </div>
-    <div class="read-more">
-      <a href="/post/get-golang-gc-info-by-pprof/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

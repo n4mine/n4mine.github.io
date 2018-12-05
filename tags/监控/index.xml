@@ -33,9 +33,7 @@ totaltime2=$(awk &#39;{if($1==&amp;quot;cpu&amp;quot;){for(i=2;i&amp;lt;=NF;i++)
 res=$(awk &#39;BEGIN{print &#39;&amp;quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;quot;&#39;}&#39;)
 
 echo $res
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>

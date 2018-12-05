@@ -24,9 +24,7 @@
 而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。&lt;br /&gt;
 更换hash算法成为当务之急。&lt;/p&gt;
 
-&lt;p&gt;我们将&lt;code&gt;CRC32 + 500虚拟节点&lt;/code&gt;，变成了&lt;code&gt;murmur3 + 10000虚拟节点&lt;/code&gt;, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;我们将&lt;code&gt;CRC32 + 500虚拟节点&lt;/code&gt;，变成了&lt;code&gt;murmur3 + 10000虚拟节点&lt;/code&gt;, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼&lt;/p&gt;</description>
     </item>
     
   </channel>

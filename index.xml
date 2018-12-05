@@ -21,6 +21,16 @@
     </item>
     
     <item>
+      <title>监控系统构建实践之传输篇</title>
+      <link>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-transfer/</link>
+      <pubDate>Wed, 05 Dec 2018 14:43:45 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-transfer/</guid>
+      <description>&lt;p&gt;在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。&lt;br /&gt;
+本文结合我司在传输链路的建设，简述一下期间的一点思考。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>计算进程的CPU占用率</title>
       <link>https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/</link>
       <pubDate>Tue, 03 Jul 2018 11:28:34 +0800</pubDate>
@@ -42,9 +52,7 @@ totaltime2=$(awk &#39;{if($1==&amp;quot;cpu&amp;quot;){for(i=2;i&amp;lt;=NF;i++)
 res=$(awk &#39;BEGIN{print &#39;&amp;quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;quot;&#39;}&#39;)
 
 echo $res
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -57,9 +65,7 @@ echo $res
 
 &lt;p&gt;监控系统这个话题很大。&lt;br /&gt;
 但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。&lt;br /&gt;
-本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的&lt;del&gt;最佳实践&lt;/del&gt;解法，及本人对各个模块在实践中的一些思考。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的&lt;del&gt;最佳实践&lt;/del&gt;解法，及本人对各个模块在实践中的一些思考。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -75,9 +81,7 @@ echo $res
 而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。&lt;br /&gt;
 更换hash算法成为当务之急。&lt;/p&gt;
 
-&lt;p&gt;我们将&lt;code&gt;CRC32 + 500虚拟节点&lt;/code&gt;，变成了&lt;code&gt;murmur3 + 10000虚拟节点&lt;/code&gt;, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;我们将&lt;code&gt;CRC32 + 500虚拟节点&lt;/code&gt;，变成了&lt;code&gt;murmur3 + 10000虚拟节点&lt;/code&gt;, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -88,9 +92,7 @@ echo $res
       <guid>https://n4mine.github.io/post/a-case-when-using-sync.pool/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
 
-&lt;p&gt;open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -115,9 +117,7 @@ echo $res
 给经常登录线上机器的使用者，带来了很大不便&lt;/p&gt;
 
 &lt;p&gt;作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。&lt;br /&gt;
-什么是iterm2的coprocess，可参见其官方说明 &lt;a href=&#34;https://www.iterm2.com/documentation-coprocesses.html&#34;&gt;coprocesses&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+什么是iterm2的coprocess，可参见其官方说明 &lt;a href=&#34;https://www.iterm2.com/documentation-coprocesses.html&#34;&gt;coprocesses&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -138,9 +138,7 @@ echo $res
 &lt;li&gt;除基础包之外, 第三方包尽可能的自包含&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -149,7 +147,18 @@ echo $res
       <pubDate>Wed, 05 Oct 2016 09:47:13 +0000</pubDate>
       
       <guid>https://n4mine.github.io/post/random-connection-timeout/</guid>
-      <description>&lt;h1 id=&#34;现象&#34;&gt;现象&lt;/h1&gt;</description>
+      <description>&lt;h1 id=&#34;现象&#34;&gt;现象&lt;/h1&gt;
+
+&lt;p&gt;业务同学反馈，A服务调用B服务有连接超时&lt;/p&gt;
+
+&lt;h1 id=&#34;环境&#34;&gt;环境&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;src：A服务, 以下均用src代指&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;dst：B服务, 以下均用dst代指&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;B服务通过lvs + nginx的方式对外服务&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;A服务连接超时设置为500ms&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -168,8 +177,7 @@ echo $res
 &lt;p&gt;为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？&lt;br /&gt;
 原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。&lt;br /&gt;
 而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。&lt;br /&gt;
-数学上有很多求平均数的方法&lt;sup&gt;[1]&lt;/sup&gt;，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。&lt;br /&gt;
-&lt;/p&gt;</description>
+数学上有很多求平均数的方法&lt;sup&gt;[1]&lt;/sup&gt;，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -180,9 +188,7 @@ echo $res
       <guid>https://n4mine.github.io/post/2015/</guid>
       <description>&lt;p&gt;又是一年终了时，又吸了一年的京霾，又老了一岁。&lt;br /&gt;
 年龄愈长，越觉时间过得快。&lt;br /&gt;
-毕业那刻，仿佛还在昨天，不过是梦一场，6年多的时间过去了。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+毕业那刻，仿佛还在昨天，不过是梦一场，6年多的时间过去了。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -196,9 +202,7 @@ echo $res
 职位：sre&lt;br /&gt;
 公司：规模不小但sre团队组建不久&lt;/p&gt;
 
-&lt;p&gt;以下是正文&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;以下是正文&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -211,9 +215,7 @@ echo $res
 
 &lt;ul&gt;
 &lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -225,9 +227,7 @@ echo $res
       <description>&lt;h2 id=&#34;起因&#34;&gt;起因&lt;/h2&gt;
 
 &lt;p&gt;大早上收到报警，几台机器内存不足&lt;br /&gt;
-想上去查原因，已登录不上&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+想上去查原因，已登录不上&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -248,9 +248,7 @@ echo $res
 
 &lt;ul&gt;
 &lt;li&gt;geo, map&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -272,9 +270,7 @@ echo $res
 &lt;li&gt;上面提到的参数可能重复出现&lt;/li&gt;
 &lt;li&gt;if不支持复杂的逻辑运算&lt;/li&gt;
 &lt;li&gt;if is evil&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -304,9 +300,7 @@ echo $res
 &lt;li&gt;GET和POST要区分对待&lt;/li&gt;
 &lt;li&gt;POST的body和GET的args、cookie等处理&lt;/li&gt;
 &lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -327,8 +321,7 @@ echo $res
 └── main.yaml
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;简单的一个说明而已，没有必要搞什么最佳实践了。^_^&lt;br /&gt;
-&lt;/p&gt;</description>
+&lt;p&gt;简单的一个说明而已，没有必要搞什么最佳实践了。^_^&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -340,9 +333,7 @@ echo $res
       <description>&lt;h2 id=&#34;始&#34;&gt;始&lt;/h2&gt;
 
 &lt;p&gt;其实一、两年前就打算搞个blog，但一直&lt;del&gt;忙&lt;/del&gt;懒，所以断断续续的，最后也没完成。&lt;br /&gt;
-但愿这个能坚持下去！&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+但愿这个能坚持下去！&lt;/p&gt;</description>
     </item>
     
   </channel>

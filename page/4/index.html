@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.48" />
+<meta name="generator" content="Hugo 0.52" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -54,7 +54,8 @@
 <meta property="og:description" content="n4mine&#39;s blog" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://n4mine.github.io/" />
-<meta property="og:updated_time" content="2014-11-11T11:08:42&#43;00:00"/>
+<meta property="og:updated_time" content="2014-11-13T17:53:55&#43;00:00"/>
+
 <meta itemprop="name" content="n4mine&#39;s blog">
 <meta itemprop="description" content="n4mine&#39;s blog">
 
@@ -131,6 +132,45 @@
     
       <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/if_in_nginx/">nginx使用if实现多重判断case一例</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-11-13 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 699 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h1 id="场景">场景</h1>
+
+<ul>
+<li>根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&hellip;，有则upstream到指定backend</li>
+<li>根据来源IP区分production环境和preview环境</li>
+</ul>
+
+<h1 id="问题">问题</h1>
+
+<ul>
+<li>上面提到的参数可能重复出现</li>
+<li>if不支持复杂的逻辑运算</li>
+<li>if is evil</li>
+</ul>
+    </div>
+    <div class="read-more">
+      <a href="/post/if_in_nginx/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/nginx_route_by_upstream_status/">nginx根据后端返回状态进行upstream</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2014-11-11 </span>
@@ -168,8 +208,6 @@
 <li>POST的body和GET的args、cookie等处理</li>
 <li>nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家</li>
 </ul>
-
-<p></p>
     </div>
     <div class="read-more">
       <a href="/post/nginx_route_by_upstream_status/" class="read-more-link">阅读更多</a>
@@ -207,8 +245,7 @@
 └── main.yaml
 </code></pre>
 
-<p>简单的一个说明而已，没有必要搞什么最佳实践了。^_^<br />
-</p>
+<p>简单的一个说明而已，没有必要搞什么最佳实践了。^_^</p>
     </div>
     <div class="read-more">
       <a href="/post/ansible_install_jdk/" class="read-more-link">阅读更多</a>
@@ -238,8 +275,6 @@
 
 <p>其实一、两年前就打算搞个blog，但一直<del>忙</del>懒，所以断断续续的，最后也没完成。<br />
 但愿这个能坚持下去！</p>
-
-<p></p>
     </div>
     <div class="read-more">
       <a href="/post/first/" class="read-more-link">阅读更多</a>

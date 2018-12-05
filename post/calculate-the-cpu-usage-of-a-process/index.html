@@ -17,8 +17,7 @@
 
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率 #!/bin/sh corenum=$(nproc --all) p=xxx pid=$(pidof $p) p_totaltime1=$(awk &#39;{print $14&#43;$15}&#39; /proc/${pid}/stat) totaltime1=$(awk &#39;{if($1==&amp;quot;cpu&amp;quot;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&#39; /proc/stat) sleep 3 # 为什么是3, 要得到与top相同的结果 p_totaltime2=$(awk &#39;{print $14&#43;$15}&#39; /proc/${pid}/stat) totaltime2=$(awk &#39;{if($1==&amp;quot;cpu&amp;quot;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&#39; /proc/stat) res=$(awk &#39;BEGIN{print &#39;&amp;quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;quot;&#39;}&#39;) echo $res  
-" />
+  <meta name="description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率 #!/bin/sh corenum=$(nproc --all) p=xxx pid=$(pidof $p) p_totaltime1=$(awk &#39;{print $14&#43;$15}&#39; /proc/${pid}/stat) totaltime1=$(awk &#39;{if($1==&amp;quot;cpu&amp;quot;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&#39; /proc/stat) sleep 3 # 为什么是3, 要得到与top相同的结果 p_totaltime2=$(awk &#39;{print $14&#43;$15}&#39; /proc/${pid}/stat) totaltime2=$(awk &#39;{if($1==&amp;quot;cpu&amp;quot;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&#39; /proc/stat) res=$(awk &#39;BEGIN{print &#39;&amp;quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;quot;&#39;}&#39;) echo $res " />
 <meta name="keywords" content="top, /proc, process, cpu" />
 
 
@@ -27,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.48" />
+<meta name="generator" content="Hugo 0.52" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/" />
@@ -67,12 +66,11 @@ totaltime2=$(awk &#39;{if($1==&quot;cpu&quot;){for(i=2;i&lt;=NF;i&#43;&#43;){sum
 res=$(awk &#39;BEGIN{print &#39;&quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&quot;&#39;}&#39;)
 
 echo $res
-
-
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/" /><meta property="article:published_time" content="2018-07-03T11:28:34&#43;08:00"/>
 <meta property="article:modified_time" content="2018-07-03T11:28:34&#43;08:00"/>
+
 <meta itemprop="name" content="计算进程的CPU占用率">
 <meta itemprop="description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率
 
@@ -90,8 +88,6 @@ totaltime2=$(awk &#39;{if($1==&quot;cpu&quot;){for(i=2;i&lt;=NF;i&#43;&#43;){sum
 res=$(awk &#39;BEGIN{print &#39;&quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&quot;&#39;}&#39;)
 
 echo $res
-
-
 ">
 
 
@@ -120,8 +116,6 @@ totaltime2=$(awk &#39;{if($1==&quot;cpu&quot;){for(i=2;i&lt;=NF;i&#43;&#43;){sum
 res=$(awk &#39;BEGIN{print &#39;&quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&quot;&#39;}&#39;)
 
 echo $res
-
-
 "/>
 
 <!--[if lte IE 9]>
@@ -242,8 +236,6 @@ res=$(awk 'BEGIN{print '&quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$to
 echo $res
 </code></pre>
 
-<p></p>
-
 <h2 id="相对应的top命令">相对应的top命令</h2>
 
 <pre><code>p=xxx; top -p $(pidof $p) -b
@@ -268,6 +260,11 @@ echo $res
       
       <nav class="post-nav">
         
+          <a class="prev" href="/post/the-practice-of-buiding-monitoring-system-transfer/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">监控系统构建实践之传输篇</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
         
           <a class="next" href="/post/the-practice-of-buiding-monitoring-system-collector/">
             <span class="next-text nav-default">监控系统构建实践-采集篇</span>

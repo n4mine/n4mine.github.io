@@ -19,9 +19,7 @@
       <guid>https://n4mine.github.io/post/a-case-when-using-sync.pool/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
 
-&lt;p&gt;open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -51,9 +49,7 @@
 &lt;li&gt;除基础包之外, 第三方包尽可能的自包含&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;</description>
     </item>
     
   </channel>
