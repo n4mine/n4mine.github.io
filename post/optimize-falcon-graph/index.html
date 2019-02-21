@@ -256,13 +256,13 @@
 
 <p>而优化后的效果，如下图所示。tp95 latency的值达到了预期。</p>
 
-<p><img src="./img/graph_tp95.png" alt="多路I/O效果" /></p>
+<p><img src="/img/graph_tp95.png" alt="多路I/O效果" /></p>
 
 <h3 id="小结">小结</h3>
 
 <p>其实，理解多路I/O的优化思路很简单，如下图所示，从只能1个1个投入的存钱罐，变为多路分拣的硬币分拣机。</p>
 
-<p><img src="./img/m_io.png" alt="多路I/O思路" /></p>
+<p><img src="/img/m_io.png" alt="多路I/O思路" /></p>
 
 <h2 id="sprint问题">Sprint问题</h2>
 
@@ -409,7 +409,7 @@ ok  	_/tmp/hash	8.541s
 
 <p>下图优化的效果，可以看到在切换前后，进入graph实例的点数均匀程度，有了明显的提升。</p>
 
-<p><img src="./img/hash_change.png" alt="hash优化" /></p>
+<p><img src="/img/hash_change.png" alt="hash优化" /></p>
 
 <p>替换的过程也不麻烦，感兴趣的可以参考 <a href="https://n4mine.github.io/post/open-falcon-change-hash-algorithm/">open-falcon 更换hash算法</a> 一文。</p>
 
@@ -438,7 +438,7 @@ ok  	_/tmp/hash	8.541s
 
 <p>如下图描述的是过去4个月graph实例的内存使用情况，前面3个<code>红框</code>的内存都是缓慢增长的，而<code>绿框</code>位置则是优化后的效果，已经相对平稳:</p>
 
-<p><img src="./img/graph_mem.png" alt="graph内存" /></p>
+<p><img src="/img/graph_mem.png" alt="graph内存" /></p>
 
 <h3 id="小结-3">小结</h3>
 
