@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.52" />
+<meta name="generator" content="Hugo 0.53" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -129,6 +129,36 @@
   <section id="posts" class="posts">
     
     
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/optimize-falcon-graph/">falcon存储做过的那些优化</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-02-21 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 2946 字 </span>
+      <span class="more-meta"> 预计阅读 6 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>我司监控系统的底层存储架构使用的是 <a href="https://github.com/open-falcon/falcon-plus">open-falcon</a>，作为非常流行的中小企业的监控解决方案，open-falcon非常优秀。</p>
+
+<p>但在我司，指标量一度达到3亿+，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。</p>
+
+<p>本文从一个开发者的角度，阐述自本人接手以来对 <code>graph</code>(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/optimize-falcon-graph/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     
       <article class="post">
   <header class="post-header">
@@ -262,34 +292,6 @@ echo $res
 </article>
 
     
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/a-case-when-using-sync.pool/">使用sync.Pool引起的case一例</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2018-02-27 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 662 字 </span>
-      <span class="more-meta"> 预计阅读 2 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h2 id="背景">背景</h2>
-
-<p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/a-case-when-using-sync.pool/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
   </section>
   
   <nav class="pagination">
@@ -329,7 +331,7 @@ echo $res
     &copy; 
     
       2014 - 
-    2018
+    2019
     <span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>
