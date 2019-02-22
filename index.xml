@@ -26,7 +26,7 @@
       <pubDate>Thu, 21 Feb 2019 15:03:20 +0800</pubDate>
       
       <guid>https://n4mine.github.io/post/optimize-falcon-graph/</guid>
-      <description>&lt;p&gt;我司监控系统的底层存储架构使用的是 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus&#34;&gt;open-falcon&lt;/a&gt;，作为非常流行的中小企业的监控解决方案，open-falcon非常优秀。&lt;/p&gt;
+      <description>&lt;p&gt;我司监控系统的底层存储架构使用的是 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus&#34;&gt;open-falcon&lt;/a&gt;，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。&lt;/p&gt;
 
 &lt;p&gt;但在我司，指标量一度达到3亿+，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。&lt;/p&gt;
 

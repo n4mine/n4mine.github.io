@@ -17,7 +17,7 @@
 
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业的监控解决方案，open-falcon非常优秀。
+  <meta name="description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。
 本文从一个开发者的角度，阐述自本人接手以来对 graph(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。
 " />
@@ -29,7 +29,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.53" />
+<meta name="generator" content="Hugo 0.54.0" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/optimize-falcon-graph/" />
@@ -53,17 +53,18 @@
 
 
 <meta property="og:title" content="falcon存储做过的那些优化" />
-<meta property="og:description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业的监控解决方案，open-falcon非常优秀。
+<meta property="og:description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
 
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。
 
 本文从一个开发者的角度，阐述自本人接手以来对 graph(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://n4mine.github.io/post/optimize-falcon-graph/" /><meta property="article:published_time" content="2019-02-21T15:03:20&#43;08:00"/>
+<meta property="og:url" content="https://n4mine.github.io/post/optimize-falcon-graph/" />
+<meta property="article:published_time" content="2019-02-21T15:03:20&#43;08:00"/>
 <meta property="article:modified_time" content="2019-02-21T15:03:20&#43;08:00"/>
 
 <meta itemprop="name" content="falcon存储做过的那些优化">
-<meta itemprop="description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业的监控解决方案，open-falcon非常优秀。
+<meta itemprop="description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
 
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。
 
@@ -72,14 +73,14 @@
 
 <meta itemprop="datePublished" content="2019-02-21T15:03:20&#43;08:00" />
 <meta itemprop="dateModified" content="2019-02-21T15:03:20&#43;08:00" />
-<meta itemprop="wordCount" content="2946">
+<meta itemprop="wordCount" content="3042">
 
 
 
 <meta itemprop="keywords" content="技术,监控系统," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="falcon存储做过的那些优化"/>
-<meta name="twitter:description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业的监控解决方案，open-falcon非常优秀。
+<meta name="twitter:description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
 
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。
 
@@ -159,8 +160,8 @@
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 2946 字 </span>
-        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        <span class="more-meta"> 约 3042 字 </span>
+        <span class="more-meta"> 预计阅读 7 分钟 </span>
         
       </div>
     </header>
@@ -199,6 +200,7 @@
 <li><a href="#分析-3">分析</a></li>
 <li><a href="#小结-3">小结</a></li>
 </ul></li>
+<li><a href="#结尾了">结尾了</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -207,7 +209,7 @@
 
     
     <div class="post-content">
-      <p>我司监控系统的底层存储架构使用的是 <a href="https://github.com/open-falcon/falcon-plus">open-falcon</a>，作为非常流行的中小企业的监控解决方案，open-falcon非常优秀。</p>
+      <p>我司监控系统的底层存储架构使用的是 <a href="https://github.com/open-falcon/falcon-plus">open-falcon</a>，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。</p>
 
 <p>但在我司，指标量一度达到3亿+，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。</p>
 
@@ -219,7 +221,7 @@
 
 <p>2017年下半年。</p>
 
-<p>当时我们看图的latency tp95一直在<code>3s</code>以上，老大下了命令，要将这个指标优化到3s以下。此为背景。</p>
+<p>当时我们看图的latency tp95一直在<code>5s</code>以上，为了提升用户体验，要将这个延迟降下来。此为背景。</p>
 
 <h3 id="分析">分析</h3>
 
@@ -227,7 +229,7 @@
 
 <p>因此我们在代码中埋点，分别统计了<code>readFromCache</code>和<code>readFromRRD</code>的latency，结果<code>readFromCache</code>的tp95在300ms左右，而<code>readFromRRD</code>的对应值则达到了1s+。</p>
 
-<p>所以接下来重点跟进方式就是<code>读取RRD文件</code>的逻辑。从代码上看，从RRD文件获取数据的读路径如下:</p>
+<p>所以接下来重点跟进方向就是<code>读取RRD文件</code>的逻辑。从代码上看，从RRD文件获取数据的读路径如下:</p>
 
 <pre><code>api/graph.go::*Graph.Query(...)  
 --&gt; rrdtool/rrdtool.go::Fetch(...)  
@@ -235,13 +237,13 @@
 
 <p>参见 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/api/graph.go#L125">api/graph.go</a> 和 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/rrdtool/rrdtool.go#L186">rrdtool/rrdtool.go</a></p>
 
-<p>然后由<code>rrdtool.go/sync_disk.go::ioWorker()</code>从预先初始化好channel获取各种类型的<code>task</code>之后进行对应的I/O操作。</p>
+<p>然后<code>rrdtool.go/sync_disk.go::ioWorker()</code>从<code>io_task_chan</code>获取对应<code>task</code>后进行I/O操作。</p>
 
 <p>参见 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/rrdtool/sync_disk.go#L89">rrdtool/sync_disk.go</a></p>
 
-<p>读路径上经过<code>pprof</code>分析后，并没有耗时太多的地方。</p>
+<p>读路径经过<code>pprof</code>分析后，并没有耗时太多的地方。</p>
 
-<p>而分析<code>ioWorker()</code>这个函数后，发现 <code>ioWorker()</code> 只有<code>1个goroutine</code>在工作。而如果只是为了避免同时读写同一RRD文件这么做，似乎有些太低效了。</p>
+<p>而经过分析<code>ioWorker()</code>这个函数，发现 <code>ioWorker()</code> 只有<code>1个goroutine</code>在工作。而如果只是为了避免同时读写同一RRD文件这么做，似乎有些太低效了。</p>
 
 <p>有了这样的思路后，问题就变成了如何拆分I/O，使得一把锁变成多把锁。当时在组内有2种思路:</p>
 
@@ -250,7 +252,7 @@
 <li>按<code>series ID</code>进行拆分<br /></li>
 </ol>
 
-<p>如果按照读写拆分，就由1路I/O变为了2路I/O，读 + 写。这样的拆分，在读写拆分仍不能满足性能的需求时，不可避免的要进行再次拆分。而且，读写2路拆分，要考虑对一个RRD文件的同时读写问题，就变得更加复杂了。</p>
+<p>如果按照读写拆分，就由1路I/O变成了2路I/O，读 + 写。这样的拆分，在读写拆分仍不能满足性能的需求时，不可避免的要进行再次拆分。而且，读写2路拆分，要考虑对一个RRD文件的同时读写问题，就变得更加复杂了。</p>
 
 <p>基于上面的考虑，决定按照<code>series ID</code>进行I/O拆分。代码很简单，参见 <a href="https://github.com/open-falcon/falcon-plus/compare/23001be...20084b4">这个diff</a></p>
 
@@ -373,9 +375,9 @@ node: node-15, count: 80273
 node: node-27, count: 126070
 </code></pre>
 
-<p><code>open-falcon</code> 使用的一致性哈希实现是 <a href="https://github.com/stathat/consistent">stathat/consistent</a>，一个非常简单的一致性hash实现，其hash算法使用的是 <a href="https://github.com/stathat/consistent/blob/master/consistent.go#L244">CRC32</a>。</p>
+<p><code>open-falcon</code> 使用的一致性哈希实现是 <a href="https://github.com/stathat/consistent">stathat/consistent</a>，一个非常简单的一致性hash实现，其hash算法使用的是 <a href="https://github.com/stathat/consistent/blob/master/consistent.go#L244">crc32</a>。</p>
 
-<p>在非加密hash算法的实现中，CRC32无论是在性能还是均匀度上都不是优选。下面对比了几种常见的hash算法在性能上的差异:</p>
+<p>在非加密hash算法的实现中，crc32无论是在性能还是均匀度上都不是优选。下面对比了几种常见的hash算法在性能上的差异:</p>
 
 <pre><code>$ go test -run '^$' -benchmem  -bench .
 goos: darwin
@@ -390,24 +392,24 @@ ok  	_/tmp/hash	8.541s
 
 <p>可以看到，相对<code>fnv32</code>和<code>murmur32</code>，<code>crc32</code>在性能方面完败。</p>
 
-<p>最后还给出了<code>sha1</code>的对比，相对于非加密hash算法，<code>sha1</code>的性能更弱一些。</p>
+<p>最后还加入了<code>sha1</code>的对比，相对于非加密hash算法，<code>sha1</code>的性能更弱一些。</p>
 
 <p>除了考量性能，还需要看各个hash算法均匀度，是否满足需求。以下是在上述模拟场景之下，几个流行hash算法的<code>均匀度</code>对比结果，仍是模拟500w样本，使用50个node，计算结果:</p>
 
-<pre><code>murmur32 &gt; fnv1 &gt; fnv1a &gt; xxHash &gt; CRC32
+<pre><code>murmur32 &gt; fnv1 &gt; fnv1a &gt; xxHash &gt; crc32
 </code></pre>
 
-<p>上述结果，表现最不好的是<code>CRC32</code>，表现最好的是<code>murmur32</code>。因为时间久远，具体的结果没有记录下来，感兴趣的同学可以自行验证。</p>
+<p>上述结果，表现最差的是<code>crc32</code>，表现最好的是<code>murmur32</code>。因为时间久远，具体的结果没有记录下来，感兴趣的同学可以自行验证。</p>
 
 <p><strong>BTW，上述结果只代表本文所述环境，不具通用性。</strong></p>
 
 <h3 id="小结-2">小结</h3>
 
-<p>综合性能和均匀度2个方面的考量，最终我们选用了<code>murmur32</code>替换原有的<code>CRC32</code>。</p>
+<p>综合性能和均匀度2个方面的考量，最终我们选用了<code>murmur32</code>替换原有的<code>crc32</code>。</p>
 
 <p>虚拟节点数则设置为10000。经过验证，虚拟节点数从500到10000，计算进入graph实例的样本数的方差值，后者是前者的<code>1/5</code>，会更均匀一些。而更高的虚拟节点数，虽然能得到更均匀的结果，但初始化的时间开销会增加很多，例如10000个虚拟节点需要13s左右，而20000个虚拟节点则需要28s，设置为50000个虚拟节点，则需要75s。</p>
 
-<p>下图优化的效果，可以看到在切换前后，进入graph实例的点数均匀程度，有了明显的提升。</p>
+<p>下图是优化的效果对比，可以看到在切换前后，进入graph实例的点数均匀程度，有了明显的提升。</p>
 
 <p><img src="/img/hash_change.png" alt="hash优化" /></p>
 
@@ -419,21 +421,21 @@ ok  	_/tmp/hash	8.541s
 
 <p>2018年下半年。</p>
 
-<p>经过上述的几番优化，graph实例已经避免了了因单路I/O导致的I/O瓶颈，替换掉了浪费性能的<code>Sprintf</code>，更换了更优更均匀的<code>murmur32</code> hash算法。</p>
+<p>经过上述的几番优化，graph实例已经避免了因单路I/O导致的I/O瓶颈，替换掉了浪费性能的<code>Sprintf</code>，更换了更优更均匀的<code>murmur32</code> hash算法。</p>
 
-<p>但仍有一个问题一直在困扰着我，如鲠在喉。那就是随着时间的增长，graph实例的内存使用都会<code>慢慢的</code>涨上来。</p>
+<p>但仍有一个问题一直在困扰着我，如鲠在喉。那就是随着时间的增长，graph实例的内存使用量会<code>慢慢的</code>涨上来。</p>
 
 <h3 id="分析-3">分析</h3>
 
 <p>既然是慢慢的涨，那首先考虑到的肯定是内存泄漏问题。</p>
 
-<p>经过heap的<code>inuse</code>分析之后，发现问题出在graph的<code>cache</code>逻辑。graph的<code>cache</code>是只增加不减少的，也就是说，所有series，无论是活跃的还是不活跃的，都会一直常驻于堆内存中。</p>
+<p>经过对heap的<code>inuse</code>分析之后，发现问题出在graph的<code>cache</code>逻辑。graph的<code>cache</code>是只增加不减少的，也就是说，所有series，无论是活跃的还是不活跃的，都会一直常驻于堆内存中。</p>
 
 <p>找到问题点，就很好解决了。解决方案如下:</p>
 
 <ol>
 <li>干掉无用的 <a href="https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/api/graph.go#L123">History store</a><br /></li>
-<li>对<a href="https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/store/store.go#L29"> cache对象</a>，做定期清理，例如<code>每30分钟清理过去12小时未活跃的series</code>。<br /></li>
+<li>对<a href="https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/store/store.go#L29"> cache对象</a>，做定期清理，例如<code>每30分钟清理过去12小时不活跃的series</code>。<br /></li>
 </ol>
 
 <p>如下图描述的是过去4个月graph实例的内存使用情况，前面3个<code>红框</code>的内存都是缓慢增长的，而<code>绿框</code>位置则是优化后的效果，已经相对平稳:</p>
@@ -445,6 +447,14 @@ ok  	_/tmp/hash	8.541s
 <p>优化要结合业务特点进行。</p>
 
 <p>是的，这个小结只有上面这么一句话 :)。</p>
+
+<h2 id="结尾了">结尾了</h2>
+
+<p>对于监控系统的优化，还在进行中。当然也有很多case没有放在这里。</p>
+
+<p>例如使用基于 <a href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Gorilla</a> 开发的cacheserver，承载了50%以上的查询请求，latency却仅是graph的<code>1/10</code>等。</p>
+
+<p>这些优化留待后续分享吧！</p>
 
 <p><em>-EOF-</em></p>
     </div>
