@@ -73,7 +73,7 @@
 
 <meta itemprop="datePublished" content="2019-02-21T15:03:20&#43;08:00" />
 <meta itemprop="dateModified" content="2019-02-21T15:03:20&#43;08:00" />
-<meta itemprop="wordCount" content="3042">
+<meta itemprop="wordCount" content="3051">
 
 
 
@@ -160,7 +160,7 @@
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 3042 字 </span>
+        <span class="more-meta"> 约 3051 字 </span>
         <span class="more-meta"> 预计阅读 7 分钟 </span>
         
       </div>
@@ -285,7 +285,7 @@
 	}
 }
 
-func Benchmark_plus(b *testing.B) {
+func Benchmark_add(b *testing.B) {
 	for i := 0; i &lt; b.N; i++ {
 		a := &quot;a&quot; + &quot;a&quot;
 		_ = a
@@ -298,10 +298,10 @@ func Benchmark_plus(b *testing.B) {
 <pre><code>$ go test -run '^$' -benchmem  -bench .
 goos: darwin
 goarch: amd64
-Benchmark_sprintf-4   	20000000	        82.0 ns/op	       2 B/op	       1 allocs/op
-Benchmark_plus-4      	2000000000	         0.34 ns/op	       0 B/op	       0 allocs/op
+Benchmark_sprintf-4   	20000000	        83.0 ns/op	       2 B/op	       1 allocs/op
+Benchmark_add-4       	2000000000	         0.34 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	_/tmp/cat	2.466s
+ok  	_/tmp/cat	2.484s
 </code></pre>
 
 <p>可以看出，对于字符串的连接，使用<code>+</code>比使用<code>Sprintf</code>性能要好上2个数量级，同时减少了内存分配。</p>
@@ -357,7 +357,7 @@ func main() {
 }
 </code></pre>
 
-<p>了解 <code>open-falcon</code> 的同学可能知道，<code>open-falcon</code> 监控数据点的写路径，是将<code>series ID</code>通过<code>一致性哈希</code>，再push到对应的graph实例。而上述代码，就是写路径<code>GetNodes</code>(获取graph实例) 的核心逻辑。</p>
+<p>了解 <code>open-falcon</code> 的同学可能知道，<code>open-falcon</code> 监控数据点的写路径，是将监控数据点的<code>series ID</code>通过<code>一致性哈希</code>计算，再push到对应的graph实例。而上述代码，就是写路径<code>GetNodes</code>(获取graph实例) 的核心逻辑。</p>
 
 <p>上面将实例数设置为<code>50</code>，样本数设置为<code>500w</code>，虚拟节点则与<code>open-falcon</code>的官方设置相同，设置为<code>500</code>。那么这50个实例，分配结果是如何的呢？</p>
 
@@ -421,7 +421,7 @@ ok  	_/tmp/hash	8.541s
 
 <p>2018年下半年。</p>
 
-<p>经过上述的几番优化，graph实例已经避免了因单路I/O导致的I/O瓶颈，替换掉了浪费性能的<code>Sprintf</code>，更换了更优更均匀的<code>murmur32</code> hash算法。</p>
+<p>经过上述的几番优化，graph已经解决了因单路I/O导致的I/O瓶颈，替换掉了浪费性能的<code>Sprintf</code>，更换了更优更均匀的<code>murmur32</code> hash算法。</p>
 
 <p>但仍有一个问题一直在困扰着我，如鲠在喉。那就是随着时间的增长，graph实例的内存使用量会<code>慢慢的</code>涨上来。</p>
 
@@ -454,7 +454,7 @@ ok  	_/tmp/hash	8.541s
 
 <p>例如使用基于 <a href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Gorilla</a> 开发的cacheserver，承载了50%以上的查询请求，latency却仅是graph的<code>1/10</code>等。</p>
 
-<p>这些优化留待后续分享吧！</p>
+<p>这些优化留待后续再慢慢分享吧。</p>
 
 <p><em>-EOF-</em></p>
     </div>
