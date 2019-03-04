@@ -133,6 +133,42 @@
     
       <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/in-memory-tsdb/">Falcon 存储优化: 高性能内存 TSDB 的诞生</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-03-04 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 3590 字 </span>
+      <span class="more-meta"> 预计阅读 8 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h2 id="tsdb">TSDB</h2>
+
+<p>先说 TSDB（时序数据库）是什么，下面的定义引用自 <a href="https://en.wikipedia.org/wiki/Time_series_database">Wikipedia</a></p>
+
+<blockquote>
+<p>A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).</p>
+</blockquote>
+
+<p><code>Influxdb</code>，<code>Graphite</code>，<code>RRDtool</code>，<code>OpenTSDB</code>等都是当下流行的TSDB实现。</p>
+
+<p>TSDB 多应用于监控系统等场景。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/in-memory-tsdb/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/optimize-falcon-graph/">Falcon存储做过的那些优化</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2019-02-21 </span>
@@ -255,39 +291,6 @@ echo $res
     </div>
     <div class="read-more">
       <a href="/post/the-practice-of-buiding-monitoring-system-collector/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/open-falcon-change-hash-algorithm/">Open-Falcon更换hash算法</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2018-03-10 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 485 字 </span>
-      <span class="more-meta"> 预计阅读 1 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h2 id="背景">背景</h2>
-
-<p>原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是<a href="https://github.com/stathat/consistent">github.com/stathat/consistent</a><br />
-这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。<br />
-而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。<br />
-更换hash算法成为当务之急。</p>
-
-<p>我们将<code>CRC32 + 500虚拟节点</code>，变成了<code>murmur3 + 10000虚拟节点</code>, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/open-falcon-change-hash-algorithm/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

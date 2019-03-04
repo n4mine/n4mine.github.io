@@ -55,7 +55,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://n4mine.github.io/" />
 
-<meta property="og:updated_time" content="2018-02-27T15:12:20&#43;08:00"/>
+<meta property="og:updated_time" content="2018-03-10T17:06:29&#43;08:00"/>
 
 <meta itemprop="name" content="n4mine&#39;s blog">
 <meta itemprop="description" content="n4mine&#39;s blog">
@@ -130,6 +130,39 @@
   <section id="posts" class="posts">
     
     
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/open-falcon-change-hash-algorithm/">Open-Falcon更换hash算法</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-03-10 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      <span class="more-meta"> 约 485 字 </span>
+      <span class="more-meta"> 预计阅读 1 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h2 id="背景">背景</h2>
+
+<p>原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是<a href="https://github.com/stathat/consistent">github.com/stathat/consistent</a><br />
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。<br />
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。<br />
+更换hash算法成为当务之急。</p>
+
+<p>我们将<code>CRC32 + 500虚拟节点</code>，变成了<code>murmur3 + 10000虚拟节点</code>, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/open-falcon-change-hash-algorithm/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     
       <article class="post">
   <header class="post-header">
@@ -251,43 +284,6 @@
     </div>
     <div class="read-more">
       <a href="/post/organizing-golang-projects-and-dependencies/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/random-connection-timeout/">调用服务端随机性连接超时case一例</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2016-10-05 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 1256 字 </span>
-      <span class="more-meta"> 预计阅读 3 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h1 id="现象">现象</h1>
-
-<p>业务同学反馈，A服务调用B服务有连接超时</p>
-
-<h1 id="环境">环境</h1>
-
-<ul>
-<li>src：A服务, 以下均用src代指<br /></li>
-<li>dst：B服务, 以下均用dst代指<br /></li>
-<li>B服务通过lvs + nginx的方式对外服务<br /></li>
-<li>A服务连接超时设置为500ms<br /></li>
-</ul>
-    </div>
-    <div class="read-more">
-      <a href="/post/random-connection-timeout/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

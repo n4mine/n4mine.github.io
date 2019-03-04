@@ -55,7 +55,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://n4mine.github.io/" />
 
-<meta property="og:updated_time" content="2015-01-02T10:22:31&#43;00:00"/>
+<meta property="og:updated_time" content="2014-07-24T23:02:08&#43;00:00"/>
 
 <meta itemprop="name" content="n4mine&#39;s blog">
 <meta itemprop="description" content="n4mine&#39;s blog">
@@ -133,190 +133,28 @@
     
       <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/run-out-of-memory/">监控进程卡住导致内存耗尽</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/first/">开篇流水</a></h1>
     <div class="post-meta">
-      <span class="post-time"> 2015-01-02 </span>
+      <span class="post-time"> 2014-07-24 </span>
       <div class="post-category">
           
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            <a href="/categories/%E7%94%9F%E6%B4%BB/"> 生活 </a>
           
         </div>
-      <span class="more-meta"> 约 286 字 </span>
-      <span class="more-meta"> 预计阅读 1 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h2 id="起因">起因</h2>
-
-<p>大早上收到报警，几台机器内存不足<br />
-想上去查原因，已登录不上</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/run-out-of-memory/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/nginx_geo/">nginx通过geo实现production/preview环境分离，限速/非限速IP分离</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2014-11-13 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 351 字 </span>
-      <span class="more-meta"> 预计阅读 1 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h1 id="场景">场景</h1>
-
-<ul>
-<li>根据来源IP区分production/preview环境</li>
-<li>根据来源IP区分限速/非限速</li>
-<li>结合上面两者</li>
-</ul>
-
-<h1 id="实现">实现</h1>
-
-<ul>
-<li>geo, map</li>
-</ul>
-    </div>
-    <div class="read-more">
-      <a href="/post/nginx_geo/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/if_in_nginx/">nginx使用if实现多重判断case一例</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2014-11-13 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 699 字 </span>
+      <span class="more-meta"> 约 844 字 </span>
       <span class="more-meta"> 预计阅读 2 分钟 </span>
     </div>
   </header>
   
   <div class="post-content">
     <div class="post-summary">
-      <h1 id="场景">场景</h1>
+      <h2 id="始">始</h2>
 
-<ul>
-<li>根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&hellip;，有则upstream到指定backend</li>
-<li>根据来源IP区分production环境和preview环境</li>
-</ul>
-
-<h1 id="问题">问题</h1>
-
-<ul>
-<li>上面提到的参数可能重复出现</li>
-<li>if不支持复杂的逻辑运算</li>
-<li>if is evil</li>
-</ul>
+<p>其实一、两年前就打算搞个blog，但一直<del>忙</del>懒，所以断断续续的，最后也没完成。<br />
+但愿这个能坚持下去！</p>
     </div>
     <div class="read-more">
-      <a href="/post/if_in_nginx/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/nginx_route_by_upstream_status/">nginx根据后端返回状态进行upstream</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2014-11-11 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 1621 字 </span>
-      <span class="more-meta"> 预计阅读 4 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h1 id="需求">需求</h1>
-
-<p>某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。<br />
-由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。</p>
-
-<h1 id="问题">问题</h1>
-
-<ul>
-<li>放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个</li>
-<li>nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识</li>
-</ul>
-
-<h1 id="解决方案">解决方案</h1>
-
-<ul>
-<li>nginx + lua + subrequest</li>
-<li>要在content阶段完成</li>
-<li>需在rewrite阶段做一点处理</li>
-<li>GET和POST要区分对待</li>
-<li>POST的body和GET的args、cookie等处理</li>
-<li>nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家</li>
-</ul>
-    </div>
-    <div class="read-more">
-      <a href="/post/nginx_route_by_upstream_status/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    
-      <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/ansible_install_jdk/">ansible安装JDK</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2014-10-18 </span>
-      <div class="post-category">
-          
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      <span class="more-meta"> 约 306 字 </span>
-      <span class="more-meta"> 预计阅读 1 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>JDK这东西，简单来说就是一个包，主要生效的还是环境变量。<br />
-直接上实现</p>
-
-<h2 id="目录结构">目录结构</h2>
-
-<pre><code>$ tree
-.
-├── files
-│   └── jdk1.6-centos6.tar.gz
-└── main.yaml
-</code></pre>
-
-<p>简单的一个说明而已，没有必要搞什么最佳实践了。^_^</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/ansible_install_jdk/" class="read-more-link">阅读更多</a>
+      <a href="/post/first/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>
@@ -326,15 +164,11 @@
   
   <nav class="pagination">
     
-      <a class="prev" href="/page/3/">
+      <a class="prev" href="/page/4/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text">上一页</span>
       </a>
     
-      <a class="next" href="/page/5/">
-        <span class="next-text">下一页</span>
-        <i class="iconfont icon-right"></i>
-      </a>
   </nav>
 
         </div>

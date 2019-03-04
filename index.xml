@@ -21,6 +21,25 @@
     </item>
     
     <item>
+      <title>Falcon 存储优化: 高性能内存 TSDB 的诞生</title>
+      <link>https://n4mine.github.io/post/in-memory-tsdb/</link>
+      <pubDate>Mon, 04 Mar 2019 14:48:36 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/in-memory-tsdb/</guid>
+      <description>&lt;h2 id=&#34;tsdb&#34;&gt;TSDB&lt;/h2&gt;
+
+&lt;p&gt;先说 TSDB（时序数据库）是什么，下面的定义引用自 &lt;a href=&#34;https://en.wikipedia.org/wiki/Time_series_database&#34;&gt;Wikipedia&lt;/a&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;code&gt;Influxdb&lt;/code&gt;，&lt;code&gt;Graphite&lt;/code&gt;，&lt;code&gt;RRDtool&lt;/code&gt;，&lt;code&gt;OpenTSDB&lt;/code&gt;等都是当下流行的TSDB实现。&lt;/p&gt;
+
+&lt;p&gt;TSDB 多应用于监控系统等场景。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Falcon存储做过的那些优化</title>
       <link>https://n4mine.github.io/post/optimize-falcon-graph/</link>
       <pubDate>Thu, 21 Feb 2019 15:03:20 +0800</pubDate>

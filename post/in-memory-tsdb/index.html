@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Falcon 存储优化: 高性能内存 TSDB 的诞生 - n4mine&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="n4mine" />
+  <meta name="description" content="TSDB 先说 TSDB（时序数据库）是什么，下面的定义引用自 Wikipedia
+ A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).
+ Influxdb，Graphite，RRDtool，OpenTSDB等都是当下流行的TSDB实现。
+TSDB 多应用于监控系统等场景。
+" />
+<meta name="keywords" content="监控系统, tsdb" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<link rel="canonical" href="https://n4mine.github.io/post/in-memory-tsdb/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.0.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Falcon 存储优化: 高性能内存 TSDB 的诞生" />
+<meta property="og:description" content="TSDB
+
+先说 TSDB（时序数据库）是什么，下面的定义引用自 Wikipedia
+
+
+A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).
+
+
+Influxdb，Graphite，RRDtool，OpenTSDB等都是当下流行的TSDB实现。
+
+TSDB 多应用于监控系统等场景。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://n4mine.github.io/post/in-memory-tsdb/" />
+<meta property="article:published_time" content="2019-03-04T14:48:36&#43;08:00"/>
+<meta property="article:modified_time" content="2019-03-04T14:48:36&#43;08:00"/>
+
+<meta itemprop="name" content="Falcon 存储优化: 高性能内存 TSDB 的诞生">
+<meta itemprop="description" content="TSDB
+
+先说 TSDB（时序数据库）是什么，下面的定义引用自 Wikipedia
+
+
+A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).
+
+
+Influxdb，Graphite，RRDtool，OpenTSDB等都是当下流行的TSDB实现。
+
+TSDB 多应用于监控系统等场景。">
+
+
+<meta itemprop="datePublished" content="2019-03-04T14:48:36&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-04T14:48:36&#43;08:00" />
+<meta itemprop="wordCount" content="3590">
+
+
+
+<meta itemprop="keywords" content="技术,监控系统," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Falcon 存储优化: 高性能内存 TSDB 的诞生"/>
+<meta name="twitter:description" content="TSDB
+
+先说 TSDB（时序数据库）是什么，下面的定义引用自 Wikipedia
+
+
+A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).
+
+
+Influxdb，Graphite，RRDtool，OpenTSDB等都是当下流行的TSDB实现。
+
+TSDB 多应用于监控系统等场景。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">n4mine&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">n4mine&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Falcon 存储优化: 高性能内存 TSDB 的诞生</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-03-04 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3590 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#tsdb">TSDB</a></li>
+<li><a href="#背景">背景</a>
+<ul>
+<li><a href="#graph-之殇">graph 之殇</a></li>
+<li><a href="#柳暗花明">柳暗花明</a></li>
+</ul></li>
+<li><a href="#cacheserver-的诞生">cacheserver 的诞生</a>
+<ul>
+<li><a href="#压缩算法的实现">压缩算法的实现</a></li>
+<li><a href="#数据模型的实现">数据模型的实现</a>
+<ul>
+<li><a href="#series-数据流">series 数据流</a></li>
+<li><a href="#chunk-chunks">chunk/chunks</a></li>
+<li><a href="#cache-结构">cache 结构</a></li>
+<li><a href="#写路径">写路径</a></li>
+<li><a href="#读路径">读路径</a></li>
+<li><a href="#解压-iters-的时机">解压 Iters 的时机</a></li>
+</ul></li>
+<li><a href="#rpc-encode-decode">rpc encode/decode</a></li>
+<li><a href="#key-的组成">key 的组成</a></li>
+<li><a href="#为什么不落盘">为什么不落盘</a></li>
+<li><a href="#与graph的关系及相关统计数据">与graph的关系及相关统计数据</a></li>
+</ul></li>
+<li><a href="#结尾">结尾</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="tsdb">TSDB</h2>
+
+<p>先说 TSDB（时序数据库）是什么，下面的定义引用自 <a href="https://en.wikipedia.org/wiki/Time_series_database">Wikipedia</a></p>
+
+<blockquote>
+<p>A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).</p>
+</blockquote>
+
+<p><code>Influxdb</code>，<code>Graphite</code>，<code>RRDtool</code>，<code>OpenTSDB</code>等都是当下流行的TSDB实现。</p>
+
+<p>TSDB 多应用于监控系统等场景。</p>
+
+<h2 id="背景">背景</h2>
+
+<p>我曾提过，我司的监控系统，其存储部分的核心是以 <a href="https://github.com/open-falcon/falcon-plus">open-falcon</a> 为蓝本开发的。</p>
+
+<p>虽然对以<code>RRDtool</code>为核心的<code>graph</code>做了一些优化，但其先天的不足，实难扭转对其<code>高资源需求</code>，<code>低性能产出</code>的差评。</p>
+
+<h3 id="graph-之殇">graph 之殇</h3>
+
+<ol>
+<li>graph 的<code>io</code>资源需求，就我司的监控体量来讲，graph 实例的 iops 峰值高达<code>50k+</code>，在我司 graph 使用的机型是使用了 nvme 磁盘的最高配机型，所以经常在申请预算时被 challenge。究其根本，无非是使用了<code>单 series 单文件</code>的存储模型。<br /></li>
+<li>cache 的数据结构选型，graph 选用了<code>container/list</code>作为其核心数据结构。在小型项目中，<code>container/list</code>是用于队列场景的常用选型之一。但其临时内存的消耗也非常可观，参见 <a href="https://idea.popcount.org/2014-02-28-improving-containerlist/">improving-containerlist</a> 所述。<br /></li>
+<li>TSDB 的核心，无非就是 <code>key</code> + <code>(t, v)...</code> 这种结构，无论以何种方式组织这几者，例如行式、列式等。都必须有方法来生成<code>key</code>，即对<code>series</code>的唯一标识。在<code>graph</code>中大量使用<code>sha1</code>, <code>md5</code>这种<code>加密hash</code>来参与<code>key</code>的生成，这是极大的浪费，杀鸡用了牛刀。</li>
+<li>仍然讨论<code>key</code>。graph 对于 <code>tsdb series</code> 的标识，使用了<code>labels</code>，所谓 labels，即 <code>k1=v1, k2=v2...</code> 这种键值对。而 graph 中对于 key 与 labels 的映射，是通过对 labels 进行<code>字符串连接</code> + <code>sort()</code> + <code>md5()</code>生成的。这种转换（<code>map &lt;-&gt; string</code>），在整个读、写路径中，在各个模块中都大量存在。而这几种操作要么是高内存耗用，要么是 CPU 杀手。<br /></li>
+</ol>
+
+<p>随着监控数据的不断增长，在 series 到达<code>3亿+</code>的时候，graph 的内存、cpu 等指标值都很不乐观，io 更是居高不下。随之而来的，查询 latency 逐渐升高，看图、大盘等功能体验变差。</p>
+
+<p>面临如上压力，我们进行了一系列分析，根据统计，我们的查询请求，有<code>80%</code>都是查询最近 2 小时数据的请求。这也是<code>graph</code>的最大压力来源。</p>
+
+<p>因此，我们需要的，是一个<code>简单</code>、<code>高性能</code>、<code>易维护</code>的模块，一个针对短期数据的高性能读写方案。</p>
+
+<h3 id="柳暗花明">柳暗花明</h3>
+
+<p>在做调研的时候，发现了 <a href="https://fabxc.org/tsdb/">Writing a Time Series Database from Scratch</a> 这篇文章，这是 prometheus 作者在发布 prometheus 新版存储引擎期间释出的文章。文章本身内容非常好，强烈大家多多研读。</p>
+
+<p>而这篇文章最吸引我的，却是下面这句话:</p>
+
+<blockquote>
+<p>Facebook’s paper on their Gorilla TSDB describes a similar chunk-based approach and <a href="http://www.vldb.org/pvldb/vol8/p1816-teller.pdf">introduces a compression format</a> that reduces 16 byte samples to an average of 1.37 bytes.</p>
+</blockquote>
+
+<p>我们知道，作为时序数据库的基本组成，<code>(t, v)</code> 代表最基本的一个点。在内存中一般占用<code>16 bytes</code>，而如果能压缩到<code>1.37 bytes</code>，这个压缩比是非常高的。</p>
+
+<p>阅读 facebook 的这篇paper，<a href="http://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Gorilla: A Fast, Scalable, In-Memory Time Series Database</a>。总结其实现高压缩比的主要抓手如下:</p>
+
+<ol>
+<li>使用 dod（delta of delta）编码，压缩 <code>timestamp</code>。原来需要存储 <code>1551532883, 1551532890, 1551532900, 1551532910</code>，编码后只需要存储 <code>1551532883, 7, 3, 0, 0</code> 即可，压缩效果可见一斑。而在 falcon 的体系中，因为有前置模块（transfer）做了时间戳取余对齐，所以 dod 算法的效果非常好。<br /></li>
+<li>使用 XOR 编码，压缩 <code>value</code>。其依据是一条 series，在相邻时间戳的<code>value</code>在大部分时候变化不大。XOR 编码，如果相邻时间戳的两个 <code>value</code>相同，那么存储 &lsquo;0&rsquo;，只占用 1 bit，在编码前则要占用 2 个<code>float64</code>的空间。<br /></li>
+</ol>
+
+<p>除了高压缩比，<code>gorilla</code>描述的 <code>In-Memory TSDB</code>架构也非常的值得借鉴，典型的<code>数据分片</code> + <code>多blocks轮转</code> 的结构。建议多读几遍 paper 学习一下。</p>
+
+<h2 id="cacheserver-的诞生">cacheserver 的诞生</h2>
+
+<h3 id="压缩算法的实现">压缩算法的实现</h3>
+
+<p>paper 也读了，原理也明白了，接下来当然就是实现。不重复造轮子，一直以来是我等的优良传统。祭出 <del>gayhub</del> github 来搜索现成的轮子。找到了 <a href="https://github.com/dgryski/go-tsz">dgryski/go-tsz</a> 这个库，其完整实现了 facebook 的 paper 中描述的<code>(t, v)</code> 编码这一部分。这位 <a href="https://github.com/dgryski">Damian Gryski</a> 实现过很多优秀的算法，值得 <code>follow</code>。但是这个库有一个小问题，由于关键的 struct 的一些字段没有导出，不满足 golang 的 rpc 规范要求。所以进行了一些小改动，放在了 <a href="https://github.com/devtoolkits/go-tsz">devtoolkits/go-tsz</a> 。</p>
+
+<h3 id="数据模型的实现">数据模型的实现</h3>
+
+<p>为了便于理解，我们自底向上描述 cacheserver 的数据模型。</p>
+
+<h4 id="series-数据流">series 数据流</h4>
+
+<p>最底层的数据，就是1个 series 的数据流(bits)，是该 series 的<code>(t, v)...</code>经过编码得来的。</p>
+
+<h4 id="chunk-chunks">chunk/chunks</h4>
+
+<p>所谓chunk，就是一个<code>时间窗口</code>内的某个 series 的 bit 流数据，而 chunks 顾名思义，就是多个 chunk 的封装。一般来说，chunk 的时间窗口越长，产出的压缩结果越小，考虑编解码效率等因素，时间窗口的设置可参考如下原则:</p>
+
+<ol>
+<li>测试在不同时间窗口之下，平均每个 <code>(t, v)</code> 的占用空间。根据<code>facebook</code>的测试结果，时间窗口设置为 <code>120 分钟</code>，平均每个<code>(t, v)</code>的占用空间为大概 <code>1.37bytes</code>。而更大的时间窗口压缩效果就不太明显了。经过简单测试后，cacheserver的 chunk 时间窗口也设置为 120 分钟。<br /></li>
+<li>理论上，chunks 就是包含了 chunk 的 slice，但频繁进行 append 的 slice，对 gc 是不友好的。所以需要有一个机制来保证，不需要的 chunk，可以被<code>清理</code>掉。cacheserver 中的 chunks 使用了 <code>Ringbuffer</code> 结构来存储 chunk，使用<code>固定的空间</code>来存储多个时间窗口的 series 数据流。<br /></li>
+</ol>
+
+<p>这部分的实现，大部分借鉴了 <a href="https://github.com/grafana/metrictank/blob/master/mdata/aggmetric.go">grafana/metrictank</a>，感兴趣的同学可以去看一下。</p>
+
+<h4 id="cache-结构">cache 结构</h4>
+
+<p>上面对于 1 条 series 的结构已经描述完毕。下面来说多条 series 的存储，也就是对多个 <code>key</code> + <code>(t, v)...</code> 的存储设计，这种场景，使用 golang 的<code>map</code>数据结构当然最合适不过。</p>
+
+<p>但还有一个问题，cacheserver 的每个实例，设计目标是要能存储 <code>1000w ~ 2000w</code> 条 series。这个量级，使用 map 光存储没有问题，但这个 map 还要有大量的读/写操作，所以一定会用到读写锁。在我们的业务场景中，1次查询几千几万条 series 的场景有很多，再加上源源不断的写操作，这样锁的竞争会非常激烈。如何解决这个问题？</p>
+
+<p>常见的做法是使用<code>分片锁</code>。所谓分片锁，就是将 map 的 key 做<code>分片</code>，然后包括读/写等操作，都先通过<code>分片</code>算法，寻找 key 所在的分片，然后再对得到的分片加锁。</p>
+
+<p>以读为例，从原始的 <code>RLock -&gt; Read -&gt; RUnlock</code> ，经过分片锁的优化之后，变成 <code>getShard -&gt; shard.RLock -&gt; Read -&gt; shard.RUnlock</code> 。后者在高并发的场景下，效率会高很多。</p>
+
+<p>分片的算法，也很重要，如果<code>key</code>是整型，那么直接按照分片数求余即可。但我们的<code>key</code>是字符串，字符串到整数类型的转换方法有很多，我们需要的是一个<code>速度快</code>、<code>占用内存低</code>的方式，核心代码如下:</p>
+
+<pre><code>func fnv32(key string) uint32 {
+	hash := uint32(2166136261)
+	const prime32 = uint32(16777619)
+	for i := 0; i &lt; len(key); i++ {
+		hash *= prime32
+		hash ^= uint32(key[i])
+	}
+	return hash
+}
+</code></pre>
+
+<p>以上就是 cacheserver 核心的数据模型，下面从读写路径2个角度来简要地描述一下具体的数据流。</p>
+
+<h4 id="写路径">写路径</h4>
+
+<p><code>rpc Call</code> &ndash;&gt; <code>cache getshard</code> &ndash;&gt; <code>chunks push</code> &ndash;&gt; <code>chunk locate</code> &ndash;&gt; <code>chunk push</code></p>
+
+<h4 id="读路径">读路径</h4>
+
+<p><code>rpc Call</code> &ndash;&gt; <code>cache getshard</code> &ndash;&gt; <code>chunks get</code> &ndash;&gt; <code>chunk locate</code> &ndash;&gt; <code>get Iters</code></p>
+
+<h4 id="解压-iters-的时机">解压 Iters 的时机</h4>
+
+<p>在读路径中，获取到的是 <code>Iter</code>，即包含<code>(t, v)...</code>数据的<code>压缩包</code>，那么这个压缩包应该在哪里解开，有2种选择:</p>
+
+<ol>
+<li>由 <code>rpc server</code>，即 <code>cacheserver</code> 解压。<br /></li>
+<li>由 <code>rpc client</code> 解压。<br /></li>
+</ol>
+
+<p>在 server 中解压的好处是，client 可以拿到明文的 <code>(t, v)...</code> 数据，直观、方便。<br />
+在 client 中解压的好处是，节省 server 的资源。</p>
+
+<p>再三考虑，为节省 cacheserver 的资源开销，我们采用后者，即在 <code>rpc client</code> 中做解压动作。后来 uber 开源的<code>m3db</code>，也涉及到这方面的描述，和我的想法不谋而合，以下引用自 uber blog 的文章 <a href="https://eng.uber.com/billion-data-point-challenge/">The Billion Data Point Challenge: Building a Query Engine for High Cardinality Time Series Data</a></p>
+
+<blockquote>
+<p>One key insight from our evaluation process was that we shouldn’t decompress data on fetch if we are dealing with storage backends that keep data compressed internally, which is exactly how M3DB stores data. If we delay the decompression as long as possible, we might be able to reduce our memory footprint.</p>
+</blockquote>
+
+<h3 id="rpc-encode-decode">rpc encode/decode</h3>
+
+<p><code>gob</code>作为 golang 默认的 rpc 编解码方案，其性能是相对低下的，在使用 pprof 生成的火焰图中，大量宽大的 gob encode/decode 调用也证明了这一点。在 cacheserver 中，使用 <a href="https://msgpack.org/">msgpack</a> 编解码，看中的就是其 <code>It's like JSON. but fast and small.</code> 的特点。</p>
+
+<h3 id="key-的组成">key 的组成</h3>
+
+<p>上文提过，graph 的<code>key</code>是由<code>labels</code>组合计算而成，且带有业务意义。<code>cacheserver</code>不同，<code>key</code>只是标识 series，不带有任何的业务意义，只需上下游模块（transfer 和 query）达成共识即可，cacheserver 不关心。这样除了更具通用型，分离了存储与索引的耦合，也降低了在既有方案中对<code>map &lt;-&gt; string</code>的转换带来的不必要开销。</p>
+
+<h3 id="为什么不落盘">为什么不落盘</h3>
+
+<p>如上文描述，我们整个架构都是基于<code>内存</code>的，并没有涉及到<code>持久化</code>的任何描述。原因有几点:</p>
+
+<ol>
+<li>持久化会加大 cacheserver 的复杂度，持久化就要考虑文件读写、WAL 等，相对会比较麻烦。开发成本和时间成本都比较高。<br /></li>
+<li>持久化后，那么 cacheserver 将成为一个完备的TSDB，这不是我们的初衷。我会在下一章节详细描述。<br /></li>
+</ol>
+
+<h3 id="与graph的关系及相关统计数据">与graph的关系及相关统计数据</h3>
+
+<p><code>cacheserver</code> 的设计初衷，是对 graph 的一个补充。目标是产出一个<code>高性能</code>，<code>低成本</code>，<code>提供热数据查询</code>的服务，降低 graph 的压力。而 graph 作为永久存储方案，实现诸如<code>将采</code>、<code>归档</code>、<code>持久化</code>等逻辑。</p>
+
+<p>在读链路，先读 cacheserver，如果 cacheserver <code>数据不足</code>或者<code>出现异常</code>，再从 graph 读取。</p>
+
+<p>写链路则沿用 open-falcon 的设计，在 transfer 中进行双写，写入 graph 的同时，也写入 cacheserver。</p>
+
+<p>我们部署了<code>20</code>个实例:</p>
+
+<ul>
+<li>存储了 <code>2亿活跃 series</code>，平均每个实例存储 <code>1000w series</code><br /></li>
+<li>共使用内存不到 <code>1 TB</code>，平均每个实例不到 <code>50 GB</code><br /></li>
+<li>查询 <code>latency(tp95)</code>在<code>200ms</code>以下<br /></li>
+</ul>
+
+<h2 id="结尾">结尾</h2>
+
+<p>以上，就是一个高性能内存TSDB诞生的故事，欢迎指正。</p>
+
+<p><em>-EOF-</em></p>
+    </div>
+
+    
+    
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E6%8A%80%E6%9C%AF/">技术</a>
+          
+          <a href="/tags/%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F/">监控系统</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/optimize-falcon-graph/">
+            <span class="next-text nav-default">Falcon存储做过的那些优化</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/n4mine" class="iconfont icon-github" title="github"></a>
+      <a href="https://weibo.com/n4mine" class="iconfont icon-weibo" title="weibo"></a>
+  <a href="https://n4mine.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2014 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">n4mine</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.0.0"></script>
+
+<script id="baidu_analytics">
+  var _hmt = _hmt || [];
+  (function() {
+    if (window.location.hostname === 'localhost') return;
+    var hm = document.createElement("script"); hm.async = true;
+    hm.src = "https://hm.baidu.com/hm.js?a0d9b192e8616a9fff384dfaa6e34871";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+
+
+
+
+
+</body>
+</html>
