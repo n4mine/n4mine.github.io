@@ -86,7 +86,7 @@ TSDB 多应用于监控系统等场景。">
 
 <meta itemprop="datePublished" content="2019-03-04T14:48:36&#43;08:00" />
 <meta itemprop="dateModified" content="2019-03-04T14:48:36&#43;08:00" />
-<meta itemprop="wordCount" content="3590">
+<meta itemprop="wordCount" content="3589">
 
 
 
@@ -179,7 +179,7 @@ TSDB 多应用于监控系统等场景。"/>
               <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             
           </div>
-        <span class="more-meta"> 约 3590 字 </span>
+        <span class="more-meta"> 约 3589 字 </span>
         <span class="more-meta"> 预计阅读 8 分钟 </span>
         
       </div>
@@ -275,7 +275,7 @@ TSDB 多应用于监控系统等场景。"/>
 <p>阅读 facebook 的这篇paper，<a href="http://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Gorilla: A Fast, Scalable, In-Memory Time Series Database</a>。总结其实现高压缩比的主要抓手如下:</p>
 
 <ol>
-<li>使用 dod（delta of delta）编码，压缩 <code>timestamp</code>。原来需要存储 <code>1551532883, 1551532890, 1551532900, 1551532910</code>，编码后只需要存储 <code>1551532883, 7, 3, 0, 0</code> 即可，压缩效果可见一斑。而在 falcon 的体系中，因为有前置模块（transfer）做了时间戳取余对齐，所以 dod 算法的效果非常好。<br /></li>
+<li>使用 dod（delta of delta）编码，压缩 <code>timestamp</code>。原来需要存储 <code>1551532883, 1551532890, 1551532900, 1551532910</code>，编码后只需要存储 <code>1551532883, 7, 3, 0</code> 即可，压缩效果可见一斑。而在 falcon 的体系中，因为有前置模块（transfer）做了时间戳取余对齐，所以 dod 算法的效果非常好。<br /></li>
 <li>使用 XOR 编码，压缩 <code>value</code>。其依据是一条 series，在相邻时间戳的<code>value</code>在大部分时候变化不大。XOR 编码，如果相邻时间戳的两个 <code>value</code>相同，那么存储 &lsquo;0&rsquo;，只占用 1 bit，在编码前则要占用 2 个<code>float64</code>的空间。<br /></li>
 </ol>
 
