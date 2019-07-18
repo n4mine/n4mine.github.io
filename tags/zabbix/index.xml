@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Zabbix on n4mine&#39;s blog</title>
+    <title>zabbix on n4mine&#39;s blog</title>
     <link>https://n4mine.github.io/tags/zabbix/</link>
-    <description>Recent content in Zabbix on n4mine&#39;s blog</description>
+    <description>Recent content in zabbix on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 22 Jan 2016 12:43:29 +0000</lastBuildDate>

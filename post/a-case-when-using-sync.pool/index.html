@@ -16,22 +16,18 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="n4mine" />
-  <meta name="description" content="背景 open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
-" />
-<meta name="keywords" content="sync.Pool, golang" />
+<meta name="author" content="n4mine" /><meta name="description" content="背景 open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题
+" /><meta name="keywords" content="sync.Pool, golang" />
 
 
 
 
 
 
-
-<meta name="generator" content="Hugo 0.54.0" />
+<meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/a-case-when-using-sync.pool/" />
-
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -39,15 +35,8 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-
-
-
-
-
-<link href="/dist/even.min.css?v=3.0.0" rel="stylesheet">
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
 <link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
-
-
 
 
 <meta property="og:title" content="使用sync.Pool引起的case一例" />
@@ -67,7 +56,7 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
 
 <meta itemprop="datePublished" content="2018-02-27T15:12:20&#43;08:00" />
 <meta itemprop="dateModified" content="2018-02-27T15:12:20&#43;08:00" />
-<meta itemprop="wordCount" content="662">
+<meta itemprop="wordCount" content="711">
 
 
 
@@ -148,18 +137,13 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
       <div class="post-meta">
         <span class="post-time"> 2018-02-27 </span>
         <div class="post-category">
-            
-              <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-            
-          </div>
-        <span class="more-meta"> 约 662 字 </span>
-        <span class="more-meta"> 预计阅读 2 分钟 </span>
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 711 字 </span>
+          <span class="more-meta"> 预计阅读 2 分钟 </span>
         
       </div>
     </header>
-
-    
-    
 
     
     <div class="post-content">
@@ -168,25 +152,57 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
 <p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
 
 <h2 id="过程">过程</h2>
-
-<pre><code>func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
 -       v := smodel.GraphItemPoint{}.New(item)
 +       v := smodel.NewPointObjFromPool(item)
 +       defer smodel.PutPointObjBack2Pool(v)
 
 ...
 
-    this.L.PushFront(v)
-</code></pre>
-
+    this.L.PushFront(v)</pre></td></tr></table>
+</div>
+</div>
 <p>上述代码中, <code>PushFront</code>是每个点到来都需要操作的函数, 即每上报一个点, <code>smodel.GraphItemPoint{}.New(item)</code> 都需要执行一次<br />
 因为这里是一个临时对象，所以尝试使用对象池来优化(虽然后面证明优化无效，但整个过程值得分享)，以期望减少内存的分配及申请对象的次数，进而减少gc</p>
 
 <p>注意上面的<code>this.L.PushFront(v)</code>，这里是一个关键点</p>
 
 <p>另外为对象池增加了helper函数，方便进行对象的Get和Put操作，如下</p>
-
-<pre><code>+var pointObjPool = sync.Pool{New: func() interface{} { return &amp;GraphItemPoint{} }}
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">+var pointObjPool = sync.Pool{New: func() interface{} { return &amp;GraphItemPoint{} }}
 +
 +func NewPointObjFromPool(item *cmodel.GraphItem) *GraphItemPoint {
 +       ret := pointObjPool.Get().(*GraphItemPoint)
@@ -203,9 +219,9 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
 +func PutPointObjBack2Pool(p *GraphItemPoint) {
 +       pointObjPool.Put(p)
 +}
-+
-</code></pre>
-
++</pre></td></tr></table>
+</div>
+</div>
 <p>在这种场景下，使用sync.Pool对象池Get一个新的对象后，使用this.L.PushFront将对象的地址（因为返回的是一个指针），放在了内存cache中。</p>
 
 <p>当执行查询操作时，在内存cache中获取到的是一个地址，将这个地址解引用获取内容时，就会出现问题。</p>
@@ -218,8 +234,28 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
 <h2 id="解决">解决</h2>
 
 <p>如果从对象池获取值而非指针的话，那么这个问题就解了，如下</p>
-
-<pre><code>func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
     if item == nil {
         return
     }
@@ -235,49 +271,46 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
 ...
 
     this.L.PushFront(&amp;v)
-    smodel.PutPointObjBack2Pool(v)
-</code></pre>
-
+    smodel.PutPointObjBack2Pool(v)</pre></td></tr></table>
+</div>
+</div>
 <p>关于对象池的更改，如下</p>
-
-<pre><code>func NewPointObjFromPool() GraphItemPoint {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func NewPointObjFromPool() GraphItemPoint {
     return pointObjPool.Get().(GraphItemPoint)
 }
 func PutPointObjBack2Pool(p GraphItemPoint) {
     pointObjPool.Put(p)
-}
-</code></pre>
-
+}</pre></td></tr></table>
+</div>
+</div>
 <p><em>-EOF-</em></p>
     </div>
 
     
-    
-
-    
-    
-
-    <footer class="post-footer">
+<footer class="post-footer">
       <div class="post-tags">
-          
           <a href="/tags/golang/">golang</a>
-          
           <a href="/tags/sync.pool/">sync.Pool</a>
-          
-        </div>
-
-      
+          </div>
       <nav class="post-nav">
-        
-          <a class="prev" href="/post/open-falcon-change-hash-algorithm/">
+        <a class="prev" href="/post/open-falcon-change-hash-algorithm/">
             <i class="iconfont icon-left"></i>
             <span class="prev-text nav-default">Open-Falcon更换hash算法</span>
             <span class="prev-text nav-mobile">上一篇</span>
           </a>
-        
-          <a class="next" href="/post/get-golang-gc-info-by-pprof/">
+        <a class="next" href="/post/get-golang-gc-info-by-pprof/">
             <span class="next-text nav-default">通过pprof获取golang gc信息</span>
-            <span class="prev-text nav-mobile">下一篇</span>
+            <span class="next-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>
       </nav>
@@ -285,6 +318,7 @@ func PutPointObjBack2Pool(p GraphItemPoint) {
   </article>
         </div>
         
+
       </div>
     </main>
 
@@ -309,8 +343,7 @@ func PutPointObjBack2Pool(p GraphItemPoint) {
 
   <span class="copyright-year">
     &copy; 
-    
-      2014 - 
+    2014 - 
     2019
     <span class="heart">
       <i class="iconfont icon-heart"></i>
@@ -324,22 +357,12 @@ func PutPointObjBack2Pool(p GraphItemPoint) {
       <i class="iconfont icon-up"></i>
     </div>
   </div>
-  
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
   <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
-<script type="text/javascript" src="/dist/even.min.js?v=3.0.0"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
 
-<script id="baidu_analytics">
-  var _hmt = _hmt || [];
-  (function() {
-    if (window.location.hostname === 'localhost') return;
-    var hm = document.createElement("script"); hm.async = true;
-    hm.src = "https://hm.baidu.com/hm.js?a0d9b192e8616a9fff384dfaa6e34871";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
-</script>
+
 
 
 

@@ -16,21 +16,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="n4mine" />
-  <meta name="description" content="场景  根据来源IP区分production/preview环境 根据来源IP区分限速/非限速 结合上面两者  实现  geo, map " />
-
-  <meta name="keywords" content="n4mine, blog" />
+<meta name="author" content="n4mine" /><meta name="description" content="场景  根据来源IP区分production/preview环境 根据来源IP区分限速/非限速 结合上面两者  实现  geo, map " /><meta name="keywords" content="n4mine, blog" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.54.0" />
+<meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/nginx_geo/" />
-
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -38,15 +34,8 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-
-
-
-
-
-<link href="/dist/even.min.css?v=3.0.0" rel="stylesheet">
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
 <link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
-
-
 
 
 <meta property="og:title" content="nginx通过geo实现production/preview环境分离，限速/非限速IP分离" />
@@ -86,7 +75,7 @@ geo, map
 
 <meta itemprop="datePublished" content="2014-11-13T20:14:06&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-13T20:14:06&#43;00:00" />
-<meta itemprop="wordCount" content="351">
+<meta itemprop="wordCount" content="383">
 
 
 
@@ -177,21 +166,16 @@ geo, map
       <div class="post-meta">
         <span class="post-time"> 2014-11-13 </span>
         <div class="post-category">
-            
-              <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-            
-          </div>
-        <span class="more-meta"> 约 351 字 </span>
-        <span class="more-meta"> 预计阅读 1 分钟 </span>
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 383 字 </span>
+          <span class="more-meta"> 预计阅读 1 分钟 </span>
         
       </div>
     </header>
 
-    
-    
-<div class="post-toc" id="post-toc">
+    <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
-  
   <div class="post-toc-content">
     <nav id="TableOfContents">
 <ul>
@@ -203,8 +187,6 @@ geo, map
 </nav>
   </div>
 </div>
-
-    
     <div class="post-content">
       <h1 id="场景">场景</h1>
 
@@ -221,8 +203,42 @@ geo, map
 </ul>
 
 <p>不多说，上实现，具体看注释</p>
-
-<pre><code># ip address classfiy detail:
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># ip address classfiy detail:
 # ^1 limit
 # ^0 unlimit
 # lan$ preview
@@ -243,7 +259,7 @@ geo $white_ip_list {
 # map for limit zone
 map $white_ip_list $limit_ip_list {
     ~^1       $binary_remote_addr;
-    ~^0       &quot;&quot;;
+    ~^0       &#34;&#34;;
 }
 
 limit_req_zone $limit_ip_list zone=limit_yr_sister_ip:500m rate=9999r/s;
@@ -252,9 +268,9 @@ limit_req_zone $limit_ip_list zone=limit_yr_sister_ip:500m rate=9999r/s;
 map $white_ip_list $address_type {
     default    wan;
     ~lan$      lan;
-}
-</code></pre>
-
+}</pre></td></tr></table>
+</div>
+</div>
 <h1 id="啰嗦一下">啰嗦一下</h1>
 
 <p>其实一切都写在注释里了<br />
@@ -265,14 +281,17 @@ map $white_ip_list $address_type {
 <h1 id="使用">使用</h1>
 
 <ul>
-<li>limit调用</li>
-</ul>
+<li><p>limit调用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">limit_req zone=limit_yr_sister burst=5 nodelay;</pre></td></tr></table>
+</div>
+</div></li>
 
-<pre><code>limit_req zone=limit_yr_sister burst=5 nodelay;
-</code></pre>
-
-<ul>
-<li>production/preview分离</li>
+<li><p>production/preview分离</p></li>
 </ul>
 
 <p>可参照上一篇blog <a href="http://n4mine.github.io/post/if_in_nginx/">nginx使用if实现多重判断case一例</a><br />
@@ -282,30 +301,19 @@ map $white_ip_list $address_type {
     </div>
 
     
-    
-
-    
-    
-
-    <footer class="post-footer">
+<footer class="post-footer">
       <div class="post-tags">
-          
           <a href="/tags/nginx/">nginx</a>
-          
-        </div>
-
-      
+          </div>
       <nav class="post-nav">
-        
-          <a class="prev" href="/post/run-out-of-memory/">
+        <a class="prev" href="/post/run-out-of-memory/">
             <i class="iconfont icon-left"></i>
             <span class="prev-text nav-default">监控进程卡住导致内存耗尽</span>
             <span class="prev-text nav-mobile">上一篇</span>
           </a>
-        
-          <a class="next" href="/post/if_in_nginx/">
+        <a class="next" href="/post/if_in_nginx/">
             <span class="next-text nav-default">nginx使用if实现多重判断case一例</span>
-            <span class="prev-text nav-mobile">下一篇</span>
+            <span class="next-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>
       </nav>
@@ -314,10 +322,10 @@ map $white_ip_list $address_type {
         </div>
         
   
-
   
 
   
+
       </div>
     </main>
 
@@ -342,8 +350,7 @@ map $white_ip_list $address_type {
 
   <span class="copyright-year">
     &copy; 
-    
-      2014 - 
+    2014 - 
     2019
     <span class="heart">
       <i class="iconfont icon-heart"></i>
@@ -357,22 +364,12 @@ map $white_ip_list $address_type {
       <i class="iconfont icon-up"></i>
     </div>
   </div>
-  
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
   <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
-<script type="text/javascript" src="/dist/even.min.js?v=3.0.0"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
 
-<script id="baidu_analytics">
-  var _hmt = _hmt || [];
-  (function() {
-    if (window.location.hostname === 'localhost') return;
-    var hm = document.createElement("script"); hm.async = true;
-    hm.src = "https://hm.baidu.com/hm.js?a0d9b192e8616a9fff384dfaa6e34871";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
-</script>
+
 
 
 

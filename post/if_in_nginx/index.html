@@ -16,21 +16,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="n4mine" />
-  <meta name="description" content="场景  根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&amp;hellip;，有则upstream到指定backend 根据来源IP区分production环境和preview环境  问题  上面提到的参数可能重复出现 if不支持复杂的逻辑运算 if is evil " />
-
-  <meta name="keywords" content="n4mine, blog" />
+<meta name="author" content="n4mine" /><meta name="description" content="场景  根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&amp;hellip;，有则upstream到指定backend 根据来源IP区分production环境和preview环境  问题  上面提到的参数可能重复出现 if不支持复杂的逻辑运算 if is evil " /><meta name="keywords" content="n4mine, blog" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.54.0" />
+<meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/if_in_nginx/" />
-
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -38,15 +34,8 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-
-
-
-
-
-<link href="/dist/even.min.css?v=3.0.0" rel="stylesheet">
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
 <link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
-
-
 
 
 <meta property="og:title" content="nginx使用if实现多重判断case一例" />
@@ -88,7 +77,7 @@ if is evil
 
 <meta itemprop="datePublished" content="2014-11-13T17:53:55&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-13T17:53:55&#43;00:00" />
-<meta itemprop="wordCount" content="699">
+<meta itemprop="wordCount" content="726">
 
 
 
@@ -180,21 +169,16 @@ if is evil
       <div class="post-meta">
         <span class="post-time"> 2014-11-13 </span>
         <div class="post-category">
-            
-              <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-            
-          </div>
-        <span class="more-meta"> 约 699 字 </span>
-        <span class="more-meta"> 预计阅读 2 分钟 </span>
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 726 字 </span>
+          <span class="more-meta"> 预计阅读 2 分钟 </span>
         
       </div>
     </header>
 
-    
-    
-<div class="post-toc" id="post-toc">
+    <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
-  
   <div class="post-toc-content">
     <nav id="TableOfContents">
 <ul>
@@ -205,8 +189,6 @@ if is evil
 </nav>
   </div>
 </div>
-
-    
     <div class="post-content">
       <h1 id="场景">场景</h1>
 
@@ -226,42 +208,75 @@ if is evil
 <h1 id="方案">方案</h1>
 
 <p>先写最终实现，然后解释</p>
-
-<pre><code>set code &quot;&quot;;
-if ( $args ~ &quot;code=[^&amp;]*.*code=[^&amp;]*&quot; ) {
-    set $code &quot;${code}Y&quot;;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">set code &#34;&#34;;
+if ( $args ~ &#34;code=[^&amp;]*.*code=[^&amp;]*&#34; ) {
+    set $code &#34;${code}Y&#34;;
 }
 
-if ( $args ~ &quot;code=OVERSEA[^&amp;]*&quot; )  {
-    set $code &quot;${code}X&quot;;
+if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
+    set $code &#34;${code}X&#34;;
 }
 
-if ( $code ~ &quot;^X$&quot; ) {
+if ( $code ~ &#34;^X$&#34; ) {
     proxy_pass http://oversea;
 }
 
-if ( $address_type ~ &quot;lan&quot; ) {
+if ( $address_type ~ &#34;lan&#34; ) {
     proxy_pass http://lan;
 }
 
-proxy_pass http://wan;
-</code></pre>
-
+proxy_pass http://wan;</pre></td></tr></table>
+</div>
+</div>
 <p>nginx的set指令和if指令都工作在rewrite阶段。<code>rewrite阶段的指令会按照config文件中的书写顺序依次执行</code></p>
 
 <p>先从最简单实现开始，最开始想到的是如下写法</p>
-
-<pre><code>if ( $args ~ &quot;code=OVERSEA[^&amp;]*&quot; )  {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
     proxy_pass http://oversea;
 }
 
-if ( $address_type ~ &quot;lan&quot; ) {
+if ( $address_type ~ &#34;lan&#34; ) {
     proxy_pass http://lan;
 }
 
-proxy_pass http://wan;
-</code></pre>
-
+proxy_pass http://wan;</pre></td></tr></table>
+</div>
+</div>
 <p>但会带来一个问题，如果请求参数有两个CODE，不管是代码写土了还是恶意，这种行为都是可能出现的。<br />
 如何解析args就成了问题。<br />
 据我实验<code>$arg_xxx</code>这种方式取到的值的应该是在参数列表中xxx第一次出现时的value。</p>
@@ -288,30 +303,19 @@ proxy_pass http://wan;
     </div>
 
     
-    
-
-    
-    
-
-    <footer class="post-footer">
+<footer class="post-footer">
       <div class="post-tags">
-          
           <a href="/tags/nginx/">nginx</a>
-          
-        </div>
-
-      
+          </div>
       <nav class="post-nav">
-        
-          <a class="prev" href="/post/nginx_geo/">
+        <a class="prev" href="/post/nginx_geo/">
             <i class="iconfont icon-left"></i>
             <span class="prev-text nav-default">nginx通过geo实现production/preview环境分离，限速/非限速IP分离</span>
             <span class="prev-text nav-mobile">上一篇</span>
           </a>
-        
-          <a class="next" href="/post/nginx_route_by_upstream_status/">
+        <a class="next" href="/post/nginx_route_by_upstream_status/">
             <span class="next-text nav-default">nginx根据后端返回状态进行upstream</span>
-            <span class="prev-text nav-mobile">下一篇</span>
+            <span class="next-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>
       </nav>
@@ -320,10 +324,10 @@ proxy_pass http://wan;
         </div>
         
   
-
   
 
   
+
       </div>
     </main>
 
@@ -348,8 +352,7 @@ proxy_pass http://wan;
 
   <span class="copyright-year">
     &copy; 
-    
-      2014 - 
+    2014 - 
     2019
     <span class="heart">
       <i class="iconfont icon-heart"></i>
@@ -363,22 +366,12 @@ proxy_pass http://wan;
       <i class="iconfont icon-up"></i>
     </div>
   </div>
-  
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
   <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
-<script type="text/javascript" src="/dist/even.min.js?v=3.0.0"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
 
-<script id="baidu_analytics">
-  var _hmt = _hmt || [];
-  (function() {
-    if (window.location.hostname === 'localhost') return;
-    var hm = document.createElement("script"); hm.async = true;
-    hm.src = "https://hm.baidu.com/hm.js?a0d9b192e8616a9fff384dfaa6e34871";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
-</script>
+
 
 
 

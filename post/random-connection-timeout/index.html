@@ -16,26 +16,22 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="n4mine" />
-  <meta name="description" content="现象 业务同学反馈，A服务调用B服务有连接超时
+<meta name="author" content="n4mine" /><meta name="description" content="现象 业务同学反馈，A服务调用B服务有连接超时
 环境  src：A服务, 以下均用src代指
  dst：B服务, 以下均用dst代指
  B服务通过lvs &#43; nginx的方式对外服务
  A服务连接超时设置为500ms
- " />
-
-  <meta name="keywords" content="n4mine, blog" />
+ " /><meta name="keywords" content="n4mine, blog" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.54.0" />
+<meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/random-connection-timeout/" />
-
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -43,15 +39,8 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-
-
-
-
-
-<link href="/dist/even.min.css?v=3.0.0" rel="stylesheet">
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
 <link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
-
-
 
 
 <meta property="og:title" content="调用服务端随机性连接超时case一例" />
@@ -89,7 +78,7 @@ A服务连接超时设置为500ms
 
 <meta itemprop="datePublished" content="2016-10-05T09:47:13&#43;00:00" />
 <meta itemprop="dateModified" content="2016-10-05T09:47:13&#43;00:00" />
-<meta itemprop="wordCount" content="1256">
+<meta itemprop="wordCount" content="1260">
 
 
 
@@ -179,21 +168,16 @@ A服务连接超时设置为500ms
       <div class="post-meta">
         <span class="post-time"> 2016-10-05 </span>
         <div class="post-category">
-            
-              <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-            
-          </div>
-        <span class="more-meta"> 约 1256 字 </span>
-        <span class="more-meta"> 预计阅读 3 分钟 </span>
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1260 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
         
       </div>
     </header>
 
-    
-    
-<div class="post-toc" id="post-toc">
+    <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
-  
   <div class="post-toc-content">
     <nav id="TableOfContents">
 <ul>
@@ -231,8 +215,6 @@ A服务连接超时设置为500ms
 </nav>
   </div>
 </div>
-
-    
     <div class="post-content">
       <h1 id="现象">现象</h1>
 
@@ -259,11 +241,17 @@ A服务连接超时设置为500ms
 <ul>
 <li>src不断的tcp连接dst（此处dst特指lvs vip）的8000端口</li>
 <li>每次设置递增源端口</li>
-<li>设置3s超时</li>
-</ul>
 
-<pre><code>for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done
-</code></pre>
+<li><p>设置3s超时</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done</pre></td></tr></table>
+</div>
+</div></li>
+</ul>
 
 <h3 id="src表现如下">src表现如下</h3>
 
@@ -297,12 +285,18 @@ A服务连接超时设置为500ms
 但我们线上的syn队列的长度是4096，且打开了syn_cookie，理论上，syn半连的数量是足够用的。<sup>[1]</sup><br />
 而且重要是的，<strong>syn,ack是tcp/ip协议栈回复的</strong>。<br />
 既然syn队列不是问题，而与syn队列最相关的就是accept队列，所以查看accpet队列情况</p>
-
-<pre><code>$ netstat -s | grep -i listen
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ netstat -s | grep -i listen
     80694004 times the listen queue of a socket overflowed
-    88476387 SYNs to LISTEN sockets ignored
-</code></pre>
-
+    88476387 SYNs to LISTEN sockets ignored</pre></td></tr></table>
+</div>
+</div>
 <p>上述返回结果，inrouter00这台机器的overflowed数量明显比其它节点的结果要大（大一个数量级）。<br />
 而且，在执行测试命令后，overflowed的数量增长明显。<br />
 syn队列与accept队列的关系如下</p>
@@ -371,38 +365,23 @@ syn队列与accept队列的关系如下</p>
     </div>
 
     
-    
-
-    
-    
-
-    <footer class="post-footer">
+<footer class="post-footer">
       <div class="post-tags">
-          
           <a href="/tags/nginx/">nginx</a>
-          
           <a href="/tags/lvs/">lvs</a>
-          
           <a href="/tags/tcp/">tcp</a>
-          
           <a href="/tags/syn_cookie/">syn_cookie</a>
-          
           <a href="/tags/listen_overflow/">listen_overflow</a>
-          
-        </div>
-
-      
+          </div>
       <nav class="post-nav">
-        
-          <a class="prev" href="/post/organizing-golang-projects-and-dependencies/">
+        <a class="prev" href="/post/organizing-golang-projects-and-dependencies/">
             <i class="iconfont icon-left"></i>
             <span class="prev-text nav-default">organizing golang projects and dependencies</span>
             <span class="prev-text nav-mobile">上一篇</span>
           </a>
-        
-          <a class="next" href="/post/fs-size-eta/">
+        <a class="next" href="/post/fs-size-eta/">
             <span class="next-text nav-default">动态监控磁盘分区使用ETA</span>
-            <span class="prev-text nav-mobile">下一篇</span>
+            <span class="next-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>
       </nav>
@@ -411,10 +390,10 @@ syn队列与accept队列的关系如下</p>
         </div>
         
   
-
   
 
   
+
       </div>
     </main>
 
@@ -439,8 +418,7 @@ syn队列与accept队列的关系如下</p>
 
   <span class="copyright-year">
     &copy; 
-    
-      2014 - 
+    2014 - 
     2019
     <span class="heart">
       <i class="iconfont icon-heart"></i>
@@ -454,22 +432,12 @@ syn队列与accept队列的关系如下</p>
       <i class="iconfont icon-up"></i>
     </div>
   </div>
-  
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
   <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
-<script type="text/javascript" src="/dist/even.min.js?v=3.0.0"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
 
-<script id="baidu_analytics">
-  var _hmt = _hmt || [];
-  (function() {
-    if (window.location.hostname === 'localhost') return;
-    var hm = document.createElement("script"); hm.async = true;
-    hm.src = "https://hm.baidu.com/hm.js?a0d9b192e8616a9fff384dfaa6e34871";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
-</script>
+
 
 
 

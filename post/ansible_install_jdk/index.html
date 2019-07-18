@@ -16,24 +16,20 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="n4mine" />
-  <meta name="description" content="JDK这东西，简单来说就是一个包，主要生效的还是环境变量。
+<meta name="author" content="n4mine" /><meta name="description" content="JDK这东西，简单来说就是一个包，主要生效的还是环境变量。
 直接上实现
-目录结构 $ tree . ├── files │ └── jdk1.6-centos6.tar.gz └── main.yaml  简单的一个说明而已，没有必要搞什么最佳实践了。^_^
-" />
-
-  <meta name="keywords" content="n4mine, blog" />
+目录结构 1 2 3 4 5  $ tree . ├── files │ └── jdk1.6-centos6.tar.gz └── main.yaml   简单的一个说明而已，没有必要搞什么最佳实践了。^_^
+" /><meta name="keywords" content="n4mine, blog" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.54.0" />
+<meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/ansible_install_jdk/" />
-
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -41,15 +37,8 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-
-
-
-
-
-<link href="/dist/even.min.css?v=3.0.0" rel="stylesheet">
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
 <link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
-
-
 
 
 <meta property="og:title" content="ansible安装JDK" />
@@ -57,6 +46,14 @@
 直接上实现
 
 目录结构
+
+
+1
+2
+3
+4
+5
+
 
 $ tree
 .
@@ -77,6 +74,14 @@ $ tree
 
 目录结构
 
+
+1
+2
+3
+4
+5
+
+
 $ tree
 .
 ├── files
@@ -89,7 +94,7 @@ $ tree
 
 <meta itemprop="datePublished" content="2014-10-18T20:53:49&#43;00:00" />
 <meta itemprop="dateModified" content="2014-10-18T20:53:49&#43;00:00" />
-<meta itemprop="wordCount" content="306">
+<meta itemprop="wordCount" content="336">
 
 
 
@@ -100,6 +105,14 @@ $ tree
 直接上实现
 
 目录结构
+
+
+1
+2
+3
+4
+5
+
 
 $ tree
 .
@@ -180,21 +193,16 @@ $ tree
       <div class="post-meta">
         <span class="post-time"> 2014-10-18 </span>
         <div class="post-category">
-            
-              <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-            
-          </div>
-        <span class="more-meta"> 约 306 字 </span>
-        <span class="more-meta"> 预计阅读 1 分钟 </span>
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 336 字 </span>
+          <span class="more-meta"> 预计阅读 1 分钟 </span>
         
       </div>
     </header>
 
-    
-    
-<div class="post-toc" id="post-toc">
+    <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
-  
   <div class="post-toc-content">
     <nav id="TableOfContents">
 <ul>
@@ -207,52 +215,86 @@ $ tree
 </nav>
   </div>
 </div>
-
-    
     <div class="post-content">
       <p>JDK这东西，简单来说就是一个包，主要生效的还是环境变量。<br />
 直接上实现</p>
 
 <h2 id="目录结构">目录结构</h2>
-
-<pre><code>$ tree
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ tree
 .
 ├── files
 │   └── jdk1.6-centos6.tar.gz
-└── main.yaml
-</code></pre>
-
+└── main.yaml</pre></td></tr></table>
+</div>
+</div>
 <p>简单的一个说明而已，没有必要搞什么最佳实践了。^_^</p>
 
 <h2 id="main-yaml">main.yaml</h2>
-
-<pre><code>---
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">---
 - hosts: test_group
   sudo: yes
   sudo_user: root
   gather_facts: no
   vars:
-    src_file: 'files/jdk1.6-centos6.tar.gz'
+    src_file: &#39;files/jdk1.6-centos6.tar.gz&#39;
     dest_dir: /opt/soft/
   tasks:
   - name: copy and unzip
     unarchive: src={{src_file}} dest={{dest_dir}}
   - name: clear old env
-#    shell: /bin/sed -i '/JAVA_HOME/d' /etc/profile &amp;&amp; echo -e &quot;\nexport JAVA_HOME=/opt/soft/jdk\nexport PATH=\\$JAVA_HOME/bin:\\$PATH\nexport CLASSPATH=.:\\$JAVA_HOME/lib/tools.jar:\\$JAVA_HOME/lib/rt.jar&quot; &gt;&gt; /etc/profile
-    lineinfile: dest=/etc/profile regexp='JAVA_HOME' state=absent
+#    shell: /bin/sed -i &#39;/JAVA_HOME/d&#39; /etc/profile &amp;&amp; echo -e &#34;\nexport JAVA_HOME=/opt/soft/jdk\nexport PATH=\\$JAVA_HOME/bin:\\$PATH\nexport CLASSPATH=.:\\$JAVA_HOME/lib/tools.jar:\\$JAVA_HOME/lib/rt.jar&#34; &gt;&gt; /etc/profile
+    lineinfile: dest=/etc/profile regexp=&#39;JAVA_HOME&#39; state=absent
   - name: set env
     lineinfile:
       dest=/etc/profile
-      insertafter=&quot;{{item.position}}&quot;
-      line=&quot;{{item.value}}&quot;
+      insertafter=&#34;{{item.position}}&#34;
+      line=&#34;{{item.value}}&#34;
       state=present
     with_items:
-    - {position: EOF, value: &quot;\n&quot;}
-    - {position: EOF, value: 'export JAVA_HOME=/opt/soft/jdk'}
-    - {position: EOF, value: 'export PATH=$JAVA_HOME/bin:$PATH'}
-    - {position: EOF, value: 'export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/rt.jar'}
-</code></pre>
-
+    - {position: EOF, value: &#34;\n&#34;}
+    - {position: EOF, value: &#39;export JAVA_HOME=/opt/soft/jdk&#39;}
+    - {position: EOF, value: &#39;export PATH=$JAVA_HOME/bin:$PATH&#39;}
+    - {position: EOF, value: &#39;export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/rt.jar&#39;}</pre></td></tr></table>
+</div>
+</div>
 <p>以上。</p>
 
 <ul>
@@ -266,30 +308,19 @@ $ tree
     </div>
 
     
-    
-
-    
-    
-
-    <footer class="post-footer">
+<footer class="post-footer">
       <div class="post-tags">
-          
           <a href="/tags/ansible/">ansible</a>
-          
-        </div>
-
-      
+          </div>
       <nav class="post-nav">
-        
-          <a class="prev" href="/post/nginx_route_by_upstream_status/">
+        <a class="prev" href="/post/nginx_route_by_upstream_status/">
             <i class="iconfont icon-left"></i>
             <span class="prev-text nav-default">nginx根据后端返回状态进行upstream</span>
             <span class="prev-text nav-mobile">上一篇</span>
           </a>
-        
-          <a class="next" href="/post/first/">
+        <a class="next" href="/post/first/">
             <span class="next-text nav-default">开篇流水</span>
-            <span class="prev-text nav-mobile">下一篇</span>
+            <span class="next-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>
       </nav>
@@ -298,10 +329,10 @@ $ tree
         </div>
         
   
-
   
 
   
+
       </div>
     </main>
 
@@ -326,8 +357,7 @@ $ tree
 
   <span class="copyright-year">
     &copy; 
-    
-      2014 - 
+    2014 - 
     2019
     <span class="heart">
       <i class="iconfont icon-heart"></i>
@@ -341,22 +371,12 @@ $ tree
       <i class="iconfont icon-up"></i>
     </div>
   </div>
-  
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
   <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
-<script type="text/javascript" src="/dist/even.min.js?v=3.0.0"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
 
-<script id="baidu_analytics">
-  var _hmt = _hmt || [];
-  (function() {
-    if (window.location.hostname === 'localhost') return;
-    var hm = document.createElement("script"); hm.async = true;
-    hm.src = "https://hm.baidu.com/hm.js?a0d9b192e8616a9fff384dfaa6e34871";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
-</script>
+
 
 
 
