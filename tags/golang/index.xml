@@ -5,7 +5,7 @@
     <link>https://n4mine.github.io/tags/golang/</link>
     <description>Recent content in golang on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
+    <language>zh-cn</language>
     <lastBuildDate>Tue, 27 Feb 2018 15:12:20 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
@@ -28,7 +28,7 @@
       <pubDate>Sat, 04 Nov 2017 10:23:25 +0000</pubDate>
       
       <guid>https://n4mine.github.io/post/get-golang-gc-info-by-pprof/</guid>
-      <description>背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s</description>
+      <description>背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &amp;quot;^# NumGC&amp;quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -</description>
     </item>
     
     <item>
