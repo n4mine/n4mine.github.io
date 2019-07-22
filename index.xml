@@ -6,7 +6,7 @@
     <description>Recent content on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 18 Jul 2019 15:37:11 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 22 Jul 2019 22:14:31 +0800</lastBuildDate>
     
         <atom:link href="https://n4mine.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -82,6 +82,82 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 </description>
+      
+    </item>
+    
+    <item>
+      <title>cacheserver - 内存TSDB的设计思想</title>
+      <link>https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/</link>
+      <pubDate>Mon, 22 Jul 2019 22:14:31 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/</guid>
+      
+        <description>&lt;h2 id=&#34;cacheserver是什么&#34;&gt;cacheserver是什么?&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库&lt;/li&gt;
+&lt;li&gt;其原理在以前的blog中有过描述, 见 &lt;a href=&#34;https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0&#34;&gt;Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;本文主要描述在设计 cacheserver 过程中的一些思考&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/cacheserver.png&#34; alt=&#34;cacheserver&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;核心架构&#34;&gt;核心架构&lt;/h2&gt;
+
+&lt;p&gt;如上图&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;instance: cacheserver的实例&lt;/li&gt;
+&lt;li&gt;shard: 一个 cacheserver instance 内的多组series chunks&lt;/li&gt;
+&lt;li&gt;chunks: chunk slice&lt;/li&gt;
+&lt;li&gt;chunk: 一段时间的(ts, value)数据&lt;/li&gt;
+&lt;li&gt;series: 一条监控曲线&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;下面依次介绍以上每个组件, 详细的内容仍可到 &lt;a href=&#34;https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0&#34;&gt;Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现&lt;/a&gt; 中查看。&lt;/p&gt;
+
+&lt;h3 id=&#34;instance&#34;&gt;instance&lt;/h3&gt;
+
+&lt;p&gt;instance 即 cacheserver 部署的实例。&lt;/p&gt;
+
+&lt;p&gt;集群还是分片？分片。&lt;/p&gt;
+
+&lt;h3 id=&#34;shard&#34;&gt;shard&lt;/h3&gt;
+
+&lt;p&gt;为什么需要 shard？分片锁降低锁冲突。&lt;/p&gt;
+
+&lt;h3 id=&#34;chunks-chunk&#34;&gt;chunks/chunk&lt;/h3&gt;
+
+&lt;p&gt;chunk 是真正存放 series 数据的结构。chunk 内存放 series 的 bit 流。
+chunks 只是 chunk 的 slice，使用 ringbuffer 技术，这样可以使用固定空间来存储多个 chunk。&lt;/p&gt;
+
+&lt;h2 id=&#34;设计思想&#34;&gt;设计思想&lt;/h2&gt;
+
+&lt;h3 id=&#34;为什么独立成一个服务-而不是嵌入到现有存储中&#34;&gt;为什么独立成一个服务，而不是嵌入到现有存储中&lt;/h3&gt;
+
+&lt;p&gt;设计之初，cacheserver 的定位就是一个独立服务。
+这样它可以与&lt;code&gt;graph&lt;/code&gt;互相兜底。
+例如&lt;code&gt;graph&lt;/code&gt;挂掉了，仍可以调用cacheserver来给用户呈现最近的数据。而&lt;code&gt;graph&lt;/code&gt;本身就是cacheserver的主存。&lt;/p&gt;
+
+&lt;h3 id=&#34;为什么将数据放在内存中&#34;&gt;为什么将数据放在内存中&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;快&lt;/li&gt;
+&lt;li&gt;gorilla 论文实现的算法压缩比高(11:1)，存放热数据，内存已经足够&lt;/li&gt;
+&lt;li&gt;redis？据了解，&lt;code&gt;baidu&lt;/code&gt;内部的tsdb。热数据就是放在&lt;code&gt;redis&lt;/code&gt;中的。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;怎么解决-series-爆炸问题&#34;&gt;怎么解决 series 爆炸问题&lt;/h3&gt;
+
+&lt;p&gt;周期检测, 不活跃数据直接从内存中清除&lt;/p&gt;
+
+&lt;h3 id=&#34;怎么解决-series-identify&#34;&gt;怎么解决 series identify&lt;/h3&gt;
+
+&lt;p&gt;什么是&lt;code&gt;series identify&lt;/code&gt;, 即根据tags搜索对应的 series。
+cacheserver 不解决这个问题！这是索引要解决的问题, 本质上是一个搜索问题，不该在这里解决。
+cacheserver 中，每个series都是用户定义的，没有业务含义。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       
     </item>
     
@@ -1671,93 +1747,6 @@ map $white_ip_list $address_type {
 
 &lt;p&gt;可参照上一篇blog &lt;a href=&#34;http://n4mine.github.io/post/if_in_nginx/&#34;&gt;nginx使用if实现多重判断case一例&lt;/a&gt;&lt;br /&gt;
 设置一个flag，然后正则判断一下就OK了。&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>nginx使用if实现多重判断case一例</title>
-      <link>https://n4mine.github.io/post/if_in_nginx/</link>
-      <pubDate>Thu, 13 Nov 2014 17:53:55 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/if_in_nginx/</guid>
-      
-        <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&amp;hellip;，有则upstream到指定backend&lt;/li&gt;
-&lt;li&gt;根据来源IP区分production环境和preview环境&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;问题&#34;&gt;问题&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;上面提到的参数可能重复出现&lt;/li&gt;
-&lt;li&gt;if不支持复杂的逻辑运算&lt;/li&gt;
-&lt;li&gt;if is evil&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;方案&#34;&gt;方案&lt;/h1&gt;
-
-&lt;p&gt;先写最终实现，然后解释&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;set code &amp;quot;&amp;quot;;
-if ( $args ~ &amp;quot;code=[^&amp;amp;]*.*code=[^&amp;amp;]*&amp;quot; ) {
-    set $code &amp;quot;${code}Y&amp;quot;;
-}
-
-if ( $args ~ &amp;quot;code=OVERSEA[^&amp;amp;]*&amp;quot; )  {
-    set $code &amp;quot;${code}X&amp;quot;;
-}
-
-if ( $code ~ &amp;quot;^X$&amp;quot; ) {
-    proxy_pass http://oversea;
-}
-
-if ( $address_type ~ &amp;quot;lan&amp;quot; ) {
-    proxy_pass http://lan;
-}
-
-proxy_pass http://wan;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;nginx的set指令和if指令都工作在rewrite阶段。&lt;code&gt;rewrite阶段的指令会按照config文件中的书写顺序依次执行&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;先从最简单实现开始，最开始想到的是如下写法&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;if ( $args ~ &amp;quot;code=OVERSEA[^&amp;amp;]*&amp;quot; )  {
-    proxy_pass http://oversea;
-}
-
-if ( $address_type ~ &amp;quot;lan&amp;quot; ) {
-    proxy_pass http://lan;
-}
-
-proxy_pass http://wan;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;但会带来一个问题，如果请求参数有两个CODE，不管是代码写土了还是恶意，这种行为都是可能出现的。&lt;br /&gt;
-如何解析args就成了问题。&lt;br /&gt;
-据我实验&lt;code&gt;$arg_xxx&lt;/code&gt;这种方式取到的值的应该是在参数列表中xxx第一次出现时的value。&lt;/p&gt;
-
-&lt;p&gt;为防止多个CODE参数出现时直接打流量到oversea，写出了上述&lt;code&gt;最终实现&lt;/code&gt;。逻辑很简单，相信看一遍就明白了。&lt;/p&gt;
-
-&lt;p&gt;为什么写成这个鸟德行。&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;nginx的if不支持逻辑运算&lt;/li&gt;
-&lt;li&gt;如果恶意的带上CODE=OVERSEA，可能会增加到oversea backend的非必要流量（该后端在国外，也会影响响应时间）。这里的逻辑是带2个及以上数量CODE参数的流量直接打到本国IDC&lt;/li&gt;
-&lt;li&gt;$address_type的判断是很武断的，应该与$CODE变量一起参与判断&lt;/li&gt;
-&lt;li&gt;如何判断address_type，会另起一篇文章&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;关于if is evil，可看下如下两篇文章&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://wiki.nginx.org/IfIsEvil&#34;&gt;If Is Evil&lt;/a&gt;&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://forum.nginx.org/read.php?2,174917,174917&#34;&gt;How nginx’s “location if” works&lt;/a&gt;&lt;br /&gt;&lt;/li&gt;
-&lt;/ul&gt;
 
 &lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       

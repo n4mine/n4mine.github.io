@@ -6,10 +6,25 @@
     <description>Recent content in Posts on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 18 Jul 2019 15:37:11 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 22 Jul 2019 22:14:31 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>cacheserver - 内存TSDB的设计思想</title>
+      <link>https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/</link>
+      <pubDate>Mon, 22 Jul 2019 22:14:31 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/</guid>
+      <description>&lt;h2 id=&#34;cacheserver是什么&#34;&gt;cacheserver是什么?&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库&lt;/li&gt;
+&lt;li&gt;其原理在以前的blog中有过描述, 见 &lt;a href=&#34;https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0&#34;&gt;Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;本文主要描述在设计 cacheserver 过程中的一些思考&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>浅谈监控层次模型</title>
@@ -302,36 +317,6 @@ echo $res
 &lt;li&gt;上面提到的参数可能重复出现&lt;/li&gt;
 &lt;li&gt;if不支持复杂的逻辑运算&lt;/li&gt;
 &lt;li&gt;if is evil&lt;/li&gt;
-&lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>nginx根据后端返回状态进行upstream</title>
-      <link>https://n4mine.github.io/post/nginx_route_by_upstream_status/</link>
-      <pubDate>Tue, 11 Nov 2014 11:08:42 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/nginx_route_by_upstream_status/</guid>
-      <description>&lt;h1 id=&#34;需求&#34;&gt;需求&lt;/h1&gt;
-
-&lt;p&gt;某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br /&gt;
-由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。&lt;/p&gt;
-
-&lt;h1 id=&#34;问题&#34;&gt;问题&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个&lt;/li&gt;
-&lt;li&gt;nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;解决方案&#34;&gt;解决方案&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;nginx + lua + subrequest&lt;/li&gt;
-&lt;li&gt;要在content阶段完成&lt;/li&gt;
-&lt;li&gt;需在rewrite阶段做一点处理&lt;/li&gt;
-&lt;li&gt;GET和POST要区分对待&lt;/li&gt;
-&lt;li&gt;POST的body和GET的args、cookie等处理&lt;/li&gt;
-&lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
