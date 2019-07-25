@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>n4mine&#39;s blog</title>
+  <title>技术 · n4mine&#39;s blog</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -34,8 +34,8 @@
 <meta name="generator" content="Hugo 0.55.6" />
 
 
-<link rel="canonical" href="https://n4mine.github.io/" />
-<link href="%7balternate%20%7bRSS%20application/rss&#43;xml%20%20index%20alternate%20%20false%20false%20true%20false%20false%200%7d%20/index.xml%20https://n4mine.github.io/index.xml%7d" rel="alternate" type="application/rss+xml" title="n4mine&#39;s blog" />
+<link rel="canonical" href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/" />
+<link href="%7balternate%20%7bRSS%20application/rss&#43;xml%20%20index%20alternate%20%20false%20false%20true%20false%20false%200%7d%20/categories/%E6%8A%80%E6%9C%AF/index.xml%20https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/index.xml%7d" rel="alternate" type="application/rss+xml" title="n4mine&#39;s blog" />
 
 
 
@@ -57,18 +57,18 @@
 
 
 
-<meta property="og:title" content="n4mine&#39;s blog" />
+<meta property="og:title" content="技术" />
 <meta property="og:description" content="n4mine&#39;s blog" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://n4mine.github.io/" />
+<meta property="og:url" content="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/" />
 
 <meta property="og:updated_time" content="2019-07-25T17:44:41&#43;08:00"/>
 
-<meta itemprop="name" content="n4mine&#39;s blog">
+<meta itemprop="name" content="技术">
 <meta itemprop="description" content="n4mine&#39;s blog">
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="n4mine&#39;s blog"/>
+<meta name="twitter:title" content="技术"/>
 <meta name="twitter:description" content="n4mine&#39;s blog"/>
 
 <!--[if lte IE 9]>
@@ -236,7 +236,7 @@ if (!doNotTrack) {
   <ul id="menu" class="menu">
     
     
-        <li class="menu-item active">
+        <li class="menu-item">
         
           
           
@@ -306,224 +306,26 @@ if (!doNotTrack) {
       <div class="content-wrapper">
         <div id="content" class="content container">
           
-  <section id="posts" class="posts">
-    
-    
-    
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/get-golang-gc-info-by-pprof/">通过pprof获取golang gc信息</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-11-04" class="post-time">
-        2017-11-04
+
+<section id="archive" class="archive">
+  
+
+  
+    <div class="archive-post">
+      <time datetime="2014-10-18" class="archive-post-time">
+        2014-10-18
       </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
+      <span class="archive-post-title">
+        <a href="/post/ansible_install_jdk/" class="archive-post-link">
+          ansible安装JDK
+        </a>
+      </span>
     </div>
-  </header>
   
-  <div class="post-content">
-    
-    <div class="post-summary">
-      背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed 's/#/\n#/g' | grep &quot;^# NumGC&quot; | awk '{print $NF}') NumGC=$[ ${_NumGC} -
-    </div>
-    <div class="read-more">
-      <a href="/post/get-golang-gc-info-by-pprof/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
+</section>
 
-    
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/autologin-with-iterm2-coprocess/">使用iterm2的coprocess完成自动登录</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-09-25" class="post-time">
-        2017-09-25
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="背景">背景</h1>
 
-<p>日常工作中，经常需要通过跳板机登录线上机器。<br />
-而为了安全起见，系统部的同学又启用了otp，动态生成code<br />
-给经常登录线上机器的使用者，带来了很大不便</p>
 
-<p>作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。<br />
-什么是iterm2的coprocess，可参见其官方说明 <a href="https://www.iterm2.com/documentation-coprocesses.html">coprocesses</a></p>
-    </div>
-    <div class="read-more">
-      <a href="/post/autologin-with-iterm2-coprocess/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-    
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/organizing-golang-projects-and-dependencies/">organizing golang projects and dependencies</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-01-15" class="post-time">
-        2017-01-15
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="背景">背景</h1>
-
-<p>golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一<br />
-而对于一个公司内部项目来讲, 主要的需求有以下几点</p>
-
-<ol>
-<li>方便的依赖包版本管理</li>
-<li>方便协同开发</li>
-<li>尽可能不依赖其编译所在环境</li>
-<li>除基础包之外, 第三方包尽可能的自包含</li>
-</ol>
-
-<p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/organizing-golang-projects-and-dependencies/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-    
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/random-connection-timeout/">调用服务端随机性连接超时case一例</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2016-10-05" class="post-time">
-        2016-10-05
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="现象">现象</h1>
-
-<p>业务同学反馈，A服务调用B服务有连接超时</p>
-
-<h1 id="环境">环境</h1>
-
-<ul>
-<li>src：A服务, 以下均用src代指<br /></li>
-<li>dst：B服务, 以下均用dst代指<br /></li>
-<li>B服务通过lvs + nginx的方式对外服务<br /></li>
-<li>A服务连接超时设置为500ms<br /></li>
-</ul>
-    </div>
-    <div class="read-more">
-      <a href="/post/random-connection-timeout/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-    
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/fs-size-eta/">动态监控磁盘分区使用ETA</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2016-01-22" class="post-time">
-        2016-01-22
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h2 id="名词解释">名词解释</h2>
-
-<p>eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。<br />
-拿到运维系统中，含义即为某个分区预计还有多长时间被打满。（暂定为此名字，还没想到其他贴切的词）</p>
-
-<h2 id="背景">背景</h2>
-
-<p>为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？<br />
-原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。<br />
-而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。<br />
-数学上有很多求平均数的方法<sup>[1]</sup>，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/fs-size-eta/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-    
-  </section>
-
-  
-  
 
 
 
@@ -546,23 +348,15 @@ if (!doNotTrack) {
     <ul>
       
       <li >
-        <a href="/">1</a>
+        <a href="/categories/%E6%8A%80%E6%9C%AF/">1</a>
       </li>
       
       <li >
-        <a href="/page/2/">2</a>
+        <a href="/categories/%E6%8A%80%E6%9C%AF/page/2/">2</a>
       </li>
       
       <li  class="active" >
-        <a href="/page/3/">3</a>
-      </li>
-      
-      <li >
-        <a href="/page/4/">4</a>
-      </li>
-      
-      <li >
-        <a href="/page/5/">5</a>
+        <a href="/categories/%E6%8A%80%E6%9C%AF/page/3/">3</a>
       </li>
       
     </ul>

@@ -6,7 +6,7 @@
     <description>Recent content on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 22 Jul 2019 22:14:31 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jul 2019 17:44:41 +0800</lastBuildDate>
     
         <atom:link href="https://n4mine.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -82,6 +82,133 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 </description>
+      
+    </item>
+    
+    <item>
+      <title>LTTB 降采样算法初试</title>
+      <link>https://n4mine.github.io/post/lttb-downsample/</link>
+      <pubDate>Thu, 25 Jul 2019 17:44:41 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/lttb-downsample/</guid>
+      
+        <description>&lt;h2 id=&#34;降采样&#34;&gt;降采样&lt;/h2&gt;
+
+&lt;p&gt;什么是降采样？在时序数据应用场景中，降采样通常是将&lt;code&gt;原始&lt;/code&gt;的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。&lt;/p&gt;
+
+&lt;p&gt;降采样带来的好处：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。&lt;/li&gt;
+&lt;li&gt;减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;降采样算法&#34;&gt;降采样算法&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;求平均&lt;/code&gt;是一个常见的降采算法，例如我写的一个 &lt;a href=&#34;https://github.com/devtoolkits/downsample&#34;&gt;demo&lt;/a&gt;，就是将 N 个点求平均，得到 1 个新的数据点的实现。&lt;/p&gt;
+
+&lt;p&gt;例如原始数据(周期为 10s)为&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[]Point{
+    Point{10, 0.5},
+    Point{20, 0.3},
+    Point{30, 0.4},
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;降采后(周期为 15s)的结果为&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[]Point{
+    Point{10, 0.4},
+    Point{25, 0.4},
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;题外话：为什么上述实现的时间戳是向过去时间对齐的？
+主要原因是便于理解，例如当前时间是 &lt;code&gt;21:28:35&lt;/code&gt;，在周期是 &lt;code&gt;30s&lt;/code&gt; 的情况下，向过去时间对齐的结果是 &lt;code&gt;21:28:30&lt;/code&gt;，而向未来时间对齐，结果则是 &lt;code&gt;21:29:00&lt;/code&gt;，&lt;code&gt;21:29:00&lt;/code&gt; 是未来的时间，很难向用户解释。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;那么&lt;code&gt;求平均&lt;/code&gt;降采算法的问题是什么？我想放一张图会很直观(&lt;code&gt;以下数据均来自线上生产环境&lt;/code&gt;)&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_avg_60s.png&#34; alt=&#34;origin vs avg 60s&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;上图中，将原始曲线的 6 个点，降采为 1 个点。&lt;/p&gt;
+
+&lt;p&gt;红色是原始曲线，绿色是经过平均降采算法后的曲线。&lt;/p&gt;
+
+&lt;p&gt;可以看出，细节&lt;code&gt;全部丢失&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;那么，有没有一种算法，可以兼顾&lt;code&gt;保留细节&lt;/code&gt;与&lt;code&gt;达到降采目的&lt;/code&gt;的效果呢？&lt;/p&gt;
+
+&lt;h2 id=&#34;lttb&#34;&gt;LTTB&lt;/h2&gt;
+
+&lt;p&gt;LTTB(Largest Triangle Three Buckets) &lt;a href=&#34;https://skemman.is/bitstream/1946/15343/3/SS_MSthesis.pdf&#34;&gt;论文链接&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;其实一句话就可以概括这个算法的功能：&lt;strong&gt;使用较少的数据点，保持原始曲线的&lt;code&gt;视觉特性&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;那么效果是否如此，看下图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_60s.png&#34; alt=&#34;origin vs lttb 60s&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;上图中，红色是原始曲线，绿色则是经过 LTTB 算法降采后的曲线。&lt;/p&gt;
+
+&lt;p&gt;可以看出，细节&lt;code&gt;得以保留&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;到这里，效果就已经验证。这个算法是满足我们的需求的。&lt;/p&gt;
+
+&lt;p&gt;那么在追求更高压缩比的场景下，LTTB 的表现又如何？&lt;/p&gt;
+
+&lt;h2 id=&#34;lttb-在不同-threshold-下的表现&#34;&gt;LTTB 在不同 threshold 下的表现&lt;/h2&gt;
+
+&lt;h3 id=&#34;原始-10s-降采至-60s&#34;&gt;原始 10s -&amp;gt; 降采至 60s&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_60s.png&#34; alt=&#34;origin vs lttb 60s&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;压缩比 6:1&lt;/li&gt;
+&lt;li&gt;绝大部分&lt;code&gt;细节&lt;/code&gt;均得以保留&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;原始-10s-降采至-90s&#34;&gt;原始 10s -&amp;gt; 降采至 90s&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_90s.png&#34; alt=&#34;origin vs lttb 90s&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;压缩比 9:1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;原始-10s-降采至-180s&#34;&gt;原始 10s -&amp;gt; 降采至 180s&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_180s.png&#34; alt=&#34;origin vs lttb 180s&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;压缩比 18:1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;原始-10s-降采至-300s&#34;&gt;原始 10s -&amp;gt; 降采至 300s&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_300s.png&#34; alt=&#34;origin vs lttb 300s&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;压缩比 30:1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在降采至 300s时，虽然很多细节都已丢失。但这时候的&lt;code&gt;平均&lt;/code&gt;降采算法又是什么样的？&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_avg_300s.png&#34; alt=&#34;origin vs avg 300s&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;已经完全看不出原来曲线的样子，只能大概的看出一个&lt;code&gt;趋势&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;本文没有什么高深的内容，只是从一个用户的角度，简单的考察一下 LTTB 这个算法，在不同场景下的表现。&lt;/p&gt;
+
+&lt;p&gt;总体来说是可以作为生产环境下的降采算法的，比&lt;code&gt;平均&lt;/code&gt;降采算法要优秀得多。&lt;/p&gt;
+
+&lt;p&gt;附: 相关代码均已放在 &lt;a href=&#34;https://github.com/n4mine/lttb-practice&#34;&gt;github&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       
     </item>
     
@@ -1666,87 +1793,6 @@ messages里面没什么有用的信息，cron的log中有如下条目&lt;br /&gt
 &lt;/ul&gt;
 
 &lt;p&gt;BTW: 这篇水文主要是测试hexo ^_^&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>nginx通过geo实现production/preview环境分离，限速/非限速IP分离</title>
-      <link>https://n4mine.github.io/post/nginx_geo/</link>
-      <pubDate>Thu, 13 Nov 2014 20:14:06 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/nginx_geo/</guid>
-      
-        <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;根据来源IP区分production/preview环境&lt;/li&gt;
-&lt;li&gt;根据来源IP区分限速/非限速&lt;/li&gt;
-&lt;li&gt;结合上面两者&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;geo, map&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;不多说，上实现，具体看注释&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# ip address classfiy detail:
-# ^1 limit
-# ^0 unlimit
-# lan$ preview
-geo $white_ip_list {
-    default            1;
-
-    127.0.0.1          0;
-    10.0.0.0/8         0;
-    192.168.0.0/16     0;
-
-    1.2.3.4            0;
-    2.3.4.5            0;
-
-    10.20.30.0/24      0lan;
-    20.30.40.50        0lan;
-}
-
-# map for limit zone
-map $white_ip_list $limit_ip_list {
-    ~^1       $binary_remote_addr;
-    ~^0       &amp;quot;&amp;quot;;
-}
-
-limit_req_zone $limit_ip_list zone=limit_yr_sister_ip:500m rate=9999r/s;
-
-# map for preview
-map $white_ip_list $address_type {
-    default    wan;
-    ~lan$      lan;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h1 id=&#34;啰嗦一下&#34;&gt;啰嗦一下&lt;/h1&gt;
-
-&lt;p&gt;其实一切都写在注释里了&lt;br /&gt;
-最初实现时是很长一坨的正则判断remote_addr是否是指定地址，然后做production/preview的区分。&lt;br /&gt;
-而limit/unlimited的实现则使用geo和map。&lt;br /&gt;
-后来我把它们结合到了一起，最后使用正则来判断其属性归属。&lt;/p&gt;
-
-&lt;h1 id=&#34;使用&#34;&gt;使用&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;limit调用&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;limit_req zone=limit_yr_sister burst=5 nodelay;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;production/preview分离&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;可参照上一篇blog &lt;a href=&#34;http://n4mine.github.io/post/if_in_nginx/&#34;&gt;nginx使用if实现多重判断case一例&lt;/a&gt;&lt;br /&gt;
-设置一个flag，然后正则判断一下就OK了。&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       

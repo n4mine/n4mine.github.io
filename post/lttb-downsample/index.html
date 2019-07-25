@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>n4mine&#39;s blog</title>
+  <title>LTTB 降采样算法初试 - n4mine&#39;s blog</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -23,8 +23,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="n4mine&#39;s blog" />
-  <meta name="keywords" content="n4mine, blog" />
+  <meta name="description" content="降采样 什么是降采样？在时序数据应用场景中，降采样通常是将原始的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。
+降采样带来的好处：
+ 降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。 减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。 " />
+<meta name="keywords" content="lttb, 降采样, 时序数据" />
+
 
 
 
@@ -34,8 +37,7 @@
 <meta name="generator" content="Hugo 0.55.6" />
 
 
-<link rel="canonical" href="https://n4mine.github.io/" />
-<link href="%7balternate%20%7bRSS%20application/rss&#43;xml%20%20index%20alternate%20%20false%20false%20true%20false%20false%200%7d%20/index.xml%20https://n4mine.github.io/index.xml%7d" rel="alternate" type="application/rss+xml" title="n4mine&#39;s blog" />
+<link rel="canonical" href="https://n4mine.github.io/post/lttb-downsample/" />
 
 
 
@@ -57,19 +59,54 @@
 
 
 
-<meta property="og:title" content="n4mine&#39;s blog" />
-<meta property="og:description" content="n4mine&#39;s blog" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://n4mine.github.io/" />
+<meta property="og:title" content="LTTB 降采样算法初试" />
+<meta property="og:description" content="降采样
 
-<meta property="og:updated_time" content="2019-07-25T17:44:41&#43;08:00"/>
+什么是降采样？在时序数据应用场景中，降采样通常是将原始的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。
 
-<meta itemprop="name" content="n4mine&#39;s blog">
-<meta itemprop="description" content="n4mine&#39;s blog">
+降采样带来的好处：
 
+
+降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。
+减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://n4mine.github.io/post/lttb-downsample/" />
+<meta property="article:published_time" content="2019-07-25T17:44:41&#43;08:00"/>
+<meta property="article:modified_time" content="2019-07-25T17:44:41&#43;08:00"/>
+
+<meta itemprop="name" content="LTTB 降采样算法初试">
+<meta itemprop="description" content="降采样
+
+什么是降采样？在时序数据应用场景中，降采样通常是将原始的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。
+
+降采样带来的好处：
+
+
+降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。
+减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。
+">
+
+
+<meta itemprop="datePublished" content="2019-07-25T17:44:41&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-25T17:44:41&#43;08:00" />
+<meta itemprop="wordCount" content="905">
+
+
+
+<meta itemprop="keywords" content="技术,监控系统,降采样," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="n4mine&#39;s blog"/>
-<meta name="twitter:description" content="n4mine&#39;s blog"/>
+<meta name="twitter:title" content="LTTB 降采样算法初试"/>
+<meta name="twitter:description" content="降采样
+
+什么是降采样？在时序数据应用场景中，降采样通常是将原始的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。
+
+降采样带来的好处：
+
+
+降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。
+减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。
+"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -236,7 +273,7 @@ if (!doNotTrack) {
   <ul id="menu" class="menu">
     
     
-        <li class="menu-item active">
+        <li class="menu-item">
         
           
           
@@ -305,275 +342,235 @@ if (!doNotTrack) {
     <main id="main" class="main bg-llight">
       <div class="content-wrapper">
         <div id="content" class="content container">
-          
-  <section id="posts" class="posts">
+          <article class="post bg-white">
     
-    
-    
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
+    <header class="post-header">
+      <h1 class="post-title">LTTB 降采样算法初试</h1>
       
-      <a class="post-link" href="/post/get-golang-gc-info-by-pprof/">通过pprof获取golang gc信息</a>
-    </h1>
+      <div class="post-meta">
+        <time datetime="2019-07-25" class="post-time">
+          2019-07-25
+        </time>
+        <div class="post-category">
+            <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            
+          </div>
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
     
-    <div class="post-meta">
-      <time datetime="2017-11-04" class="post-time">
-        2017-11-04
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
     
-    <div class="post-summary">
-      背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed 's/#/\n#/g' | grep &quot;^# NumGC&quot; | awk '{print $NF}') NumGC=$[ ${_NumGC} -
-    </div>
-    <div class="read-more">
-      <a href="/post/get-golang-gc-info-by-pprof/" class="read-more-link">阅读全文</a>
-    </div>
-    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#降采样">降采样</a></li>
+<li><a href="#降采样算法">降采样算法</a></li>
+<li><a href="#lttb">LTTB</a></li>
+<li><a href="#lttb-在不同-threshold-下的表现">LTTB 在不同 threshold 下的表现</a>
+<ul>
+<li><a href="#原始-10s-降采至-60s">原始 10s -&gt; 降采至 60s</a></li>
+<li><a href="#原始-10s-降采至-90s">原始 10s -&gt; 降采至 90s</a></li>
+<li><a href="#原始-10s-降采至-180s">原始 10s -&gt; 降采至 180s</a></li>
+<li><a href="#原始-10s-降采至-300s">原始 10s -&gt; 降采至 300s</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
   </div>
-</article>
+</div>
 
     
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/autologin-with-iterm2-coprocess/">使用iterm2的coprocess完成自动登录</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-09-25" class="post-time">
-        2017-09-25
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="背景">背景</h1>
+    <div class="post-content">
+      <h2 id="降采样">降采样</h2>
 
-<p>日常工作中，经常需要通过跳板机登录线上机器。<br />
-而为了安全起见，系统部的同学又启用了otp，动态生成code<br />
-给经常登录线上机器的使用者，带来了很大不便</p>
+<p>什么是降采样？在时序数据应用场景中，降采样通常是将<code>原始</code>的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。</p>
 
-<p>作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。<br />
-什么是iterm2的coprocess，可参见其官方说明 <a href="https://www.iterm2.com/documentation-coprocesses.html">coprocesses</a></p>
-    </div>
-    <div class="read-more">
-      <a href="/post/autologin-with-iterm2-coprocess/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-    
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/organizing-golang-projects-and-dependencies/">organizing golang projects and dependencies</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-01-15" class="post-time">
-        2017-01-15
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="背景">背景</h1>
-
-<p>golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一<br />
-而对于一个公司内部项目来讲, 主要的需求有以下几点</p>
+<p>降采样带来的好处：</p>
 
 <ol>
-<li>方便的依赖包版本管理</li>
-<li>方便协同开发</li>
-<li>尽可能不依赖其编译所在环境</li>
-<li>除基础包之外, 第三方包尽可能的自包含</li>
+<li>降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。</li>
+<li>减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。</li>
 </ol>
 
-<p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/organizing-golang-projects-and-dependencies/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
+<h2 id="降采样算法">降采样算法</h2>
 
-    
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/random-connection-timeout/">调用服务端随机性连接超时case一例</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2016-10-05" class="post-time">
-        2016-10-05
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="现象">现象</h1>
+<p><code>求平均</code>是一个常见的降采算法，例如我写的一个 <a href="https://github.com/devtoolkits/downsample">demo</a>，就是将 N 个点求平均，得到 1 个新的数据点的实现。</p>
 
-<p>业务同学反馈，A服务调用B服务有连接超时</p>
+<p>例如原始数据(周期为 10s)为</p>
 
-<h1 id="环境">环境</h1>
+<pre><code>[]Point{
+    Point{10, 0.5},
+    Point{20, 0.3},
+    Point{30, 0.4},
+}
+</code></pre>
+
+<p>降采后(周期为 15s)的结果为</p>
+
+<pre><code>[]Point{
+    Point{10, 0.4},
+    Point{25, 0.4},
+}
+</code></pre>
+
+<blockquote>
+<p>题外话：为什么上述实现的时间戳是向过去时间对齐的？
+主要原因是便于理解，例如当前时间是 <code>21:28:35</code>，在周期是 <code>30s</code> 的情况下，向过去时间对齐的结果是 <code>21:28:30</code>，而向未来时间对齐，结果则是 <code>21:29:00</code>，<code>21:29:00</code> 是未来的时间，很难向用户解释。</p>
+</blockquote>
+
+<p>那么<code>求平均</code>降采算法的问题是什么？我想放一张图会很直观(<code>以下数据均来自线上生产环境</code>)</p>
+
+<p><img src="/img/mix_origin_avg_60s.png" alt="origin vs avg 60s" /></p>
+
+<p>上图中，将原始曲线的 6 个点，降采为 1 个点。</p>
+
+<p>红色是原始曲线，绿色是经过平均降采算法后的曲线。</p>
+
+<p>可以看出，细节<code>全部丢失</code>。</p>
+
+<p>那么，有没有一种算法，可以兼顾<code>保留细节</code>与<code>达到降采目的</code>的效果呢？</p>
+
+<h2 id="lttb">LTTB</h2>
+
+<p>LTTB(Largest Triangle Three Buckets) <a href="https://skemman.is/bitstream/1946/15343/3/SS_MSthesis.pdf">论文链接</a></p>
+
+<p>其实一句话就可以概括这个算法的功能：<strong>使用较少的数据点，保持原始曲线的<code>视觉特性</code></strong></p>
+
+<p>那么效果是否如此，看下图：</p>
+
+<p><img src="/img/mix_origin_lttb_60s.png" alt="origin vs lttb 60s" /></p>
+
+<p>上图中，红色是原始曲线，绿色则是经过 LTTB 算法降采后的曲线。</p>
+
+<p>可以看出，细节<code>得以保留</code>。</p>
+
+<p>到这里，效果就已经验证。这个算法是满足我们的需求的。</p>
+
+<p>那么在追求更高压缩比的场景下，LTTB 的表现又如何？</p>
+
+<h2 id="lttb-在不同-threshold-下的表现">LTTB 在不同 threshold 下的表现</h2>
+
+<h3 id="原始-10s-降采至-60s">原始 10s -&gt; 降采至 60s</h3>
+
+<p><img src="/img/mix_origin_lttb_60s.png" alt="origin vs lttb 60s" /></p>
 
 <ul>
-<li>src：A服务, 以下均用src代指<br /></li>
-<li>dst：B服务, 以下均用dst代指<br /></li>
-<li>B服务通过lvs + nginx的方式对外服务<br /></li>
-<li>A服务连接超时设置为500ms<br /></li>
+<li>压缩比 6:1</li>
+<li>绝大部分<code>细节</code>均得以保留</li>
 </ul>
+
+<h3 id="原始-10s-降采至-90s">原始 10s -&gt; 降采至 90s</h3>
+
+<p><img src="/img/mix_origin_lttb_90s.png" alt="origin vs lttb 90s" /></p>
+
+<ul>
+<li>压缩比 9:1</li>
+</ul>
+
+<h3 id="原始-10s-降采至-180s">原始 10s -&gt; 降采至 180s</h3>
+
+<p><img src="/img/mix_origin_lttb_180s.png" alt="origin vs lttb 180s" /></p>
+
+<ul>
+<li>压缩比 18:1</li>
+</ul>
+
+<h3 id="原始-10s-降采至-300s">原始 10s -&gt; 降采至 300s</h3>
+
+<p><img src="/img/mix_origin_lttb_300s.png" alt="origin vs lttb 300s" /></p>
+
+<ul>
+<li>压缩比 30:1</li>
+</ul>
+
+<p>在降采至 300s时，虽然很多细节都已丢失。但这时候的<code>平均</code>降采算法又是什么样的？</p>
+
+<p><img src="/img/mix_origin_avg_300s.png" alt="origin vs avg 300s" /></p>
+
+<p>已经完全看不出原来曲线的样子，只能大概的看出一个<code>趋势</code>。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>本文没有什么高深的内容，只是从一个用户的角度，简单的考察一下 LTTB 这个算法，在不同场景下的表现。</p>
+
+<p>总体来说是可以作为生产环境下的降采算法的，比<code>平均</code>降采算法要优秀得多。</p>
+
+<p>附: 相关代码均已放在 <a href="https://github.com/n4mine/lttb-practice">github</a></p>
+
+<p><em>-EOF-</em></p>
     </div>
-    <div class="read-more">
-      <a href="/post/random-connection-timeout/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
 
     
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/fs-size-eta/">动态监控磁盘分区使用ETA</a>
-    </h1>
     
-    <div class="post-meta">
-      <time datetime="2016-01-22" class="post-time">
-        2016-01-22
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">n4mine</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2019-07-25
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://n4mine.github.io/tags/%E6%8A%80%E6%9C%AF/">技术</a>
+          <a href="https://n4mine.github.io/tags/%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F/">监控系统</a>
+          <a href="https://n4mine.github.io/tags/%E9%99%8D%E9%87%87%E6%A0%B7/">降采样</a>
           
         </div>
+
       
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h2 id="名词解释">名词解释</h2>
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/cacheserver-in-memory-tsdb-design/">
+            <span class="next-text nav-default">cacheserver - 内存TSDB的设计思想</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
 
-<p>eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。<br />
-拿到运维系统中，含义即为某个分区预计还有多长时间被打满。（暂定为此名字，还没想到其他贴切的词）</p>
-
-<h2 id="背景">背景</h2>
-
-<p>为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？<br />
-原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。<br />
-而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。<br />
-数学上有很多求平均数的方法<sup>[1]</sup>，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/fs-size-eta/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-    
-  </section>
-
-  
-  
-
-
-
-  
-  
-  
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
 
   
   
 
   
   
-
-  
-  
-
-  
-  
-  <nav class="pagination">
-    <ul>
-      
-      <li >
-        <a href="/">1</a>
-      </li>
-      
-      <li >
-        <a href="/page/2/">2</a>
-      </li>
-      
-      <li  class="active" >
-        <a href="/page/3/">3</a>
-      </li>
-      
-      <li >
-        <a href="/page/4/">4</a>
-      </li>
-      
-      <li >
-        <a href="/page/5/">5</a>
-      </li>
-      
-    </ul>
-  </nav>
-
-  
-  
-
-
-
-
 
         </div>
       </div>

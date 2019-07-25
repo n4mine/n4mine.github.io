@@ -6,10 +6,28 @@
     <description>Recent content in 技术 on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 22 Jul 2019 22:14:31 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jul 2019 17:44:41 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>LTTB 降采样算法初试</title>
+      <link>https://n4mine.github.io/post/lttb-downsample/</link>
+      <pubDate>Thu, 25 Jul 2019 17:44:41 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/lttb-downsample/</guid>
+      <description>&lt;h2 id=&#34;降采样&#34;&gt;降采样&lt;/h2&gt;
+
+&lt;p&gt;什么是降采样？在时序数据应用场景中，降采样通常是将&lt;code&gt;原始&lt;/code&gt;的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。&lt;/p&gt;
+
+&lt;p&gt;降采样带来的好处：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。&lt;/li&gt;
+&lt;li&gt;减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
     
     <item>
       <title>cacheserver - 内存TSDB的设计思想</title>
@@ -323,27 +341,6 @@ echo $res
 &lt;li&gt;POST的body和GET的args、cookie等处理&lt;/li&gt;
 &lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家&lt;/li&gt;
 &lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>ansible安装JDK</title>
-      <link>https://n4mine.github.io/post/ansible_install_jdk/</link>
-      <pubDate>Sat, 18 Oct 2014 20:53:49 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/ansible_install_jdk/</guid>
-      <description>&lt;p&gt;JDK这东西，简单来说就是一个包，主要生效的还是环境变量。&lt;br /&gt;
-直接上实现&lt;/p&gt;
-
-&lt;h2 id=&#34;目录结构&#34;&gt;目录结构&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;$ tree
-.
-├── files
-│   └── jdk1.6-centos6.tar.gz
-└── main.yaml
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;简单的一个说明而已，没有必要搞什么最佳实践了。^_^&lt;/p&gt;</description>
     </item>
     
   </channel>
