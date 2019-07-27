@@ -9,8 +9,57 @@
   </url>
   
   <url>
+    <loc>https://n4mine.github.io/post/understand-container-in-15-minutes/</loc>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://n4mine.github.io/categories/</loc>
-    <lastmod>2019-07-25T17:44:41+08:00</lastmod>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://n4mine.github.io/post/</loc>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://n4mine.github.io/tags/</loc>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://n4mine.github.io/tags/container/</loc>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://n4mine.github.io/tags/docker/</loc>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://n4mine.github.io/</loc>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://n4mine.github.io/tags/%E5%AE%B9%E5%99%A8/</loc>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/</loc>
+    <lastmod>2019-07-27T20:02:57+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -22,31 +71,7 @@
   </url>
   
   <url>
-    <loc>https://n4mine.github.io/post/</loc>
-    <lastmod>2019-07-25T17:44:41+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://n4mine.github.io/tags/</loc>
-    <lastmod>2019-07-25T17:44:41+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://n4mine.github.io/</loc>
-    <lastmod>2019-07-25T17:44:41+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://n4mine.github.io/tags/%E6%8A%80%E6%9C%AF/</loc>
-    <lastmod>2019-07-25T17:44:41+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/</loc>
     <lastmod>2019-07-25T17:44:41+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -253,13 +278,13 @@
   </url>
   
   <url>
-    <loc>https://n4mine.github.io/tags/%E7%94%9F%E6%B4%BB/</loc>
+    <loc>https://n4mine.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
     <lastmod>2015-12-31T22:43:29+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://n4mine.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <loc>https://n4mine.github.io/tags/%E7%94%9F%E6%B4%BB/</loc>
     <lastmod>2015-12-31T22:43:29+00:00</lastmod>
     <priority>0</priority>
   </url>

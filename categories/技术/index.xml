@@ -6,10 +6,29 @@
     <description>Recent content in 技术 on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 25 Jul 2019 17:44:41 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jul 2019 20:02:57 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>15 分钟了解容器</title>
+      <link>https://n4mine.github.io/post/understand-container-in-15-minutes/</link>
+      <pubDate>Sat, 27 Jul 2019 20:02:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/understand-container-in-15-minutes/</guid>
+      <description>&lt;h2 id=&#34;什么是容器&#34;&gt;什么是容器？&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/upgrade-vr.png&#34; alt=&#34;upgrade vr&#34; /&gt;
+&lt;center&gt;图片来自 &lt;a href=&#34;https://movie.douban.com/subject/27093707/&#34;&gt;Upgrade (2018)&lt;/a&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;所谓容器，其实就像上图:&lt;br /&gt;
+把 VR 玩家放在一个其以为是家的地方(&lt;code&gt;chroot&lt;/code&gt;)，创造目标所需环境(&lt;code&gt;namespaces&lt;/code&gt;)，再定期定量的提供水、食物(&lt;code&gt;cgroups&lt;/code&gt;)供其维续生命。&lt;/p&gt;
+
+&lt;p&gt;chroot、namespace、cgroups，就是容器的核心技术。&lt;/p&gt;
+
+&lt;p&gt;本文将使用几个有限的命令，用 15 分钟的时间，让读者直观的了解&lt;code&gt;容器&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>LTTB 降采样算法初试</title>
@@ -310,36 +329,6 @@ echo $res
 &lt;li&gt;上面提到的参数可能重复出现&lt;/li&gt;
 &lt;li&gt;if不支持复杂的逻辑运算&lt;/li&gt;
 &lt;li&gt;if is evil&lt;/li&gt;
-&lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>nginx根据后端返回状态进行upstream</title>
-      <link>https://n4mine.github.io/post/nginx_route_by_upstream_status/</link>
-      <pubDate>Tue, 11 Nov 2014 11:08:42 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/nginx_route_by_upstream_status/</guid>
-      <description>&lt;h1 id=&#34;需求&#34;&gt;需求&lt;/h1&gt;
-
-&lt;p&gt;某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br /&gt;
-由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。&lt;/p&gt;
-
-&lt;h1 id=&#34;问题&#34;&gt;问题&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个&lt;/li&gt;
-&lt;li&gt;nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;解决方案&#34;&gt;解决方案&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;nginx + lua + subrequest&lt;/li&gt;
-&lt;li&gt;要在content阶段完成&lt;/li&gt;
-&lt;li&gt;需在rewrite阶段做一点处理&lt;/li&gt;
-&lt;li&gt;GET和POST要区分对待&lt;/li&gt;
-&lt;li&gt;POST的body和GET的args、cookie等处理&lt;/li&gt;
-&lt;li&gt;nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     

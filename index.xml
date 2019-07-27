@@ -6,7 +6,7 @@
     <description>Recent content on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 25 Jul 2019 17:44:41 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jul 2019 20:02:57 +0800</lastBuildDate>
     
         <atom:link href="https://n4mine.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -82,6 +82,226 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 </description>
+      
+    </item>
+    
+    <item>
+      <title>15 分钟了解容器</title>
+      <link>https://n4mine.github.io/post/understand-container-in-15-minutes/</link>
+      <pubDate>Sat, 27 Jul 2019 20:02:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/understand-container-in-15-minutes/</guid>
+      
+        <description>&lt;h2 id=&#34;什么是容器&#34;&gt;什么是容器？&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/upgrade-vr.png&#34; alt=&#34;upgrade vr&#34; /&gt;
+&lt;center&gt;图片来自 &lt;a href=&#34;https://movie.douban.com/subject/27093707/&#34;&gt;Upgrade (2018)&lt;/a&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;所谓容器，其实就像上图:&lt;br /&gt;
+把 VR 玩家放在一个其以为是家的地方(&lt;code&gt;chroot&lt;/code&gt;)，创造目标所需环境(&lt;code&gt;namespaces&lt;/code&gt;)，再定期定量的提供水、食物(&lt;code&gt;cgroups&lt;/code&gt;)供其维续生命。&lt;/p&gt;
+
+&lt;p&gt;chroot、namespace、cgroups，就是容器的核心技术。&lt;/p&gt;
+
+&lt;p&gt;本文将使用几个有限的命令，用 15 分钟的时间，让读者直观的了解&lt;code&gt;容器&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h2 id=&#34;chroot&#34;&gt;chroot&lt;/h2&gt;
+
+&lt;p&gt;chroot 比较简单，不演示了。&lt;/p&gt;
+
+&lt;h2 id=&#34;namespaces&#34;&gt;namespaces&lt;/h2&gt;
+
+&lt;p&gt;namespaces，&lt;a href=&#34;https://en.wikipedia.org/wiki/Linux_namespaces&#34;&gt;wikipedia&lt;/a&gt; 定义: &lt;code&gt;Namespaces are a feature of the Linux kernel that partitions kernel resources such that one set of processes sees one set of resources while another set of processes sees a different set of resources.&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;文档见 &lt;a href=&#34;https://lwn.net/Articles/531114/&#34;&gt;namespaces&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;不同的&lt;code&gt;进程&lt;/code&gt;，可以处于不同的 namespaces 中，这样它们就被隔离了。&lt;/p&gt;
+
+&lt;p&gt;namespaces 从类型来讲，分为 6 种，分别用于不同场景。这 6 种 namespaces 分别是:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;宏定义&lt;/th&gt;
+&lt;th&gt;隔离内容&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Mount namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWNS&lt;/td&gt;
+&lt;td&gt;Mount points&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;UTS namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWUTS&lt;/td&gt;
+&lt;td&gt;Hostname and NIS domain name&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;IPC namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWIPC&lt;/td&gt;
+&lt;td&gt;System V IPC, POSIX message queues&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;PID namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWPID&lt;/td&gt;
+&lt;td&gt;Process IDs&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Network namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWNET&lt;/td&gt;
+&lt;td&gt;Network devices, stacks, ports, etc.&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;User namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWUSER&lt;/td&gt;
+&lt;td&gt;User and group IDs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;uts-namespaces&#34;&gt;uts namespaces&lt;/h3&gt;
+
+&lt;p&gt;我们先从最简单的 &lt;code&gt;uts namespaces&lt;/code&gt;开始。&lt;/p&gt;
+
+&lt;p&gt;下面开始我们的第一个目标：隔离&lt;code&gt;hostname&lt;/code&gt;。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;查看当前 namespaces 的 hostname 和当前进程所在的 namespaces:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# hostname
+outside
+[root@outside ~]# readlink /proc/$$/ns/uts
+uts:[4026531838]
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;解除 namespaces share, 创建新的进程:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# unshare --uts /bin/sh
+sh-4.2# hostname inside
+sh-4.2# hostname
+inside
+sh-4.2# readlink /proc/$$/ns/uts
+uts:[4026532328]
+sh-4.2# exit
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;以上可看到，新的 hostname 在内部已经生效，并且内部进程的 uts namespaces 已发生变化(&lt;code&gt;4026531838&lt;/code&gt; -&amp;gt; &lt;code&gt;4026532328&lt;/code&gt;)。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;验证外部的 namespaces，其 hostname 未受到影响:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# hostname
+outside
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;那是如何实现的？下例说明:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# strace -fe unshare,execve unshare --uts  /bin/sh
+execve(&amp;quot;/usr/bin/unshare&amp;quot;, [&amp;quot;unshare&amp;quot;, &amp;quot;--uts&amp;quot;, &amp;quot;/bin/sh&amp;quot;], [/* 27 vars */]) = 0
+unshare(CLONE_NEWUTS)                   = 0  # &amp;lt;-- 关键点
+execve(&amp;quot;/bin/sh&amp;quot;, [&amp;quot;/bin/sh&amp;quot;], [/* 27 vars */]) = 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;对于&lt;code&gt;unshare(2)&lt;/code&gt;, 请参考 &lt;a href=&#34;http://man7.org/linux/man-pages/man2/unshare.2.html&#34;&gt;man page&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;pid-namespaces&#34;&gt;pid namespaces&lt;/h3&gt;
+
+&lt;p&gt;如果只是修改 hostname 而不影响宿主，那也没什么意思。下面我们来看看如何隔离&lt;code&gt;pid 资源&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;实现目标：在新的进程中看到&lt;code&gt;全新&lt;/code&gt;的&lt;code&gt;一套&lt;/code&gt; &lt;code&gt;pids&lt;/code&gt;。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# unshare --fork --pid --mount-proc  /bin/sh
+sh-4.2# ps
+   PID TTY          TIME CMD
+     1 pts/5    00:00:00 sh
+     2 pts/5    00:00:00 ps
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如此，我们就在新的 namespaces 中，隔离了 pids，在这个&lt;code&gt;容器&lt;/code&gt;内部看来，就是全新的一套 pids(第一个 pid 为 1)。&lt;/p&gt;
+
+&lt;p&gt;如何实现的呢？仍使用&lt;code&gt;strace&lt;/code&gt;验证:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# strace -fe unshare,execve,mount unshare --fork --pid --mount-proc  /bin/sh
+execve(&amp;quot;/usr/bin/unshare&amp;quot;, [&amp;quot;unshare&amp;quot;, &amp;quot;--fork&amp;quot;, &amp;quot;--pid&amp;quot;, &amp;quot;--mount-proc&amp;quot;, &amp;quot;/bin/sh&amp;quot;], [/* 27 vars */]) = 0
+unshare(CLONE_NEWNS|CLONE_NEWPID)       = 0 # &amp;lt;-- 关键点
+Process 97554 attached
+[pid 97554] mount(&amp;quot;none&amp;quot;, &amp;quot;/proc&amp;quot;, NULL, MS_REC|MS_PRIVATE, NULL) = 0
+[pid 97554] mount(&amp;quot;proc&amp;quot;, &amp;quot;/proc&amp;quot;, &amp;quot;proc&amp;quot;, MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL) = 0
+[pid 97554] execve(&amp;quot;/bin/sh&amp;quot;, [&amp;quot;/bin/sh&amp;quot;], [/* 27 vars */]) = 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;cgroups&#34;&gt;cgroups&lt;/h2&gt;
+
+&lt;p&gt;cgroups，&lt;a href=&#34;https://en.wikipedia.org/wiki/Cgroups&#34;&gt;wikipedia&lt;/a&gt; 定义: &lt;code&gt;cgroups is a Linux kernel feature that limits, accounts for, and isolates the resource usage (CPU, memory, disk I/O, network, etc.) of a collection of processes&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;我们只需要知道 cgroups，能限制资源就行了。下面我们来直观感受一下 cgroup 的功能。&lt;/p&gt;
+
+&lt;p&gt;限制目标: &lt;code&gt;进程数&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;新启动一个&lt;code&gt;sh&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# sh
+sh-4.2# echo $$
+14838 # &amp;lt;-- 记住这个 pid
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;先挂载 cgroups(pids子系统):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# mkdir -p cgroup/pids
+[root@outside ~]# mount -t cgroup -o pids pids ./cgroup/pids
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;配置 cgroups:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside ~]# cd ./cgroup/pids/
+[root@outside pids]# mkdir x
+[root@outside pids]# cd x
+[root@outside x]# echo 3 &amp;gt; pids.max # &amp;lt;-- 限制只能启动 3 个进程
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;将上面的 sh 加入到我们新建立的 cgroups 中(默认也影响其子进程):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside x]# echo 14838 &amp;gt; cgroup.procs
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;下面来看看效果:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sh-4.2# pstree -p $$
+sh(14838)───pstree(15421)
+sh-4.2# sleep 100 &amp;amp; # &amp;lt;-- 启动第 1 个进程
+[1] 15427
+sh-4.2# sleep 100 &amp;amp; # &amp;lt;-- 启动第 2 个进程
+[2] 15429
+sh-4.2# sleep 100 &amp;amp; # &amp;lt;-- 第 3 个进程启动失败, 因为最开始的 sh 进程也算
+sh: fork: retry: Resource temporarily unavailable
+sh: fork: retry: Resource temporarily unavailable
+sh: fork: retry: Resource temporarily unavailable
+sh: fork: retry: Resource temporarily unavailable
+sh: fork: Resource temporarily unavailable
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以查看一下当前的&lt;code&gt;pids&lt;/code&gt;数量:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@outside x]# cat pids.current
+3  # &amp;lt;-- 的确是 3 个
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;以上使用&lt;code&gt;unshare&lt;/code&gt;命令与&lt;code&gt;cgroups&lt;/code&gt;，初步了解了容器的几个基本技术。&lt;/p&gt;
+
+&lt;p&gt;关于容器更深入的内容，有待读者自己去学习。&lt;/p&gt;
+
+&lt;p&gt;玩得开心 :)&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       
     </item>
     
@@ -1746,53 +1966,6 @@ else
     print(current_remote_addr..&amp;quot; is not a private ip&amp;quot;)
 end
 &lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>监控进程卡住导致内存耗尽</title>
-      <link>https://n4mine.github.io/post/run-out-of-memory/</link>
-      <pubDate>Fri, 02 Jan 2015 10:22:31 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/run-out-of-memory/</guid>
-      
-        <description>&lt;h2 id=&#34;起因&#34;&gt;起因&lt;/h2&gt;
-
-&lt;p&gt;大早上收到报警，几台机器内存不足&lt;br /&gt;
-想上去查原因，已登录不上&lt;/p&gt;
-
-&lt;h2 id=&#34;排查&#34;&gt;排查&lt;/h2&gt;
-
-&lt;p&gt;查看监控，发现以下现象&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;内存耗尽&lt;/li&gt;
-&lt;li&gt;cpu cs在某个时间开始飙高&lt;/li&gt;
-&lt;li&gt;其他部分机器也有内存使用开始下降的趋势&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;找了1台还能登录的机器看了下，sleep状态的进程数目6000+&lt;br /&gt;
-都是监控上报进程&lt;br /&gt;
-messages里面没什么有用的信息，cron的log中有如下条目&lt;br /&gt;
-&lt;code&gt;crond[21657]: (root) INFO (Job execution of per-minute job scheduled for 18:08 delayed into subsequent minute 18:13. Skipping job run.)&lt;/code&gt;&lt;br /&gt;
-说明是cron任务卡住&lt;/p&gt;
-
-&lt;p&gt;另外strace跟了下监控上报进程，全在wait状态&lt;br /&gt;
-杀对应进程，故障恢复&lt;/p&gt;
-
-&lt;p&gt;ansible批量&lt;code&gt;pkill -f $PATTERN&lt;/code&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;改进&#34;&gt;改进&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;加入task数量监控&lt;/li&gt;
-&lt;li&gt;监控上报程序自防御措施&lt;/li&gt;
-&lt;li&gt;OOM监控，但此例未见OOM&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;BTW: 这篇水文主要是测试hexo ^_^&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       
