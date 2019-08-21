@@ -79,7 +79,7 @@
 
 <meta itemprop="datePublished" content="2019-08-21T17:48:57&#43;08:00" />
 <meta itemprop="dateModified" content="2019-08-21T17:48:57&#43;08:00" />
-<meta itemprop="wordCount" content="185">
+<meta itemprop="wordCount" content="223">
 
 
 
@@ -374,8 +374,27 @@ if (!doNotTrack) {
 <h1 id="实现">实现</h1>
 
 <p>直接上代码</p>
-
-<pre><code>func FuncAndCallerFunc() (string, string) {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func FuncAndCallerFunc() (string, string) {
 	pc := make([]uintptr, 15)
 	n := runtime.Callers(2, pc)
 	frames := runtime.CallersFrames(pc[:n])
@@ -386,43 +405,71 @@ if (!doNotTrack) {
 		caller = callerFra.Function
 	}
 	if len(caller) == 0 {
-		caller = &quot;-&quot;
+		caller = &#34;-&#34;
 	}
 
 	return frame.Function, caller
-}
-</code></pre>
-
+}</pre></td></tr></table>
+</div>
+</div>
 <p>测试一下</p>
-
-<pre><code>type A struct{}
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">type A struct{}
 
 func main() {
 	_f, _c := FuncAndCallerFunc()
-	fmt.Printf(&quot;in func: %v, caller is: %v\n&quot;, _f, _c)
+	fmt.Printf(&#34;in func: %v, caller is: %v\n&#34;, _f, _c)
 	a := A{}
 	x(a)
 }
 
 func x(a A) {
 	_f, _c := FuncAndCallerFunc()
-	fmt.Printf(&quot;in func: %v, caller is: %v\n&quot;, _f, _c)
+	fmt.Printf(&#34;in func: %v, caller is: %v\n&#34;, _f, _c)
 	a.print()
 }
 
 func (A) print() {
 	_f, _c := FuncAndCallerFunc()
-	fmt.Printf(&quot;in func: %v, caller is: %v\n&quot;, _f, _c)
-}
-</code></pre>
-
+	fmt.Printf(&#34;in func: %v, caller is: %v\n&#34;, _f, _c)
+}</pre></td></tr></table>
+</div>
+</div>
 <p>输出为</p>
-
-<pre><code>in func: main.main, caller is: runtime.main
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">in func: main.main, caller is: runtime.main
 in func: main.x, caller is: main.main
-in func: main.A.print, caller is: main.x
-</code></pre>
-
+in func: main.A.print, caller is: main.x</pre></td></tr></table>
+</div>
+</div>
 <p><em>-EOF-</em></p>
     </div>
 

@@ -94,7 +94,7 @@ chroot、namespace、cgroups，就是容器的核心技术。
 
 <meta itemprop="datePublished" content="2019-07-27T20:02:57&#43;08:00" />
 <meta itemprop="dateModified" content="2019-07-27T20:02:57&#43;08:00" />
-<meta itemprop="wordCount" content="1244">
+<meta itemprop="wordCount" content="1297">
 
 
 
@@ -478,41 +478,72 @@ if (!doNotTrack) {
 
 <ol>
 <li><p>查看当前 namespaces 的 hostname 和当前进程所在的 namespaces:</p>
-
-<pre><code>[root@outside ~]# hostname
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# hostname
 outside
 [root@outside ~]# readlink /proc/$$/ns/uts
-uts:[4026531838]
-</code></pre></li>
+uts:[4026531838]</pre></td></tr></table>
+</div>
+</div></li>
 
 <li><p>解除 namespaces share, 创建新的进程:</p>
-
-<pre><code>[root@outside ~]# unshare --uts /bin/sh
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# unshare --uts /bin/sh
 sh-4.2# hostname inside
 sh-4.2# hostname
 inside
 sh-4.2# readlink /proc/$$/ns/uts
 uts:[4026532328]
-sh-4.2# exit
-</code></pre>
-
+sh-4.2# exit</pre></td></tr></table>
+</div>
+</div>
 <p>以上可看到，新的 hostname 在内部已经生效，并且内部进程的 uts namespaces 已发生变化(<code>4026531838</code> -&gt; <code>4026532328</code>)。</p></li>
 
 <li><p>验证外部的 namespaces，其 hostname 未受到影响:</p>
-
-<pre><code>[root@outside ~]# hostname
-outside
-</code></pre></li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# hostname
+outside</pre></td></tr></table>
+</div>
+</div></li>
 </ol>
 
 <p>那是如何实现的？下例说明:</p>
-
-<pre><code>[root@outside ~]# strace -fe unshare,execve unshare --uts  /bin/sh
-execve(&quot;/usr/bin/unshare&quot;, [&quot;unshare&quot;, &quot;--uts&quot;, &quot;/bin/sh&quot;], [/* 27 vars */]) = 0
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# strace -fe unshare,execve unshare --uts  /bin/sh
+execve(&#34;/usr/bin/unshare&#34;, [&#34;unshare&#34;, &#34;--uts&#34;, &#34;/bin/sh&#34;], [/* 27 vars */]) = 0
 unshare(CLONE_NEWUTS)                   = 0  # &lt;-- 关键点
-execve(&quot;/bin/sh&quot;, [&quot;/bin/sh&quot;], [/* 27 vars */]) = 0
-</code></pre>
-
+execve(&#34;/bin/sh&#34;, [&#34;/bin/sh&#34;], [/* 27 vars */]) = 0</pre></td></tr></table>
+</div>
+</div>
 <p>对于<code>unshare(2)</code>, 请参考 <a href="http://man7.org/linux/man-pages/man2/unshare.2.html">man page</a></p>
 
 <h3 id="pid-namespaces">pid namespaces</h3>
@@ -520,27 +551,45 @@ execve(&quot;/bin/sh&quot;, [&quot;/bin/sh&quot;], [/* 27 vars */]) = 0
 <p>如果只是修改 hostname 而不影响宿主，那也没什么意思。下面我们来看看如何隔离<code>pid 资源</code>。</p>
 
 <p>实现目标：在新的进程中看到<code>全新</code>的<code>一套</code> <code>pids</code>。</p>
-
-<pre><code>[root@outside ~]# unshare --fork --pid --mount-proc  /bin/sh
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# unshare --fork --pid --mount-proc  /bin/sh
 sh-4.2# ps
    PID TTY          TIME CMD
      1 pts/5    00:00:00 sh
-     2 pts/5    00:00:00 ps
-</code></pre>
-
+     2 pts/5    00:00:00 ps</pre></td></tr></table>
+</div>
+</div>
 <p>如此，我们就在新的 namespaces 中，隔离了 pids，在这个<code>容器</code>内部看来，就是全新的一套 pids(第一个 pid 为 1)。</p>
 
 <p>如何实现的呢？仍使用<code>strace</code>验证:</p>
-
-<pre><code>[root@outside ~]# strace -fe unshare,execve,mount unshare --fork --pid --mount-proc  /bin/sh
-execve(&quot;/usr/bin/unshare&quot;, [&quot;unshare&quot;, &quot;--fork&quot;, &quot;--pid&quot;, &quot;--mount-proc&quot;, &quot;/bin/sh&quot;], [/* 27 vars */]) = 0
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# strace -fe unshare,execve,mount unshare --fork --pid --mount-proc  /bin/sh
+execve(&#34;/usr/bin/unshare&#34;, [&#34;unshare&#34;, &#34;--fork&#34;, &#34;--pid&#34;, &#34;--mount-proc&#34;, &#34;/bin/sh&#34;], [/* 27 vars */]) = 0
 unshare(CLONE_NEWNS|CLONE_NEWPID)       = 0 # &lt;-- 关键点
 Process 97554 attached
-[pid 97554] mount(&quot;none&quot;, &quot;/proc&quot;, NULL, MS_REC|MS_PRIVATE, NULL) = 0
-[pid 97554] mount(&quot;proc&quot;, &quot;/proc&quot;, &quot;proc&quot;, MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL) = 0
-[pid 97554] execve(&quot;/bin/sh&quot;, [&quot;/bin/sh&quot;], [/* 27 vars */]) = 0
-</code></pre>
-
+[pid 97554] mount(&#34;none&#34;, &#34;/proc&#34;, NULL, MS_REC|MS_PRIVATE, NULL) = 0
+[pid 97554] mount(&#34;proc&#34;, &#34;/proc&#34;, &#34;proc&#34;, MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL) = 0
+[pid 97554] execve(&#34;/bin/sh&#34;, [&#34;/bin/sh&#34;], [/* 27 vars */]) = 0</pre></td></tr></table>
+</div>
+</div>
 <h2 id="cgroups">cgroups</h2>
 
 <p>cgroups，<a href="https://en.wikipedia.org/wiki/Cgroups">wikipedia</a> 定义: <code>cgroups is a Linux kernel feature that limits, accounts for, and isolates the resource usage (CPU, memory, disk I/O, network, etc.) of a collection of processes</code></p>
@@ -550,34 +599,71 @@ Process 97554 attached
 <p>限制目标: <code>进程数</code></p>
 
 <p>新启动一个<code>sh</code>:</p>
-
-<pre><code>[root@outside ~]# sh
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# sh
 sh-4.2# echo $$
-14838 # &lt;-- 记住这个 pid
-</code></pre>
-
+14838 # &lt;-- 记住这个 pid</pre></td></tr></table>
+</div>
+</div>
 <p>先挂载 cgroups(pids子系统):</p>
-
-<pre><code>[root@outside ~]# mkdir -p cgroup/pids
-[root@outside ~]# mount -t cgroup -o pids pids ./cgroup/pids
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# mkdir -p cgroup/pids
+[root@outside ~]# mount -t cgroup -o pids pids ./cgroup/pids</pre></td></tr></table>
+</div>
+</div>
 <p>配置 cgroups:</p>
-
-<pre><code>[root@outside ~]# cd ./cgroup/pids/
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside ~]# cd ./cgroup/pids/
 [root@outside pids]# mkdir x
 [root@outside pids]# cd x
-[root@outside x]# echo 3 &gt; pids.max # &lt;-- 限制只能启动 3 个进程
-</code></pre>
-
+[root@outside x]# echo 3 &gt; pids.max # &lt;-- 限制只能启动 3 个进程</pre></td></tr></table>
+</div>
+</div>
 <p>将上面的 sh 加入到我们新建立的 cgroups 中(默认也影响其子进程):</p>
-
-<pre><code>[root@outside x]# echo 14838 &gt; cgroup.procs
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside x]# echo 14838 &gt; cgroup.procs</pre></td></tr></table>
+</div>
+</div>
 <p>下面来看看效果:</p>
-
-<pre><code>sh-4.2# pstree -p $$
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sh-4.2# pstree -p $$
 sh(14838)───pstree(15421)
 sh-4.2# sleep 100 &amp; # &lt;-- 启动第 1 个进程
 [1] 15427
@@ -588,15 +674,20 @@ sh: fork: retry: Resource temporarily unavailable
 sh: fork: retry: Resource temporarily unavailable
 sh: fork: retry: Resource temporarily unavailable
 sh: fork: retry: Resource temporarily unavailable
-sh: fork: Resource temporarily unavailable
-</code></pre>
-
+sh: fork: Resource temporarily unavailable</pre></td></tr></table>
+</div>
+</div>
 <p>可以查看一下当前的<code>pids</code>数量:</p>
-
-<pre><code>[root@outside x]# cat pids.current
-3  # &lt;-- 的确是 3 个
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@outside x]# cat pids.current
+3  # &lt;-- 的确是 3 个</pre></td></tr></table>
+</div>
+</div>
 <h2 id="总结">总结</h2>
 
 <p>以上使用<code>unshare</code>命令与<code>cgroups</code>，初步了解了容器的几个基本技术。</p>

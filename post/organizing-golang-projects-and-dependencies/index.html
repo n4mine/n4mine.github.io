@@ -96,7 +96,7 @@ golang的依赖一直是让人头疼的问题, 大家对其自有的package管�
 
 <meta itemprop="datePublished" content="2017-01-15T14:49:18&#43;00:00" />
 <meta itemprop="dateModified" content="2017-01-15T14:49:18&#43;00:00" />
-<meta itemprop="wordCount" content="604">
+<meta itemprop="wordCount" content="614">
 
 
 
@@ -432,29 +432,48 @@ if (!doNotTrack) {
 </ul>
 
 <h1 id="项目创建者">项目创建者</h1>
-
-<pre><code>export GOPATH=$PWD:$PWD/deps
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">export GOPATH=$PWD:$PWD/deps
 mkdir -p deps
 ln -sf ../vendor deps/src
 
 glide init --non-interactive
-glide install
-</code></pre>
-
+glide install</pre></td></tr></table>
+</div>
+</div>
 <h1 id="项目协同者">项目协同者</h1>
-
-<pre><code>git clone
-glide install
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">git clone
+glide install</pre></td></tr></table>
+</div>
+</div>
 <h1 id="依赖已有的包">依赖已有的包</h1>
 
 <p>可能一些包你已经下载过了，例如golang.org/x/ 下的一系列包，不想再辛苦重新下载，可以使用<code>glide mirrors</code>，然后再<code>glide install</code>即可</p>
-
-<pre><code>glide mirror set https://gopkg.in/go-playground/validator.v8 file:///path/to/gopkg.in/go-playground/validator.v8 --vcs git
-glide mirror set https://gopkg.in/yaml.v2 file:///path/to/gopkg.in/yaml.v2 --vcs git
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">glide mirror set https://gopkg.in/go-playground/validator.v8 file:///path/to/gopkg.in/go-playground/validator.v8 --vcs git
+glide mirror set https://gopkg.in/yaml.v2 file:///path/to/gopkg.in/yaml.v2 --vcs git</pre></td></tr></table>
+</div>
+</div>
 <h1 id="锁定依赖包的版本">锁定依赖包的版本</h1>
 
 <p>当执行<code>glide up</code>时，glide的思路是更新你项目的所有依赖到最新版本。这个结果往往不是我们想要的，生产环境中往往只是依赖一个稳定的版本。<br />

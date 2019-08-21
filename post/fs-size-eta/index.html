@@ -95,7 +95,7 @@ eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预�
 
 <meta itemprop="datePublished" content="2016-01-22T12:43:29&#43;00:00" />
 <meta itemprop="dateModified" content="2016-01-22T12:43:29&#43;00:00" />
-<meta itemprop="wordCount" content="694">
+<meta itemprop="wordCount" content="699">
 
 
 
@@ -413,13 +413,22 @@ if (!doNotTrack) {
 <li>Type选择calculated，因为是calculated类型，所以key不是zabbix预定义的，可以自定义</li>
 
 <li><p>formula解析如下</p>
-
-<pre><code>last(&quot;vfs.fs.size[/test,free]&quot;) / ### @1
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">last(&#34;vfs.fs.size[/test,free]&#34;) / ### @1
 (
-( last(&quot;vfs.fs.size[/test,free]&quot;, #4) - last(&quot;vfs.fs.size[/test,free]&quot;) ) / 3 ### @2
+( last(&#34;vfs.fs.size[/test,free]&#34;, #4) - last(&#34;vfs.fs.size[/test,free]&#34;) ) / 3 ### @2
 + 0.0001 ### @3
-) * 2 ### @4
-</code></pre></li>
+) * 2 ### @4</pre></td></tr></table>
+</div>
+</div></li>
 </ul>
 
 <p>@1 代表某个分区的最后检测到的剩余空间<br />

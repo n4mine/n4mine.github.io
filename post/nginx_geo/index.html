@@ -93,7 +93,7 @@ geo, map
 
 <meta itemprop="datePublished" content="2014-11-13T20:14:06&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-13T20:14:06&#43;00:00" />
-<meta itemprop="wordCount" content="351">
+<meta itemprop="wordCount" content="383">
 
 
 
@@ -404,8 +404,42 @@ if (!doNotTrack) {
 </ul>
 
 <p>不多说，上实现，具体看注释</p>
-
-<pre><code># ip address classfiy detail:
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># ip address classfiy detail:
 # ^1 limit
 # ^0 unlimit
 # lan$ preview
@@ -426,7 +460,7 @@ geo $white_ip_list {
 # map for limit zone
 map $white_ip_list $limit_ip_list {
     ~^1       $binary_remote_addr;
-    ~^0       &quot;&quot;;
+    ~^0       &#34;&#34;;
 }
 
 limit_req_zone $limit_ip_list zone=limit_yr_sister_ip:500m rate=9999r/s;
@@ -435,9 +469,9 @@ limit_req_zone $limit_ip_list zone=limit_yr_sister_ip:500m rate=9999r/s;
 map $white_ip_list $address_type {
     default    wan;
     ~lan$      lan;
-}
-</code></pre>
-
+}</pre></td></tr></table>
+</div>
+</div>
 <h1 id="啰嗦一下">啰嗦一下</h1>
 
 <p>其实一切都写在注释里了<br />
@@ -449,9 +483,14 @@ map $white_ip_list $address_type {
 
 <ul>
 <li><p>limit调用</p>
-
-<pre><code>limit_req zone=limit_yr_sister burst=5 nodelay;
-</code></pre></li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">limit_req zone=limit_yr_sister burst=5 nodelay;</pre></td></tr></table>
+</div>
+</div></li>
 
 <li><p>production/preview分离</p></li>
 </ul>

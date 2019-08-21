@@ -413,7 +413,7 @@ if (!doNotTrack) {
   <div class="post-content">
     
     <div class="post-summary">
-      背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed 's/#/\n#/g' | grep &quot;^# NumGC&quot; | awk '{print $NF}') NumGC=$[ ${_NumGC} -
+      背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s
     </div>
     <div class="read-more">
       <a href="/post/get-golang-gc-info-by-pprof/" class="read-more-link">阅读全文</a>

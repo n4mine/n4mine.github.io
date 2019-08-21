@@ -113,7 +113,7 @@ nginx根据后端的不同返回status code，进行逻辑判断，是直接返�
 
 <meta itemprop="datePublished" content="2014-11-11T11:08:42&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-11T11:08:42&#43;00:00" />
-<meta itemprop="wordCount" content="1621">
+<meta itemprop="wordCount" content="1630">
 
 
 
@@ -477,45 +477,69 @@ subrequest的返回值是一个lua的table<br />
 <code>Returns a Lua table with three slots (res.status, res.header, res.body, and res.truncated).</code><br />
 只看字面意思就知道了。注意这里res.header也是一个table，所以处理的时候需要loop<br />
 处理起来就差不多像下面的样子</p>
-
-<pre><code>args = ngx.req.get_body_data()
-res = ngx.location.capture(&quot;/fooPost&quot; .. ngx.var.request_uri,{ method = ngx.HTTP_POST , body = args })
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">args = ngx.req.get_body_data()
+res = ngx.location.capture(&#34;/fooPost&#34; .. ngx.var.request_uri,{ method = ngx.HTTP_POST , body = args })</pre></td></tr></table>
+</div>
+</div>
 <p>注意<code>request_uri</code>和<code>uri</code>的区别，不细说了。<br />
 剩下的就是判断后端返回status code、各种if判断了。</p>
 
 <p>至于GET请求，直接搞<code>request_uri</code>就可以了。</p>
-
-<pre><code>args = ngx.req.get_body_data()
-res = ngx.location.capture(&quot;/fooPost&quot; .. ngx.var.request_uri)
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">args = ngx.req.get_body_data()
+res = ngx.location.capture(&#34;/fooPost&#34; .. ngx.var.request_uri)</pre></td></tr></table>
+</div>
+</div>
 <p>args什么的，直接都带过去了。</p>
 
 <p>GET和POST共同要处理就是header，上面说了是一个table，使用循环处理一下就可以了。<br />
 lua里面的for语法和其他脚本语言没什么区别</p>
-
-<pre><code>for k, v in pairs(res.header) do
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">for k, v in pairs(res.header) do
     ngx.header[k] = v
-end
-</code></pre>
-
+end</pre></td></tr></table>
+</div>
+</div>
 <p>这里还有一个问题，如何将响应的body送回给client/backend。<br />
 我在官方doc中没找到对应的说明，但从各种例子看，直接使用<code>ngx.print</code>即可</p>
-
-<pre><code>ngx.print(res.body)
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ngx.print(res.body)</pre></td></tr></table>
+</div>
+</div>
 <h3 id="为什么rewrite阶段也需要介入">为什么rewrite阶段也需要介入</h3>
 
 <p>上文我们看到，subrequest是打到/fooPost这个location的。<br />
 为什么需要另起一个location，答案是避免死循环，例如在<code>/</code>启用content_by_lua的逻辑，极可能引起死循环。这部分需要看下nginx如何处理多个location。<br />
 那我原来的request_uri是/login，打到backend变成了/fooPost/login，肯定就要使用rewrite了。</p>
-
-<pre><code>rewrite ^/fooPost(.*) $1 break;
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">rewrite ^/fooPost(.*) $1 break;</pre></td></tr></table>
+</div>
+</div>
 <p>说到这里就差不多了。总之罗里罗嗦的说了一堆，连着思路带着实现都扔了出来。<br />
 看官自己理解吧^_^</p>
 

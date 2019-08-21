@@ -89,7 +89,7 @@
 
 <meta itemprop="datePublished" content="2019-07-25T17:44:41&#43;08:00" />
 <meta itemprop="dateModified" content="2019-07-25T17:44:41&#43;08:00" />
-<meta itemprop="wordCount" content="905">
+<meta itemprop="wordCount" content="914">
 
 
 
@@ -408,22 +408,37 @@ if (!doNotTrack) {
 <p><code>求平均</code>是一个常见的降采算法，例如我写的一个 <a href="https://github.com/devtoolkits/downsample">demo</a>，就是将 N 个点求平均，得到 1 个新的数据点的实现。</p>
 
 <p>例如原始数据(周期为 10s)为</p>
-
-<pre><code>[]Point{
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[]Point{
     Point{10, 0.5},
     Point{20, 0.3},
     Point{30, 0.4},
-}
-</code></pre>
-
+}</pre></td></tr></table>
+</div>
+</div>
 <p>降采后(周期为 15s)的结果为</p>
-
-<pre><code>[]Point{
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[]Point{
     Point{10, 0.4},
     Point{25, 0.4},
-}
-</code></pre>
-
+}</pre></td></tr></table>
+</div>
+</div>
 <blockquote>
 <p>题外话：为什么上述实现的时间戳是向过去时间对齐的？
 主要原因是便于理解，例如当前时间是 <code>21:28:35</code>，在周期是 <code>30s</code> 的情况下，向过去时间对齐的结果是 <code>21:28:30</code>，而向未来时间对齐，结果则是 <code>21:29:00</code>，<code>21:29:00</code> 是未来的时间，很难向用户解释。</p>

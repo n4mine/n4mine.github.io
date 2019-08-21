@@ -454,22 +454,40 @@ if (!doNotTrack) {
     
     <div class="post-summary">
       <h2 id="基于-proc-pid-stat和-proc-stat计算指定进程的cpu利用率">基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="cp">#!/bin/sh
+</span><span class="cp"></span>
+<span class="nv">corenum</span><span class="o">=</span><span class="k">$(</span>nproc --all<span class="k">)</span>
+<span class="nv">p</span><span class="o">=</span>xxx
+<span class="nv">pid</span><span class="o">=</span><span class="k">$(</span>pidof <span class="nv">$p</span><span class="k">)</span>
+<span class="nv">p_totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
+<span class="nv">totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
+sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top相同的结果</span>
+<span class="nv">p_totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
+<span class="nv">totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
 
-<pre><code>#!/bin/sh
+<span class="nv">res</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;BEGIN{print &#39;</span><span class="s2">&#34;(</span><span class="nv">$p_totaltime2</span><span class="s2">-</span><span class="nv">$p_totaltime1</span><span class="s2">)*100/(</span><span class="nv">$totaltime2</span><span class="s2">-</span><span class="nv">$totaltime1</span><span class="s2">)*</span><span class="nv">$corenum</span><span class="s2">&#34;</span><span class="s1">&#39;}&#39;</span><span class="k">)</span>
 
-corenum=$(nproc --all)
-p=xxx
-pid=$(pidof $p)
-p_totaltime1=$(awk '{print $14+$15}' /proc/${pid}/stat)
-totaltime1=$(awk '{if($1==&quot;cpu&quot;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}' /proc/stat)
-sleep 3 # 为什么是3, 要得到与top相同的结果
-p_totaltime2=$(awk '{print $14+$15}' /proc/${pid}/stat)
-totaltime2=$(awk '{if($1==&quot;cpu&quot;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}' /proc/stat)
-
-res=$(awk 'BEGIN{print '&quot;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&quot;'}')
-
-echo $res
-</code></pre>
+<span class="nb">echo</span> <span class="nv">$res</span></pre></td></tr></table>
+</div>
+</div>
     </div>
     <div class="read-more">
       <a href="/post/calculate-the-cpu-usage-of-a-process/" class="read-more-link">阅读全文</a>

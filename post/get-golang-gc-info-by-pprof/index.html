@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &amp;quot;^# NumGC&amp;quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -" />
+  <meta name="description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s" />
 
   <meta name="keywords" content="n4mine, blog" />
 
@@ -58,25 +58,25 @@
 
 
 <meta property="og:title" content="通过pprof获取golang gc信息" />
-<meta property="og:description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -" />
+<meta property="og:description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://n4mine.github.io/post/get-golang-gc-info-by-pprof/" />
 <meta property="article:published_time" content="2017-11-04T10:23:25+00:00" />
 <meta property="article:modified_time" content="2017-11-04T10:23:25+00:00" />
 <meta itemprop="name" content="通过pprof获取golang gc信息">
-<meta itemprop="description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -">
+<meta itemprop="description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s">
 
 
 <meta itemprop="datePublished" content="2017-11-04T10:23:25&#43;00:00" />
 <meta itemprop="dateModified" content="2017-11-04T10:23:25&#43;00:00" />
-<meta itemprop="wordCount" content="124">
+<meta itemprop="wordCount" content="144">
 
 
 
 <meta itemprop="keywords" content="golang," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="通过pprof获取golang gc信息"/>
-<meta name="twitter:description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22) _NumGC=$(echo $r | sed &#39;s/#/\n#/g&#39; | grep &quot;^# NumGC&quot; | awk &#39;{print $NF}&#39;) NumGC=$[ ${_NumGC} -"/>
+<meta name="twitter:description" content="背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -358,29 +358,52 @@ if (!doNotTrack) {
 <p>服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况</p>
 
 <h1 id="实现">实现</h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="nv">_lastNumGC</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">_first</span><span class="o">=</span><span class="nb">true</span>
 
-<pre><code>#!/bin/bash
+<span class="k">while</span> : <span class="p">;</span> <span class="k">do</span>
+<span class="nv">r</span><span class="o">=</span><span class="k">$(</span>curl -s <span class="m">127</span>.0.0.1:6071/debug/pprof/heap?debug<span class="o">=</span><span class="m">1</span> <span class="p">|</span> tail -22<span class="k">)</span>
 
-_lastNumGC=0
-_first=true
+<span class="nv">_NumGC</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$r</span> <span class="p">|</span> sed <span class="s1">&#39;s/#/\n#/g&#39;</span> <span class="p">|</span> grep <span class="s2">&#34;^# NumGC&#34;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $NF}&#39;</span><span class="k">)</span>
+<span class="nv">NumGC</span><span class="o">=</span>$<span class="o">[</span> <span class="si">${</span><span class="nv">_NumGC</span><span class="si">}</span> - <span class="si">${</span><span class="nv">_lastNumGC</span><span class="si">}</span> <span class="o">]</span>
+<span class="k">if</span> <span class="si">${</span><span class="nv">_first</span><span class="si">}</span><span class="p">;</span> <span class="k">then</span> <span class="nv">NumGC</span><span class="o">=</span><span class="m">0</span><span class="p">;</span> <span class="nv">_first</span><span class="o">=</span>false<span class="p">;</span> <span class="k">fi</span>
+<span class="nv">_lastNumGC</span><span class="o">=</span><span class="si">${</span><span class="nv">_NumGC</span><span class="si">}</span>
 
-while : ; do
-r=$(curl -s 127.0.0.1:6071/debug/pprof/heap?debug=1 | tail -22)
+<span class="nv">PauseNs</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$r</span> <span class="p">|</span> sed <span class="s1">&#39;s/#/\n#/g&#39;</span> <span class="p">|</span> grep <span class="s1">&#39;^# PauseNs&#39;</span> <span class="p">|</span> grep -Eo <span class="s1">&#39;\[.*\]&#39;</span> <span class="p">|</span> sed -e <span class="s1">&#39;s/\[//&#39;</span> -e <span class="s1">&#39;s/\]//&#39;</span> <span class="p">|</span>  sed <span class="s1">&#39;s/ /\n/g&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{ sum+=$0; if ($0&gt;0){count+=1} } END {printf &#34;%.f\n&#34;,sum/count}&#39;</span><span class="k">)</span>
 
-_NumGC=$(echo $r | sed 's/#/\n#/g' | grep &quot;^# NumGC&quot; | awk '{print $NF}')
-NumGC=$[ ${_NumGC} - ${_lastNumGC} ]
-if ${_first}; then NumGC=0; _first=false; fi
-_lastNumGC=${_NumGC}
+<span class="nb">echo</span> <span class="s2">&#34;NumGC: &#34;</span> <span class="si">${</span><span class="nv">NumGC</span><span class="si">}</span>
+<span class="nb">echo</span> <span class="s2">&#34;PauseNs_Avg: &#34;</span> <span class="si">${</span><span class="nv">PauseNs</span><span class="si">}</span>
 
-PauseNs=$(echo $r | sed 's/#/\n#/g' | grep '^# PauseNs' | grep -Eo '\[.*\]' | sed -e 's/\[//' -e 's/\]//' |  sed 's/ /\n/g' | awk '{ sum+=$0; if ($0&gt;0){count+=1} } END {printf &quot;%.f\n&quot;,sum/count}')
-
-echo &quot;NumGC: &quot; ${NumGC}
-echo &quot;PauseNs_Avg: &quot; ${PauseNs}
-
-sleep 10
-done
-</code></pre>
-
+sleep <span class="m">10</span>
+<span class="k">done</span></pre></td></tr></table>
+</div>
+</div>
 <p><em>-EOF-</em></p>
 
     </div>

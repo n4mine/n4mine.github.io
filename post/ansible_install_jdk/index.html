@@ -25,7 +25,7 @@
 <meta name="author" content="n4mine" />
   <meta name="description" content="JDK这东西，简单来说就是一个包，主要生效的还是环境变量。
 直接上实现
-目录结构 $ tree . ├── files │ └── jdk1.6-centos6.tar.gz └── main.yaml  简单的一个说明而已，没有必要搞什么最佳实践了。^_^
+目录结构 1 2 3 4 5  $ tree . ├── files │ └── jdk1.6-centos6.tar.gz └── main.yaml   简单的一个说明而已，没有必要搞什么最佳实践了。^_^
 " />
 
   <meta name="keywords" content="n4mine, blog" />
@@ -66,6 +66,14 @@
 
 目录结构
 
+
+1
+2
+3
+4
+5
+
+
 $ tree
 .
 ├── files
@@ -84,6 +92,14 @@ $ tree
 
 目录结构
 
+
+1
+2
+3
+4
+5
+
+
 $ tree
 .
 ├── files
@@ -96,7 +112,7 @@ $ tree
 
 <meta itemprop="datePublished" content="2014-10-18T20:53:49&#43;00:00" />
 <meta itemprop="dateModified" content="2014-10-18T20:53:49&#43;00:00" />
-<meta itemprop="wordCount" content="306">
+<meta itemprop="wordCount" content="336">
 
 
 
@@ -107,6 +123,14 @@ $ tree
 直接上实现
 
 目录结构
+
+
+1
+2
+3
+4
+5
+
 
 $ tree
 .
@@ -397,45 +421,81 @@ if (!doNotTrack) {
 直接上实现</p>
 
 <h2 id="目录结构">目录结构</h2>
-
-<pre><code>$ tree
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ tree
 .
 ├── files
 │   └── jdk1.6-centos6.tar.gz
-└── main.yaml
-</code></pre>
-
+└── main.yaml</pre></td></tr></table>
+</div>
+</div>
 <p>简单的一个说明而已，没有必要搞什么最佳实践了。^_^</p>
 
 <h2 id="main-yaml">main.yaml</h2>
-
-<pre><code>---
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">---
 - hosts: test_group
   sudo: yes
   sudo_user: root
   gather_facts: no
   vars:
-    src_file: 'files/jdk1.6-centos6.tar.gz'
+    src_file: &#39;files/jdk1.6-centos6.tar.gz&#39;
     dest_dir: /opt/soft/
   tasks:
   - name: copy and unzip
     unarchive: src={{src_file}} dest={{dest_dir}}
   - name: clear old env
-#    shell: /bin/sed -i '/JAVA_HOME/d' /etc/profile &amp;&amp; echo -e &quot;\nexport JAVA_HOME=/opt/soft/jdk\nexport PATH=\\$JAVA_HOME/bin:\\$PATH\nexport CLASSPATH=.:\\$JAVA_HOME/lib/tools.jar:\\$JAVA_HOME/lib/rt.jar&quot; &gt;&gt; /etc/profile
-    lineinfile: dest=/etc/profile regexp='JAVA_HOME' state=absent
+#    shell: /bin/sed -i &#39;/JAVA_HOME/d&#39; /etc/profile &amp;&amp; echo -e &#34;\nexport JAVA_HOME=/opt/soft/jdk\nexport PATH=\\$JAVA_HOME/bin:\\$PATH\nexport CLASSPATH=.:\\$JAVA_HOME/lib/tools.jar:\\$JAVA_HOME/lib/rt.jar&#34; &gt;&gt; /etc/profile
+    lineinfile: dest=/etc/profile regexp=&#39;JAVA_HOME&#39; state=absent
   - name: set env
     lineinfile:
       dest=/etc/profile
-      insertafter=&quot;{{item.position}}&quot;
-      line=&quot;{{item.value}}&quot;
+      insertafter=&#34;{{item.position}}&#34;
+      line=&#34;{{item.value}}&#34;
       state=present
     with_items:
-    - {position: EOF, value: &quot;\n&quot;}
-    - {position: EOF, value: 'export JAVA_HOME=/opt/soft/jdk'}
-    - {position: EOF, value: 'export PATH=$JAVA_HOME/bin:$PATH'}
-    - {position: EOF, value: 'export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/rt.jar'}
-</code></pre>
-
+    - {position: EOF, value: &#34;\n&#34;}
+    - {position: EOF, value: &#39;export JAVA_HOME=/opt/soft/jdk&#39;}
+    - {position: EOF, value: &#39;export PATH=$JAVA_HOME/bin:$PATH&#39;}
+    - {position: EOF, value: &#39;export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/rt.jar&#39;}</pre></td></tr></table>
+</div>
+</div>
 <p>以上。</p>
 
 <ul>

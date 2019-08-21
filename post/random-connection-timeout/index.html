@@ -96,7 +96,7 @@ A服务连接超时设置为500ms
 
 <meta itemprop="datePublished" content="2016-10-05T09:47:13&#43;00:00" />
 <meta itemprop="dateModified" content="2016-10-05T09:47:13&#43;00:00" />
-<meta itemprop="wordCount" content="1256">
+<meta itemprop="wordCount" content="1260">
 
 
 
@@ -444,9 +444,14 @@ if (!doNotTrack) {
 <li>每次设置递增源端口</li>
 
 <li><p>设置3s超时</p>
-
-<pre><code>for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done
-</code></pre></li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done</pre></td></tr></table>
+</div>
+</div></li>
 </ul>
 
 <h3 id="src表现如下">src表现如下</h3>
@@ -481,12 +486,18 @@ if (!doNotTrack) {
 但我们线上的syn队列的长度是4096，且打开了syn_cookie，理论上，syn半连的数量是足够用的。<sup>[1]</sup><br />
 而且重要是的，<strong>syn,ack是tcp/ip协议栈回复的</strong>。<br />
 既然syn队列不是问题，而与syn队列最相关的就是accept队列，所以查看accpet队列情况</p>
-
-<pre><code>$ netstat -s | grep -i listen
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ netstat -s | grep -i listen
     80694004 times the listen queue of a socket overflowed
-    88476387 SYNs to LISTEN sockets ignored
-</code></pre>
-
+    88476387 SYNs to LISTEN sockets ignored</pre></td></tr></table>
+</div>
+</div>
 <p>上述返回结果，inrouter00这台机器的overflowed数量明显比其它节点的结果要大（大一个数量级）。<br />
 而且，在执行测试命令后，overflowed的数量增长明显。<br />
 syn队列与accept队列的关系如下</p>

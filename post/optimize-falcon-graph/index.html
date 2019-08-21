@@ -80,7 +80,7 @@
 
 <meta itemprop="datePublished" content="2019-02-21T15:03:20&#43;08:00" />
 <meta itemprop="dateModified" content="2019-02-21T15:03:20&#43;08:00" />
-<meta itemprop="wordCount" content="3051">
+<meta itemprop="wordCount" content="3120">
 
 
 
@@ -413,11 +413,16 @@ if (!doNotTrack) {
 <p>因此我们在代码中埋点，分别统计了<code>readFromCache</code>和<code>readFromRRD</code>的latency，结果<code>readFromCache</code>的tp95在300ms左右，而<code>readFromRRD</code>的对应值则达到了1s+。</p>
 
 <p>所以接下来重点跟进方向就是<code>读取RRD文件</code>的逻辑。从代码上看，从RRD文件获取数据的读路径如下:</p>
-
-<pre><code>api/graph.go::*Graph.Query(...)  
---&gt; rrdtool/rrdtool.go::Fetch(...)  
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">api/graph.go::*Graph.Query(...)  
+--&gt; rrdtool/rrdtool.go::Fetch(...)  </pre></td></tr></table>
+</div>
+</div>
 <p>参见 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/api/graph.go#L125">api/graph.go</a> 和 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/rrdtool/rrdtool.go#L186">rrdtool/rrdtool.go</a></p>
 
 <p>然后<code>rrdtool.go/sync_disk.go::ioWorker()</code>从<code>io_task_chan</code>获取对应<code>task</code>后进行I/O操作。</p>
@@ -460,33 +465,59 @@ if (!doNotTrack) {
 <h3 id="分析-1">分析</h3>
 
 <p>直接show一个benchmark:</p>
-
-<pre><code>func Benchmark_sprintf(b *testing.B) {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func Benchmark_sprintf(b *testing.B) {
 	for i := 0; i &lt; b.N; i++ {
-		a := fmt.Sprintf(&quot;a%s&quot;, &quot;a&quot;)
+		a := fmt.Sprintf(&#34;a%s&#34;, &#34;a&#34;)
 		_ = a
 	}
 }
 
 func Benchmark_add(b *testing.B) {
 	for i := 0; i &lt; b.N; i++ {
-		a := &quot;a&quot; + &quot;a&quot;
+		a := &#34;a&#34; + &#34;a&#34;
 		_ = a
 	}
-}
-</code></pre>
-
+}</pre></td></tr></table>
+</div>
+</div>
 <p>bench的结果:</p>
-
-<pre><code>$ go test -run '^$' -benchmem  -bench .
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ go test -run &#39;^$&#39; -benchmem  -bench .
 goos: darwin
 goarch: amd64
 Benchmark_sprintf-4   	20000000	        83.0 ns/op	       2 B/op	       1 allocs/op
 Benchmark_add-4       	2000000000	         0.34 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	_/tmp/cat	2.484s
-</code></pre>
-
+ok  	_/tmp/cat	2.484s</pre></td></tr></table>
+</div>
+</div>
 <p>可以看出，对于字符串的连接，使用<code>+</code>比使用<code>Sprintf</code>性能要好上2个数量级，同时减少了内存分配。</p>
 
 <h3 id="小结-1">小结</h3>
@@ -506,63 +537,121 @@ ok  	_/tmp/cat	2.484s
 <h3 id="分析-2">分析</h3>
 
 <p>使用一个小demo描述这个问题:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
 
-<pre><code>package main
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;strconv&#34;</span>
 
-import (
-	&quot;fmt&quot;
-	&quot;strconv&quot;
+	<span class="s">&#34;stathat.com/c/consistent&#34;</span>
+<span class="p">)</span>
 
-	&quot;stathat.com/c/consistent&quot;
-)
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">t</span> <span class="o">:=</span> <span class="nx">consistent</span><span class="p">.</span><span class="nf">New</span><span class="p">()</span>
 
-func main() {
-	t := consistent.New()
+	<span class="nx">t</span><span class="p">.</span><span class="nx">NumberOfReplicas</span> <span class="p">=</span> <span class="mi">500</span>
 
-	t.NumberOfReplicas = 500
+	<span class="nx">nodeCnt</span> <span class="o">:=</span> <span class="mi">50</span>
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">nodeCnt</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">t</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">&#34;node-&#34;</span> <span class="o">+</span> <span class="nx">strconv</span><span class="p">.</span><span class="nf">Itoa</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
+	<span class="p">}</span>
 
-	nodeCnt := 50
-	for i := 0; i &lt; nodeCnt; i++ {
-		t.Add(&quot;node-&quot; + strconv.Itoa(i))
-	}
+	<span class="nx">testNum</span> <span class="o">:=</span> <span class="mi">5000000</span>
+	<span class="nx">result</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">testNum</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">strconv</span><span class="p">.</span><span class="nf">Itoa</span><span class="p">(</span><span class="nx">i</span><span class="p">));</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">result</span><span class="p">[</span><span class="nx">node</span><span class="p">]</span> <span class="p">=</span> <span class="nx">result</span><span class="p">[</span><span class="nx">node</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
 
-	testNum := 5000000
-	result := make(map[string]int)
-	for i := 0; i &lt; testNum; i++ {
-		if node, err := t.Get(strconv.Itoa(i)); err == nil {
-			result[node] = result[node] + 1
-		}
-	}
-
-	for k, v := range result {
-		fmt.Printf(&quot;node: %v, count: %v\n&quot;, k, v)
-	}
-}
-</code></pre>
-
+	<span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">result</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;node: %v, count: %v\n&#34;</span><span class="p">,</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span></pre></td></tr></table>
+</div>
+</div>
 <p>了解 <code>open-falcon</code> 的同学可能知道，<code>open-falcon</code> 监控数据点的写路径，是将监控数据点的<code>series ID</code>通过<code>一致性哈希</code>计算，再push到对应的graph实例。而上述代码，就是写路径<code>GetNodes</code>(获取graph实例) 的核心逻辑。</p>
 
 <p>上面将实例数设置为<code>50</code>，样本数设置为<code>500w</code>，虚拟节点则与<code>open-falcon</code>的官方设置相同，设置为<code>500</code>。那么这50个实例，分配结果是如何的呢？</p>
 
 <p>为了方便，直接看最大值和最小值的差异。结果如下，最小值为<code>65286</code>，最大值为<code>134657</code>。相差较大，graph实例的流量差异，就是从这里产生的。</p>
-
-<pre><code>$ go run hash.go | sort -nk 4 | gsed -n -e '1p' -e '$p'
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ go run hash.go | sort -nk 4 | gsed -n -e &#39;1p&#39; -e &#39;$p&#39;
 node: node-18, count: 65286
-node: node-7, count: 134657
-</code></pre>
-
+node: node-7, count: 134657</pre></td></tr></table>
+</div>
+</div>
 <p>而经过验证，简单的将虚拟节点的数量提高，并不会提高均匀度。以下是将虚拟节点设置为<code>10000</code>的结果:</p>
-
-<pre><code>$ go run hash.go | sort -nk 4 | gsed -n -e '1p' -e '$p'
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ go run hash.go | sort -nk 4 | gsed -n -e &#39;1p&#39; -e &#39;$p&#39;
 node: node-15, count: 80273
-node: node-27, count: 126070
-</code></pre>
-
+node: node-27, count: 126070</pre></td></tr></table>
+</div>
+</div>
 <p><code>open-falcon</code> 使用的一致性哈希实现是 <a href="https://github.com/stathat/consistent">stathat/consistent</a>，一个非常简单的一致性hash实现，其hash算法使用的是 <a href="https://github.com/stathat/consistent/blob/master/consistent.go#L244">crc32</a>。</p>
 
 <p>在非加密hash算法的实现中，crc32无论是在性能还是均匀度上都不是优选。下面对比了几种常见的hash算法在性能上的差异:</p>
-
-<pre><code>$ go test -run '^$' -benchmem  -bench .
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ go test -run &#39;^$&#39; -benchmem  -bench .
 goos: darwin
 goarch: amd64
 Benchmark_crcHashKeyByString-4        	20000000	        74.0 ns/op	      64 B/op	       1 allocs/op
@@ -570,18 +659,22 @@ Benchmark_fnv32HashKeyByString-4      	500000000	         3.76 ns/op	       0 B/
 Benchmark_murmur32HashKeyByString-4   	100000000	        23.8 ns/op	       0 B/op	       0 allocs/op
 Benchmark_sha1-4                      	 5000000	       392 ns/op	      96 B/op	       2 allocs/op
 PASS
-ok  	_/tmp/hash	8.541s
-</code></pre>
-
+ok  	_/tmp/hash	8.541s</pre></td></tr></table>
+</div>
+</div>
 <p>可以看到，相对<code>fnv32</code>和<code>murmur32</code>，<code>crc32</code>在性能方面完败。</p>
 
 <p>最后还加入了<code>sha1</code>的对比，相对于非加密hash算法，<code>sha1</code>的性能更弱一些。</p>
 
 <p>除了考量性能，还需要看各个hash算法均匀度，是否满足需求。以下是在上述模拟场景之下，几个流行hash算法的<code>均匀度</code>对比结果，仍是模拟500w样本，使用50个node，计算结果:</p>
-
-<pre><code>murmur32 &gt; fnv1 &gt; fnv1a &gt; xxHash &gt; crc32
-</code></pre>
-
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">murmur32 &gt; fnv1 &gt; fnv1a &gt; xxHash &gt; crc32</pre></td></tr></table>
+</div>
+</div>
 <p>上述结果，表现最差的是<code>crc32</code>，表现最好的是<code>murmur32</code>。因为时间久远，具体的结果没有记录下来，感兴趣的同学可以自行验证。</p>
 
 <p><strong>BTW，上述结果只代表本文所述环境，不具通用性。</strong></p>

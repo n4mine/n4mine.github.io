@@ -88,7 +88,7 @@
 
 <meta itemprop="datePublished" content="2017-09-25T18:10:41&#43;00:00" />
 <meta itemprop="dateModified" content="2017-09-25T18:10:41&#43;00:00" />
-<meta itemprop="wordCount" content="474">
+<meta itemprop="wordCount" content="481">
 
 
 
@@ -390,16 +390,26 @@ if (!doNotTrack) {
 
 <p>一般的跳板机都是先让用户输入动态密码，然后输入个人密码。<br />
 那么我们可以写个脚本如下，假设脚本名字为<code>fillme</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="cp">#!/bin/bash
+</span><span class="cp"></span><span class="nv">code</span><span class="o">=</span><span class="k">$(</span>balabala<span class="k">)</span> <span class="c1"># 生成code的shell语句</span>
+<span class="nv">pass</span><span class="o">=</span><span class="k">$(</span>labalaba<span class="k">)</span> <span class="c1"># 生成你个人密码的语句</span>
 
-<pre><code>#!/bin/bash
-code=$(balabala) # 生成code的shell语句
-pass=$(labalaba) # 生成你个人密码的语句
-
-echo ${code}
-sleep 0.5        # sleep是防止输入太快跳板机来不及反应
-echo ${pass}
-</code></pre>
-
+<span class="nb">echo</span> <span class="si">${</span><span class="nv">code</span><span class="si">}</span>
+sleep <span class="m">0</span>.5        <span class="c1"># sleep是防止输入太快跳板机来不及反应</span>
+<span class="nb">echo</span> <span class="si">${</span><span class="nv">pass</span><span class="si">}</span></pre></td></tr></table>
+</div>
+</div>
 <p>设置iterm2，在<code>Preferences -&gt; keys</code>或<code>Preferences -&gt; Profiles -&gt; keys</code>下，增加一组<code>Key Mappings</code><br />
 快捷键为<code>⌘\</code>(这是本人前期使用sudolikeaboss的快捷键，现在sudolikeaboss与1password配合起来有问题就放弃了)<br />
 Action设置为<code>Run Coprocess</code><br />

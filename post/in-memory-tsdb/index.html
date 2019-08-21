@@ -93,7 +93,7 @@ TSDB 多应用于监控系统等场景。">
 
 <meta itemprop="datePublished" content="2019-03-04T14:48:36&#43;08:00" />
 <meta itemprop="dateModified" content="2019-03-04T14:48:36&#43;08:00" />
-<meta itemprop="wordCount" content="3589">
+<meta itemprop="wordCount" content="3598">
 
 
 
@@ -500,8 +500,20 @@ if (!doNotTrack) {
 <p>以读为例，从原始的 <code>RLock -&gt; Read -&gt; RUnlock</code> ，经过分片锁的优化之后，变成 <code>getShard -&gt; shard.RLock -&gt; Read -&gt; shard.RUnlock</code> 。后者在高并发的场景下，效率会高很多。</p>
 
 <p>分片的算法，也很重要，如果<code>key</code>是整型，那么直接按照分片数求余即可。但我们的<code>key</code>是字符串，字符串到整数类型的转换方法有很多，我们需要的是一个<code>速度快</code>、<code>占用内存低</code>的方式，核心代码如下:</p>
-
-<pre><code>func fnv32(key string) uint32 {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func fnv32(key string) uint32 {
 	hash := uint32(2166136261)
 	const prime32 = uint32(16777619)
 	for i := 0; i &lt; len(key); i++ {
@@ -509,9 +521,9 @@ if (!doNotTrack) {
 		hash ^= uint32(key[i])
 	}
 	return hash
-}
-</code></pre>
-
+}</pre></td></tr></table>
+</div>
+</div>
 <p>以上就是 cacheserver 核心的数据模型，下面从读写路径2个角度来简要地描述一下具体的数据流。</p>
 
 <h4 id="写路径">写路径</h4>

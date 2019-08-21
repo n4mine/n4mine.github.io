@@ -95,7 +95,7 @@ if is evil
 
 <meta itemprop="datePublished" content="2014-11-13T17:53:55&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-13T17:53:55&#43;00:00" />
-<meta itemprop="wordCount" content="699">
+<meta itemprop="wordCount" content="726">
 
 
 
@@ -409,42 +409,75 @@ if (!doNotTrack) {
 <h1 id="方案">方案</h1>
 
 <p>先写最终实现，然后解释</p>
-
-<pre><code>set code &quot;&quot;;
-if ( $args ~ &quot;code=[^&amp;]*.*code=[^&amp;]*&quot; ) {
-    set $code &quot;${code}Y&quot;;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">set code &#34;&#34;;
+if ( $args ~ &#34;code=[^&amp;]*.*code=[^&amp;]*&#34; ) {
+    set $code &#34;${code}Y&#34;;
 }
 
-if ( $args ~ &quot;code=OVERSEA[^&amp;]*&quot; )  {
-    set $code &quot;${code}X&quot;;
+if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
+    set $code &#34;${code}X&#34;;
 }
 
-if ( $code ~ &quot;^X$&quot; ) {
+if ( $code ~ &#34;^X$&#34; ) {
     proxy_pass http://oversea;
 }
 
-if ( $address_type ~ &quot;lan&quot; ) {
+if ( $address_type ~ &#34;lan&#34; ) {
     proxy_pass http://lan;
 }
 
-proxy_pass http://wan;
-</code></pre>
-
+proxy_pass http://wan;</pre></td></tr></table>
+</div>
+</div>
 <p>nginx的set指令和if指令都工作在rewrite阶段。<code>rewrite阶段的指令会按照config文件中的书写顺序依次执行</code></p>
 
 <p>先从最简单实现开始，最开始想到的是如下写法</p>
-
-<pre><code>if ( $args ~ &quot;code=OVERSEA[^&amp;]*&quot; )  {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
     proxy_pass http://oversea;
 }
 
-if ( $address_type ~ &quot;lan&quot; ) {
+if ( $address_type ~ &#34;lan&#34; ) {
     proxy_pass http://lan;
 }
 
-proxy_pass http://wan;
-</code></pre>
-
+proxy_pass http://wan;</pre></td></tr></table>
+</div>
+</div>
 <p>但会带来一个问题，如果请求参数有两个CODE，不管是代码写土了还是恶意，这种行为都是可能出现的。<br />
 如何解析args就成了问题。<br />
 据我实验<code>$arg_xxx</code>这种方式取到的值的应该是在参数列表中xxx第一次出现时的value。</p>
