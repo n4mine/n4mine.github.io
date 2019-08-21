@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.56.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -62,8 +62,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://n4mine.github.io/" />
 
-<meta property="og:updated_time" content="2019-07-27T20:02:57&#43;08:00"/>
-
+<meta property="og:updated_time" content="2019-08-21T17:48:57+08:00" />
 <meta itemprop="name" content="n4mine&#39;s blog">
 <meta itemprop="description" content="n4mine&#39;s blog">
 
@@ -314,6 +313,47 @@ if (!doNotTrack) {
   <header class="post-header">
     <h1 class="post-title">
       
+      <a class="post-link" href="/post/open-falcon-change-hash-algorithm/">Open-Falcon更换hash算法</a>
+    </h1>
+    
+    <div class="post-meta">
+      <time datetime="2018-03-10" class="post-time">
+        2018-03-10
+      </time>
+      <div class="post-category">
+          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      
+      
+      
+    </div>
+  </header>
+  
+  <div class="post-content">
+    
+    <div class="post-summary">
+      <h2 id="背景">背景</h2>
+
+<p>原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是<a href="https://github.com/stathat/consistent">github.com/stathat/consistent</a><br />
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。<br />
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。<br />
+更换hash算法成为当务之急。</p>
+
+<p>我们将<code>CRC32 + 500虚拟节点</code>，变成了<code>murmur3 + 10000虚拟节点</code>, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/open-falcon-change-hash-algorithm/" class="read-more-link">阅读全文</a>
+    </div>
+    
+  </div>
+</article>
+
+    
+      <article class="post bg-white">
+  <header class="post-header">
+    <h1 class="post-title">
+      
       <a class="post-link" href="/post/a-case-when-using-sync.pool/">使用sync.Pool引起的case一例</a>
     </h1>
     
@@ -467,51 +507,6 @@ if (!doNotTrack) {
 </article>
 
     
-      <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/random-connection-timeout/">调用服务端随机性连接超时case一例</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2016-10-05" class="post-time">
-        2016-10-05
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="现象">现象</h1>
-
-<p>业务同学反馈，A服务调用B服务有连接超时</p>
-
-<h1 id="环境">环境</h1>
-
-<ul>
-<li>src：A服务, 以下均用src代指<br /></li>
-<li>dst：B服务, 以下均用dst代指<br /></li>
-<li>B服务通过lvs + nginx的方式对外服务<br /></li>
-<li>A服务连接超时设置为500ms<br /></li>
-</ul>
-    </div>
-    <div class="read-more">
-      <a href="/post/random-connection-timeout/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-    
   </section>
 
   
@@ -555,6 +550,10 @@ if (!doNotTrack) {
       
       <li >
         <a href="/page/5/">5</a>
+      </li>
+      
+      <li >
+        <a href="/page/6/">6</a>
       </li>
       
     </ul>

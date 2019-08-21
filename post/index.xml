@@ -6,10 +6,23 @@
     <description>Recent content in Posts on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 27 Jul 2019 20:02:57 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 21 Aug 2019 17:48:57 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Get Funcname and Callername in Golang</title>
+      <link>https://n4mine.github.io/post/get-funcname-and-callername-in-golang/</link>
+      <pubDate>Wed, 21 Aug 2019 17:48:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/get-funcname-and-callername-in-golang/</guid>
+      <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+
+&lt;p&gt;在 golang 中，往往需要获知当前的函数名及其调用者。&lt;/p&gt;
+
+&lt;p&gt;例如在监控场景，自动获取函数名的需求比较常见。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>15 分钟了解容器</title>
@@ -300,18 +313,6 @@ echo $res
 &lt;ul&gt;
 &lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP&lt;/li&gt;
 &lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>监控进程卡住导致内存耗尽</title>
-      <link>https://n4mine.github.io/post/run-out-of-memory/</link>
-      <pubDate>Fri, 02 Jan 2015 10:22:31 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/run-out-of-memory/</guid>
-      <description>&lt;h2 id=&#34;起因&#34;&gt;起因&lt;/h2&gt;
-
-&lt;p&gt;大早上收到报警，几台机器内存不足&lt;br /&gt;
-想上去查原因，已登录不上&lt;/p&gt;</description>
     </item>
     
   </channel>

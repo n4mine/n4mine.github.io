@@ -6,7 +6,7 @@
     <description>Recent content on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 27 Jul 2019 20:02:57 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 21 Aug 2019 17:48:57 +0800</lastBuildDate>
     
         <atom:link href="https://n4mine.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -82,6 +82,75 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 </description>
+      
+    </item>
+    
+    <item>
+      <title>Get Funcname and Callername in Golang</title>
+      <link>https://n4mine.github.io/post/get-funcname-and-callername-in-golang/</link>
+      <pubDate>Wed, 21 Aug 2019 17:48:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/get-funcname-and-callername-in-golang/</guid>
+      
+        <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+
+&lt;p&gt;在 golang 中，往往需要获知当前的函数名及其调用者。&lt;/p&gt;
+
+&lt;p&gt;例如在监控场景，自动获取函数名的需求比较常见。&lt;/p&gt;
+
+&lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
+
+&lt;p&gt;直接上代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func FuncAndCallerFunc() (string, string) {
+	pc := make([]uintptr, 15)
+	n := runtime.Callers(2, pc)
+	frames := runtime.CallersFrames(pc[:n])
+	frame, more := frames.Next()
+	var caller string
+	if more {
+		callerFra, _ := frames.Next()
+		caller = callerFra.Function
+	}
+	if len(caller) == 0 {
+		caller = &amp;quot;-&amp;quot;
+	}
+
+	return frame.Function, caller
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;测试一下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type A struct{}
+
+func main() {
+	_f, _c := FuncAndCallerFunc()
+	fmt.Printf(&amp;quot;in func: %v, caller is: %v\n&amp;quot;, _f, _c)
+	a := A{}
+	x(a)
+}
+
+func x(a A) {
+	_f, _c := FuncAndCallerFunc()
+	fmt.Printf(&amp;quot;in func: %v, caller is: %v\n&amp;quot;, _f, _c)
+	a.print()
+}
+
+func (A) print() {
+	_f, _c := FuncAndCallerFunc()
+	fmt.Printf(&amp;quot;in func: %v, caller is: %v\n&amp;quot;, _f, _c)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出为&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;in func: main.main, caller is: runtime.main
+in func: main.x, caller is: main.main
+in func: main.A.print, caller is: main.x
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       
     </item>
     
@@ -1928,44 +1997,6 @@ rd串讲了几个服务，thrift的http的都有。&lt;br /&gt;
 &lt;p&gt;&lt;code&gt;20:20&lt;/code&gt; 计划&lt;br /&gt;
 今日工作整理一下，再列一下明天的计划。&lt;br /&gt;
 收工&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>lua判断是否是私有IP地址</title>
-      <link>https://n4mine.github.io/post/private-ip-or-not/</link>
-      <pubDate>Tue, 03 Feb 2015 08:24:00 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/private-ip-or-not/</guid>
-      
-        <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
-
-&lt;pre&gt;&lt;code&gt;local current_remote_addr = &amp;quot;192.168.1.1&amp;quot;
-
-local ip_decimal = 0
-local postion = 3
-for i in string.gmatch(current_remote_addr, [[%d+]]) do
-    ip_decimal = ip_decimal + math.pow(256, postion) * i
-    postion = postion - 1
-end
-
-if ip_decimal &amp;gt;= 0x7f000000 and ip_decimal &amp;lt;= 0x7fffffff or -- 127.0.0.0 ~ 127.255.255.255
-    ip_decimal &amp;gt;= 0x0a000000 and ip_decimal &amp;lt;= 0x0affffff or -- 10.0.0.0 ~ 10.255.255.255
-    ip_decimal &amp;gt;= 0xac100000 and ip_decimal &amp;lt;= 0xac1fffff or -- 172.16.0.0 ~ 172.31.255.255
-    ip_decimal &amp;gt;= 0xc0a80000 and ip_decimal &amp;lt;= 0xc0a8ffff then   -- 192.168.0.0 ~ 192.168.255.255
-    print(current_remote_addr..&amp;quot; is a private ip&amp;quot;)
-else
-    print(current_remote_addr..&amp;quot; is not a private ip&amp;quot;)
-end
-&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       
