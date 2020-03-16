@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>lua on n4mine&#39;s blog</title>
@@ -18,7 +18,6 @@
       
       <guid>https://n4mine.github.io/post/private-ip-or-not/</guid>
       <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP&lt;/li&gt;
 &lt;/ul&gt;</description>
@@ -31,19 +30,14 @@
       
       <guid>https://n4mine.github.io/post/nginx_route_by_upstream_status/</guid>
       <description>&lt;h1 id=&#34;需求&#34;&gt;需求&lt;/h1&gt;
-
-&lt;p&gt;某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br /&gt;
+&lt;p&gt;某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br&gt;
 由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。&lt;/p&gt;
-
 &lt;h1 id=&#34;问题&#34;&gt;问题&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个&lt;/li&gt;
 &lt;li&gt;nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h1 id=&#34;解决方案&#34;&gt;解决方案&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;nginx + lua + subrequest&lt;/li&gt;
 &lt;li&gt;要在content阶段完成&lt;/li&gt;

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>技术 on n4mine&#39;s blog</title>
@@ -18,11 +18,8 @@
       
       <guid>https://n4mine.github.io/post/lttb-downsample/</guid>
       <description>&lt;h2 id=&#34;降采样&#34;&gt;降采样&lt;/h2&gt;
-
 &lt;p&gt;什么是降采样？在时序数据应用场景中，降采样通常是将&lt;code&gt;原始&lt;/code&gt;的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。&lt;/p&gt;
-
 &lt;p&gt;降采样带来的好处：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。&lt;/li&gt;
 &lt;li&gt;减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。&lt;/li&gt;
@@ -36,7 +33,6 @@
       
       <guid>https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/</guid>
       <description>&lt;h2 id=&#34;cacheserver是什么&#34;&gt;cacheserver是什么?&lt;/h2&gt;
-
 &lt;ul&gt;
 &lt;li&gt;基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库&lt;/li&gt;
 &lt;li&gt;其原理在以前的blog中有过描述, 见 &lt;a href=&#34;https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0&#34;&gt;Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现&lt;/a&gt;&lt;/li&gt;
@@ -50,7 +46,7 @@
       <pubDate>Thu, 18 Jul 2019 15:37:11 +0800</pubDate>
       
       <guid>https://n4mine.github.io/post/monitoring-system-hierarchy/</guid>
-      <description>&lt;p&gt;&lt;del&gt;开局一张图，剩下全靠编。&lt;/del&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;!-- raw HTML omitted --&gt;开局一张图，剩下全靠编。&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -60,15 +56,11 @@
       
       <guid>https://n4mine.github.io/post/in-memory-tsdb/</guid>
       <description>&lt;h2 id=&#34;tsdb&#34;&gt;TSDB&lt;/h2&gt;
-
 &lt;p&gt;先说 TSDB（时序数据库）是什么，下面的定义引用自 &lt;a href=&#34;https://en.wikipedia.org/wiki/Time_series_database&#34;&gt;Wikipedia&lt;/a&gt;&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;p&gt;&lt;code&gt;Influxdb&lt;/code&gt;，&lt;code&gt;Graphite&lt;/code&gt;，&lt;code&gt;RRDtool&lt;/code&gt;，&lt;code&gt;OpenTSDB&lt;/code&gt;等都是当下流行的TSDB实现。&lt;/p&gt;
-
 &lt;p&gt;TSDB 多应用于监控系统等场景。&lt;/p&gt;</description>
     </item>
     
@@ -79,9 +71,7 @@
       
       <guid>https://n4mine.github.io/post/optimize-falcon-graph/</guid>
       <description>&lt;p&gt;我司监控系统的底层存储架构使用的是 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus&#34;&gt;open-falcon&lt;/a&gt;，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。&lt;/p&gt;
-
 &lt;p&gt;但在我司，指标量一度达到3亿+，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。&lt;/p&gt;
-
 &lt;p&gt;本文从一个开发者的角度，阐述自本人接手以来对 &lt;code&gt;graph&lt;/code&gt;(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。&lt;/p&gt;</description>
     </item>
     
@@ -91,7 +81,7 @@
       <pubDate>Wed, 05 Dec 2018 14:43:45 +0800</pubDate>
       
       <guid>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-transfer/</guid>
-      <description>&lt;p&gt;在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。&lt;br /&gt;
+      <description>&lt;p&gt;在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。&lt;br&gt;
 本文结合我司在传输链路的建设，简述一下期间的一点思考。&lt;/p&gt;</description>
     </item>
     
@@ -102,9 +92,8 @@
       
       <guid>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-collector/</guid>
       <description>&lt;h2 id=&#34;写在前面&#34;&gt;写在前面&lt;/h2&gt;
-
-&lt;p&gt;监控系统这个话题很大。&lt;br /&gt;
-但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。&lt;br /&gt;
+&lt;p&gt;监控系统这个话题很大。&lt;br&gt;
+但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。&lt;br&gt;
 本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的&lt;del&gt;最佳实践&lt;/del&gt;解法，及本人对各个模块在实践中的一些思考。&lt;/p&gt;</description>
     </item>
     

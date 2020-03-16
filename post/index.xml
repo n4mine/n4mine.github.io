@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on n4mine&#39;s blog</title>
@@ -6,10 +6,22 @@
     <description>Recent content in Posts on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 21 Aug 2019 17:48:57 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 16 Mar 2020 18:40:57 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>用 map 实现 nginx 的动态 upstream</title>
+      <link>https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/</link>
+      <pubDate>Mon, 16 Mar 2020 18:40:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/</guid>
+      <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;在我们的场景下，nginx 的 upstream servers 是一堆容器。
+容器的主机名不变，但其 ip 可能发生变化。
+我希望在容器 ip 发生变化时，无需变更 nginx 的配置。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Get Funcname and Callername in Golang</title>
@@ -18,9 +30,7 @@
       
       <guid>https://n4mine.github.io/post/get-funcname-and-callername-in-golang/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
-
 &lt;p&gt;在 golang 中，往往需要获知当前的函数名及其调用者。&lt;/p&gt;
-
 &lt;p&gt;例如在监控场景，自动获取函数名的需求比较常见。&lt;/p&gt;</description>
     </item>
     
@@ -31,15 +41,11 @@
       
       <guid>https://n4mine.github.io/post/understand-container-in-15-minutes/</guid>
       <description>&lt;h2 id=&#34;什么是容器&#34;&gt;什么是容器？&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/upgrade-vr.png&#34; alt=&#34;upgrade vr&#34; /&gt;
-&lt;center&gt;图片来自 &lt;a href=&#34;https://movie.douban.com/subject/27093707/&#34;&gt;Upgrade (2018)&lt;/a&gt;&lt;/center&gt;&lt;/p&gt;
-
-&lt;p&gt;所谓容器，其实就像上图:&lt;br /&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/upgrade-vr.png&#34; alt=&#34;upgrade vr&#34;&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;所谓容器，其实就像上图:&lt;br&gt;
 把 VR 玩家放在一个其以为是家的地方(&lt;code&gt;chroot&lt;/code&gt;)，创造目标所需环境(&lt;code&gt;namespaces&lt;/code&gt;)，再定期定量的提供水、食物(&lt;code&gt;cgroups&lt;/code&gt;)供其维续生命。&lt;/p&gt;
-
 &lt;p&gt;chroot、namespace、cgroups，就是容器的核心技术。&lt;/p&gt;
-
 &lt;p&gt;本文将使用几个有限的命令，用 15 分钟的时间，让读者直观的了解&lt;code&gt;容器&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
@@ -50,11 +56,8 @@
       
       <guid>https://n4mine.github.io/post/lttb-downsample/</guid>
       <description>&lt;h2 id=&#34;降采样&#34;&gt;降采样&lt;/h2&gt;
-
 &lt;p&gt;什么是降采样？在时序数据应用场景中，降采样通常是将&lt;code&gt;原始&lt;/code&gt;的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。&lt;/p&gt;
-
 &lt;p&gt;降采样带来的好处：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。&lt;/li&gt;
 &lt;li&gt;减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。&lt;/li&gt;
@@ -68,7 +71,6 @@
       
       <guid>https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/</guid>
       <description>&lt;h2 id=&#34;cacheserver是什么&#34;&gt;cacheserver是什么?&lt;/h2&gt;
-
 &lt;ul&gt;
 &lt;li&gt;基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库&lt;/li&gt;
 &lt;li&gt;其原理在以前的blog中有过描述, 见 &lt;a href=&#34;https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0&#34;&gt;Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现&lt;/a&gt;&lt;/li&gt;
@@ -82,7 +84,7 @@
       <pubDate>Thu, 18 Jul 2019 15:37:11 +0800</pubDate>
       
       <guid>https://n4mine.github.io/post/monitoring-system-hierarchy/</guid>
-      <description>&lt;p&gt;&lt;del&gt;开局一张图，剩下全靠编。&lt;/del&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;!-- raw HTML omitted --&gt;开局一张图，剩下全靠编。&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -92,15 +94,11 @@
       
       <guid>https://n4mine.github.io/post/in-memory-tsdb/</guid>
       <description>&lt;h2 id=&#34;tsdb&#34;&gt;TSDB&lt;/h2&gt;
-
 &lt;p&gt;先说 TSDB（时序数据库）是什么，下面的定义引用自 &lt;a href=&#34;https://en.wikipedia.org/wiki/Time_series_database&#34;&gt;Wikipedia&lt;/a&gt;&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;p&gt;&lt;code&gt;Influxdb&lt;/code&gt;，&lt;code&gt;Graphite&lt;/code&gt;，&lt;code&gt;RRDtool&lt;/code&gt;，&lt;code&gt;OpenTSDB&lt;/code&gt;等都是当下流行的TSDB实现。&lt;/p&gt;
-
 &lt;p&gt;TSDB 多应用于监控系统等场景。&lt;/p&gt;</description>
     </item>
     
@@ -111,9 +109,7 @@
       
       <guid>https://n4mine.github.io/post/optimize-falcon-graph/</guid>
       <description>&lt;p&gt;我司监控系统的底层存储架构使用的是 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus&#34;&gt;open-falcon&lt;/a&gt;，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。&lt;/p&gt;
-
 &lt;p&gt;但在我司，指标量一度达到3亿+，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。&lt;/p&gt;
-
 &lt;p&gt;本文从一个开发者的角度，阐述自本人接手以来对 &lt;code&gt;graph&lt;/code&gt;(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。&lt;/p&gt;</description>
     </item>
     
@@ -123,7 +119,7 @@
       <pubDate>Wed, 05 Dec 2018 14:43:45 +0800</pubDate>
       
       <guid>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-transfer/</guid>
-      <description>&lt;p&gt;在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。&lt;br /&gt;
+      <description>&lt;p&gt;在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。&lt;br&gt;
 本文结合我司在传输链路的建设，简述一下期间的一点思考。&lt;/p&gt;</description>
     </item>
     
@@ -133,10 +129,10 @@
       <pubDate>Tue, 03 Jul 2018 11:28:34 +0800</pubDate>
       
       <guid>https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/</guid>
-      <description>&lt;h2 id=&#34;基于-proc-pid-stat和-proc-stat计算指定进程的cpu利用率&#34;&gt;基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;基于procpidstat和procstat计算指定进程的cpu利用率&#34;&gt;基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
@@ -150,9 +146,9 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/sh
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/sh
 &lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
 &lt;span class=&#34;nv&#34;&gt;corenum&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;nproc --all&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
 &lt;span class=&#34;nv&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;xxx
@@ -165,7 +161,8 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
 
 &lt;span class=&#34;nv&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;BEGIN{print &amp;#39;&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$p_totaltime2&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$p_totaltime1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;)*100/(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$totaltime2&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$totaltime1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;)*&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$corenum&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;}&amp;#39;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
 
-&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$res&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$res&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;</description>
     </item>
@@ -177,9 +174,8 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       
       <guid>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-collector/</guid>
       <description>&lt;h2 id=&#34;写在前面&#34;&gt;写在前面&lt;/h2&gt;
-
-&lt;p&gt;监控系统这个话题很大。&lt;br /&gt;
-但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。&lt;br /&gt;
+&lt;p&gt;监控系统这个话题很大。&lt;br&gt;
+但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。&lt;br&gt;
 本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的&lt;del&gt;最佳实践&lt;/del&gt;解法，及本人对各个模块在实践中的一些思考。&lt;/p&gt;</description>
     </item>
     
@@ -190,12 +186,10 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       
       <guid>https://n4mine.github.io/post/open-falcon-change-hash-algorithm/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
-
-&lt;p&gt;原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是&lt;a href=&#34;https://github.com/stathat/consistent&#34;&gt;github.com/stathat/consistent&lt;/a&gt;&lt;br /&gt;
-这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。&lt;br /&gt;
-而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。&lt;br /&gt;
+&lt;p&gt;原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是&lt;a href=&#34;https://github.com/stathat/consistent&#34;&gt;github.com/stathat/consistent&lt;/a&gt;&lt;br&gt;
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。&lt;br&gt;
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。&lt;br&gt;
 更换hash算法成为当务之急。&lt;/p&gt;
-
 &lt;p&gt;我们将&lt;code&gt;CRC32 + 500虚拟节点&lt;/code&gt;，变成了&lt;code&gt;murmur3 + 10000虚拟节点&lt;/code&gt;, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼&lt;/p&gt;</description>
     </item>
     
@@ -206,7 +200,6 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       
       <guid>https://n4mine.github.io/post/a-case-when-using-sync.pool/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
-
 &lt;p&gt;open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题&lt;/p&gt;</description>
     </item>
     
@@ -226,12 +219,10 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       
       <guid>https://n4mine.github.io/post/autologin-with-iterm2-coprocess/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
-
-&lt;p&gt;日常工作中，经常需要通过跳板机登录线上机器。&lt;br /&gt;
-而为了安全起见，系统部的同学又启用了otp，动态生成code&lt;br /&gt;
+&lt;p&gt;日常工作中，经常需要通过跳板机登录线上机器。&lt;br&gt;
+而为了安全起见，系统部的同学又启用了otp，动态生成code&lt;br&gt;
 给经常登录线上机器的使用者，带来了很大不便&lt;/p&gt;
-
-&lt;p&gt;作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。&lt;br /&gt;
+&lt;p&gt;作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。&lt;br&gt;
 什么是iterm2的coprocess，可参见其官方说明 &lt;a href=&#34;https://www.iterm2.com/documentation-coprocesses.html&#34;&gt;coprocesses&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
@@ -242,17 +233,14 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       
       <guid>https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
-
-&lt;p&gt;golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一&lt;br /&gt;
+&lt;p&gt;golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一&lt;br&gt;
 而对于一个公司内部项目来讲, 主要的需求有以下几点&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;方便的依赖包版本管理&lt;/li&gt;
 &lt;li&gt;方便协同开发&lt;/li&gt;
 &lt;li&gt;尽可能不依赖其编译所在环境&lt;/li&gt;
 &lt;li&gt;除基础包之外, 第三方包尽可能的自包含&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;</description>
     </item>
     
@@ -263,16 +251,13 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       
       <guid>https://n4mine.github.io/post/random-connection-timeout/</guid>
       <description>&lt;h1 id=&#34;现象&#34;&gt;现象&lt;/h1&gt;
-
 &lt;p&gt;业务同学反馈，A服务调用B服务有连接超时&lt;/p&gt;
-
 &lt;h1 id=&#34;环境&#34;&gt;环境&lt;/h1&gt;
-
 &lt;ul&gt;
-&lt;li&gt;src：A服务, 以下均用src代指&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;dst：B服务, 以下均用dst代指&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;B服务通过lvs + nginx的方式对外服务&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;A服务连接超时设置为500ms&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;src：A服务, 以下均用src代指&lt;/li&gt;
+&lt;li&gt;dst：B服务, 以下均用dst代指&lt;/li&gt;
+&lt;li&gt;B服务通过lvs + nginx的方式对外服务&lt;/li&gt;
+&lt;li&gt;A服务连接超时设置为500ms&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
@@ -283,16 +268,13 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       
       <guid>https://n4mine.github.io/post/fs-size-eta/</guid>
       <description>&lt;h2 id=&#34;名词解释&#34;&gt;名词解释&lt;/h2&gt;
-
-&lt;p&gt;eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。&lt;br /&gt;
+&lt;p&gt;eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。&lt;br&gt;
 拿到运维系统中，含义即为某个分区预计还有多长时间被打满。（暂定为此名字，还没想到其他贴切的词）&lt;/p&gt;
-
 &lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
-
-&lt;p&gt;为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？&lt;br /&gt;
-原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。&lt;br /&gt;
-而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。&lt;br /&gt;
-数学上有很多求平均数的方法&lt;sup&gt;[1]&lt;/sup&gt;，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。&lt;/p&gt;</description>
+&lt;p&gt;为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？&lt;br&gt;
+原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。&lt;br&gt;
+而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。&lt;br&gt;
+数学上有很多求平均数的方法&lt;!-- raw HTML omitted --&gt;[1]&lt;!-- raw HTML omitted --&gt;，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -301,8 +283,8 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       <pubDate>Thu, 31 Dec 2015 22:43:29 +0000</pubDate>
       
       <guid>https://n4mine.github.io/post/2015/</guid>
-      <description>&lt;p&gt;又是一年终了时，又吸了一年的京霾，又老了一岁。&lt;br /&gt;
-年龄愈长，越觉时间过得快。&lt;br /&gt;
+      <description>&lt;p&gt;又是一年终了时，又吸了一年的京霾，又老了一岁。&lt;br&gt;
+年龄愈长，越觉时间过得快。&lt;br&gt;
 毕业那刻，仿佛还在昨天，不过是梦一场，6年多的时间过去了。&lt;/p&gt;</description>
     </item>
     
@@ -312,25 +294,11 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       <pubDate>Thu, 05 Mar 2015 20:49:00 +0000</pubDate>
       
       <guid>https://n4mine.github.io/post/sre-diary/</guid>
-      <description>&lt;p&gt;本文记录一个sre一天的工作&lt;br /&gt;
-背景交代：80后、单身&lt;br /&gt;
-职位：sre&lt;br /&gt;
+      <description>&lt;p&gt;本文记录一个sre一天的工作&lt;br&gt;
+背景交代：80后、单身&lt;br&gt;
+职位：sre&lt;br&gt;
 公司：规模不小但sre团队组建不久&lt;/p&gt;
-
 &lt;p&gt;以下是正文&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>lua判断是否是私有IP地址</title>
-      <link>https://n4mine.github.io/post/private-ip-or-not/</link>
-      <pubDate>Tue, 03 Feb 2015 08:24:00 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/private-ip-or-not/</guid>
-      <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP&lt;/li&gt;
-&lt;/ul&gt;</description>
     </item>
     
   </channel>

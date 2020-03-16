@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>nginx on n4mine&#39;s blog</title>
@@ -6,10 +6,22 @@
     <description>Recent content in nginx on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 05 Oct 2016 09:47:13 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 16 Mar 2020 18:40:57 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/tags/nginx/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>用 map 实现 nginx 的动态 upstream</title>
+      <link>https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/</link>
+      <pubDate>Mon, 16 Mar 2020 18:40:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/</guid>
+      <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;在我们的场景下，nginx 的 upstream servers 是一堆容器。
+容器的主机名不变，但其 ip 可能发生变化。
+我希望在容器 ip 发生变化时，无需变更 nginx 的配置。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>调用服务端随机性连接超时case一例</title>
@@ -18,16 +30,13 @@
       
       <guid>https://n4mine.github.io/post/random-connection-timeout/</guid>
       <description>&lt;h1 id=&#34;现象&#34;&gt;现象&lt;/h1&gt;
-
 &lt;p&gt;业务同学反馈，A服务调用B服务有连接超时&lt;/p&gt;
-
 &lt;h1 id=&#34;环境&#34;&gt;环境&lt;/h1&gt;
-
 &lt;ul&gt;
-&lt;li&gt;src：A服务, 以下均用src代指&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;dst：B服务, 以下均用dst代指&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;B服务通过lvs + nginx的方式对外服务&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;A服务连接超时设置为500ms&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;src：A服务, 以下均用src代指&lt;/li&gt;
+&lt;li&gt;dst：B服务, 以下均用dst代指&lt;/li&gt;
+&lt;li&gt;B服务通过lvs + nginx的方式对外服务&lt;/li&gt;
+&lt;li&gt;A服务连接超时设置为500ms&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
@@ -38,15 +47,12 @@
       
       <guid>https://n4mine.github.io/post/nginx_geo/</guid>
       <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;根据来源IP区分production/preview环境&lt;/li&gt;
 &lt;li&gt;根据来源IP区分限速/非限速&lt;/li&gt;
 &lt;li&gt;结合上面两者&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;geo, map&lt;/li&gt;
 &lt;/ul&gt;</description>
@@ -59,14 +65,11 @@
       
       <guid>https://n4mine.github.io/post/if_in_nginx/</guid>
       <description>&lt;h1 id=&#34;场景&#34;&gt;场景&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&amp;hellip;，有则upstream到指定backend&lt;/li&gt;
 &lt;li&gt;根据来源IP区分production环境和preview环境&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h1 id=&#34;问题&#34;&gt;问题&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;上面提到的参数可能重复出现&lt;/li&gt;
 &lt;li&gt;if不支持复杂的逻辑运算&lt;/li&gt;
@@ -81,19 +84,14 @@
       
       <guid>https://n4mine.github.io/post/nginx_route_by_upstream_status/</guid>
       <description>&lt;h1 id=&#34;需求&#34;&gt;需求&lt;/h1&gt;
-
-&lt;p&gt;某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br /&gt;
+&lt;p&gt;某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。&lt;br&gt;
 由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。&lt;/p&gt;
-
 &lt;h1 id=&#34;问题&#34;&gt;问题&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个&lt;/li&gt;
 &lt;li&gt;nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h1 id=&#34;解决方案&#34;&gt;解决方案&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;nginx + lua + subrequest&lt;/li&gt;
 &lt;li&gt;要在content阶段完成&lt;/li&gt;

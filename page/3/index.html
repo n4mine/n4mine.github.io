@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -51,7 +51,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -61,12 +61,9 @@
 <meta property="og:description" content="n4mine&#39;s blog" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://n4mine.github.io/" />
-
-<meta property="og:updated_time" content="2019-08-21T17:48:57+08:00" />
+<meta property="og:updated_time" content="2014-07-23T07:41:43+00:00" />
 <meta itemprop="name" content="n4mine&#39;s blog">
-<meta itemprop="description" content="n4mine&#39;s blog">
-
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="description" content="n4mine&#39;s blog"><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="n4mine&#39;s blog"/>
 <meta name="twitter:description" content="n4mine&#39;s blog"/>
 
@@ -316,6 +313,43 @@ if (!doNotTrack) {
   <header class="post-header">
     <h1 class="post-title">
       
+      <a class="post-link" href="/post/the-practice-of-buiding-monitoring-system-collector/">监控系统构建实践-采集篇</a>
+    </h1>
+    
+    <div class="post-meta">
+      <time datetime="2018-04-30" class="post-time">
+        2018-04-30
+      </time>
+      <div class="post-category">
+          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      
+      
+      
+    </div>
+  </header>
+  
+  <div class="post-content">
+    
+    <div class="post-summary">
+      <h2 id="写在前面">写在前面</h2>
+<p>监控系统这个话题很大。<br>
+但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。<br>
+本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的<del>最佳实践</del>解法，及本人对各个模块在实践中的一些思考。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/the-practice-of-buiding-monitoring-system-collector/" class="read-more-link">阅读全文</a>
+    </div>
+    
+  </div>
+</article>
+
+  
+    <article class="post bg-white">
+  <header class="post-header">
+    <h1 class="post-title">
+      
       <a class="post-link" href="/post/open-falcon-change-hash-algorithm/">Open-Falcon更换hash算法</a>
     </h1>
     
@@ -337,12 +371,10 @@ if (!doNotTrack) {
     
     <div class="post-summary">
       <h2 id="背景">背景</h2>
-
-<p>原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是<a href="https://github.com/stathat/consistent">github.com/stathat/consistent</a><br />
-这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。<br />
-而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。<br />
+<p>原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是<a href="https://github.com/stathat/consistent">github.com/stathat/consistent</a><br>
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。<br>
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。<br>
 更换hash算法成为当务之急。</p>
-
 <p>我们将<code>CRC32 + 500虚拟节点</code>，变成了<code>murmur3 + 10000虚拟节点</code>, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼</p>
     </div>
     <div class="read-more">
@@ -378,7 +410,6 @@ if (!doNotTrack) {
     
     <div class="post-summary">
       <h2 id="背景">背景</h2>
-
 <p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
     </div>
     <div class="read-more">
@@ -448,62 +479,14 @@ if (!doNotTrack) {
     
     <div class="post-summary">
       <h1 id="背景">背景</h1>
-
-<p>日常工作中，经常需要通过跳板机登录线上机器。<br />
-而为了安全起见，系统部的同学又启用了otp，动态生成code<br />
+<p>日常工作中，经常需要通过跳板机登录线上机器。<br>
+而为了安全起见，系统部的同学又启用了otp，动态生成code<br>
 给经常登录线上机器的使用者，带来了很大不便</p>
-
-<p>作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。<br />
+<p>作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。<br>
 什么是iterm2的coprocess，可参见其官方说明 <a href="https://www.iterm2.com/documentation-coprocesses.html">coprocesses</a></p>
     </div>
     <div class="read-more">
       <a href="/post/autologin-with-iterm2-coprocess/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-  
-    <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/organizing-golang-projects-and-dependencies/">organizing golang projects and dependencies</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-01-15" class="post-time">
-        2017-01-15
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="背景">背景</h1>
-
-<p>golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一<br />
-而对于一个公司内部项目来讲, 主要的需求有以下几点</p>
-
-<ol>
-<li>方便的依赖包版本管理</li>
-<li>方便协同开发</li>
-<li>尽可能不依赖其编译所在环境</li>
-<li>除基础包之外, 第三方包尽可能的自包含</li>
-</ol>
-
-<p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/organizing-golang-projects-and-dependencies/" class="read-more-link">阅读全文</a>
     </div>
     
   </div>
@@ -625,7 +608,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/nginx_geo/" />
@@ -51,7 +51,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -60,14 +60,11 @@
 <meta property="og:title" content="nginx通过geo实现production/preview环境分离，限速/非限速IP分离" />
 <meta property="og:description" content="场景
 
-
 根据来源IP区分production/preview环境
 根据来源IP区分限速/非限速
 结合上面两者
 
-
 实现
-
 
 geo, map
 " />
@@ -78,38 +75,29 @@ geo, map
 <meta itemprop="name" content="nginx通过geo实现production/preview环境分离，限速/非限速IP分离">
 <meta itemprop="description" content="场景
 
-
 根据来源IP区分production/preview环境
 根据来源IP区分限速/非限速
 结合上面两者
 
-
 实现
-
 
 geo, map
 ">
-
-
 <meta itemprop="datePublished" content="2014-11-13T20:14:06&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-13T20:14:06&#43;00:00" />
 <meta itemprop="wordCount" content="383">
 
 
 
-<meta itemprop="keywords" content="nginx," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="nginx," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="nginx通过geo实现production/preview环境分离，限速/非限速IP分离"/>
 <meta name="twitter:description" content="场景
-
 
 根据来源IP区分production/preview环境
 根据来源IP区分限速/非限速
 结合上面两者
 
-
 实现
-
 
 geo, map
 "/>
@@ -376,37 +364,26 @@ if (!doNotTrack) {
 <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
-    <nav id="TableOfContents">
-<ul>
-<li><a href="#场景">场景</a></li>
-<li><a href="#实现">实现</a></li>
-<li><a href="#啰嗦一下">啰嗦一下</a></li>
-<li><a href="#使用">使用</a></li>
-</ul>
-</nav>
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
 
     
     <div class="post-content">
       <h1 id="场景">场景</h1>
-
 <ul>
 <li>根据来源IP区分production/preview环境</li>
 <li>根据来源IP区分限速/非限速</li>
 <li>结合上面两者</li>
 </ul>
-
 <h1 id="实现">实现</h1>
-
 <ul>
 <li>geo, map</li>
 </ul>
-
 <p>不多说，上实现，具体看注释</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -437,9 +414,9 @@ if (!doNotTrack) {
 </span><span class="lnt">29
 </span><span class="lnt">30
 </span><span class="lnt">31
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"># ip address classfiy detail:
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># ip address classfiy detail:
 # ^1 limit
 # ^0 unlimit
 # lan$ preview
@@ -469,35 +446,31 @@ limit_req_zone $limit_ip_list zone=limit_yr_sister_ip:500m rate=9999r/s;
 map $white_ip_list $address_type {
     default    wan;
     ~lan$      lan;
-}</pre></td></tr></table>
+}
+</code></pre></td></tr></table>
 </div>
-</div>
-<h1 id="啰嗦一下">啰嗦一下</h1>
-
-<p>其实一切都写在注释里了<br />
-最初实现时是很长一坨的正则判断remote_addr是否是指定地址，然后做production/preview的区分。<br />
-而limit/unlimited的实现则使用geo和map。<br />
+</div><h1 id="啰嗦一下">啰嗦一下</h1>
+<p>其实一切都写在注释里了<br>
+最初实现时是很长一坨的正则判断remote_addr是否是指定地址，然后做production/preview的区分。<br>
+而limit/unlimited的实现则使用geo和map。<br>
 后来我把它们结合到了一起，最后使用正则来判断其属性归属。</p>
-
 <h1 id="使用">使用</h1>
-
 <ul>
-<li><p>limit调用</p>
+<li>limit调用</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">limit_req zone=limit_yr_sister burst=5 nodelay;</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">limit_req zone=limit_yr_sister burst=5 nodelay;
+</code></pre></td></tr></table>
 </div>
-</div></li>
-
-<li><p>production/preview分离</p></li>
+</div><ul>
+<li>production/preview分离</li>
 </ul>
-
-<p>可参照上一篇blog <a href="http://n4mine.github.io/post/if_in_nginx/">nginx使用if实现多重判断case一例</a><br />
+<p>可参照上一篇blog <a href="http://n4mine.github.io/post/if_in_nginx/">nginx使用if实现多重判断case一例</a><br>
 设置一个flag，然后正则判断一下就OK了。</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -641,7 +614,7 @@ map $white_ip_list $address_type {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

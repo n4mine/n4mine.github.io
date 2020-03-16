@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on n4mine&#39;s blog</title>
@@ -6,7 +6,7 @@
     <description>Recent content in Categories on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 21 Aug 2019 17:48:57 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 16 Mar 2020 18:40:57 +0800</lastBuildDate>
     
 	<atom:link href="https://n4mine.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>技术</title>
       <link>https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/</link>
-      <pubDate>Wed, 21 Aug 2019 17:48:57 +0800</pubDate>
+      <pubDate>Mon, 16 Mar 2020 18:40:57 +0800</pubDate>
       
       <guid>https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/</guid>
       <description></description>

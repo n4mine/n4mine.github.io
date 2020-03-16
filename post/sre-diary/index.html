@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/sre-diary/" />
@@ -56,7 +56,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -67,7 +67,6 @@
 背景交代：80后、单身
 职位：sre
 公司：规模不小但sre团队组建不久
-
 以下是正文" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://n4mine.github.io/post/sre-diary/" />
@@ -78,24 +77,19 @@
 背景交代：80后、单身
 职位：sre
 公司：规模不小但sre团队组建不久
-
 以下是正文">
-
-
 <meta itemprop="datePublished" content="2015-03-05T20:49:00&#43;00:00" />
 <meta itemprop="dateModified" content="2015-03-05T20:49:00&#43;00:00" />
 <meta itemprop="wordCount" content="1956">
 
 
 
-<meta itemprop="keywords" content="生活," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="生活," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="一个普通sre一天的工作记录"/>
 <meta name="twitter:description" content="本文记录一个sre一天的工作
 背景交代：80后、单身
 职位：sre
 公司：规模不小但sre团队组建不久
-
 以下是正文"/>
 
 <!--[if lte IE 9]>
@@ -360,146 +354,110 @@ if (!doNotTrack) {
 <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
-    
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
 
     
     <div class="post-content">
-      <p>本文记录一个sre一天的工作<br />
-背景交代：80后、单身<br />
-职位：sre<br />
+      <p>本文记录一个sre一天的工作<br>
+背景交代：80后、单身<br>
+职位：sre<br>
 公司：规模不小但sre团队组建不久</p>
-
 <p>以下是正文</p>
-
-<p><code>6:16</code> 惊醒<br />
-最近总是做些关于以前的人和事的梦，难道是老了开始怀旧了？发条微博感慨下。<br />
+<p><code>6:16</code> 惊醒<br>
+最近总是做些关于以前的人和事的梦，难道是老了开始怀旧了？发条微博感慨下。<br>
 看了下短信、IM。昨晚有几条业务的报警，呃，电脑离得有点远，又舍不得温暖的被窝，一会儿再去看下</p>
-
-<p><code>6:20</code> 强迫症<br />
+<p><code>6:20</code> 强迫症<br>
 手机里所有有提示的app，都打开一下以消灭右上角的红色数字。美拍里有个翻唱排行榜的用户，听起来很不错，听了几首</p>
-
-<p><code>6:40</code> 起床<br />
+<p><code>6:40</code> 起床<br>
 去个洗手间，顺便洗把脸</p>
-
-<p><code>6:50</code> 电脑<br />
+<p><code>6:50</code> 电脑<br>
 扫一眼邮件，昨天我总结的case study有rd更新了一下，讲到接口meantime不稳定与其服务localcache增长导致gc抖动有关，在尝试从代码层解决，但我认为这可能不是根本原因，还是因为依赖层的服务挂掉的关联性更大一些</p>
-
-<p><code>6:55</code> 处理报警<br />
-先看昨天的x集群的swap使用情况，昨天x集群整体有个a服务swap瞬间疯长，为防止影响x集群自身服务，已通过批量重启a服务缓解，随便找出几台x集群的节点观察下，从graph上来看a服务没有发飙的迹象；<br />
-b服务thrift的一个接口，meantime在3:10的时候抖了一下，只是一个尖峰，其他节点没有报警，扫一下其他报警，看看有没有相关联的；<br />
+<p><code>6:55</code> 处理报警<br>
+先看昨天的x集群的swap使用情况，昨天x集群整体有个a服务swap瞬间疯长，为防止影响x集群自身服务，已通过批量重启a服务缓解，随便找出几台x集群的节点观察下，从graph上来看a服务没有发飙的迹象；<br>
+b服务thrift的一个接口，meantime在3:10的时候抖了一下，只是一个尖峰，其他节点没有报警，扫一下其他报警，看看有没有相关联的；<br>
 c服务的一个获取队列size的指标在1:40 - 2:20之间超过阈值，引起报警。其他graph暂时没有线索，发到IM上，告知RD一下；</p>
-
-<p><code>7:10</code> 微信<br />
-妹妹提醒，今天可以买5.3的回程票了。<br />
-好多年五一没回家了，今年正赶上父亲的祭日。2年的时间，过去的好快。<br />
-顺便发会儿呆，看看北京外面的高楼大厦。天气不怎么样。<br />
+<p><code>7:10</code> 微信<br>
+妹妹提醒，今天可以买5.3的回程票了。<br>
+好多年五一没回家了，今年正赶上父亲的祭日。2年的时间，过去的好快。<br>
+顺便发会儿呆，看看北京外面的高楼大厦。天气不怎么样。<br>
 和妹妹聊一会儿。她最近在搞自己的公司，我也帮不上什么忙，只能干看着。</p>
-
-<p><code>7:20</code> 行事历<br />
+<p><code>7:20</code> 行事历<br>
 下午有个rd串讲服务</p>
-
-<p><code>7:25</code> 微博<br />
-刷一刷，看看有什么感兴趣的内容。<br />
-嗯？有个相互关注的妹子发了条生日快乐的微博，这是过生日了？赞一下<br />
-嗯？都说Apple会出rMBA。关我鸟事！<br />
-嗯？jdk 7要end of life了。关我鸟事！<br />
-嗯？iPhone 6s据传升级到2G内存了。关我鸟事！反正我今年绝对不换手机了。<br />
+<p><code>7:25</code> 微博<br>
+刷一刷，看看有什么感兴趣的内容。<br>
+嗯？有个相互关注的妹子发了条生日快乐的微博，这是过生日了？赞一下<br>
+嗯？都说Apple会出rMBA。关我鸟事！<br>
+嗯？jdk 7要end of life了。关我鸟事！<br>
+嗯？iPhone 6s据传升级到2G内存了。关我鸟事！反正我今年绝对不换手机了。<br>
 嗯？今天元宵节了。关我鸟事！嗯，记得一会儿给老妈打个电话</p>
-
-<p><code>7:40</code> 闹铃<br />
+<p><code>7:40</code> 闹铃<br>
 人到了年龄，比闹铃都早，悲剧！</p>
-
-<p><code>8:00</code> 想法<br />
-突然有了一个想法，想把自己的一天用文字的形式记录下来。<br />
+<p><code>8:00</code> 想法<br>
+突然有了一个想法，想把自己的一天用文字的形式记录下来。<br>
 恩，就这么干，先用wiz笔记简单记下来，无所谓格式了，晚上收工的时候发到blog上。</p>
-
-<p><code>8:16</code> 音乐<br />
+<p><code>8:16</code> 音乐<br>
 “繁星点点 - 庄心妍”，刚好放这首歌，很不错。</p>
-
-<p><code>8:25</code> IM、邮件<br />
-各种IM上看看<br />
+<p><code>8:25</code> IM、邮件<br>
+各种IM上看看<br>
 个人邮件收一收，其实没什么重要的事，就是想把它置为已读。:-D</p>
-
 <p><code>8:35</code> 洗漱</p>
-
-<p><code>8:50</code> 电影<br />
-看到复仇者联盟2的预告。嗯，可以去电影院看看那种。<br />
+<p><code>8:50</code> 电影<br>
+看到复仇者联盟2的预告。嗯，可以去电影院看看那种。<br>
 本人看电影的分类就两种，值得去电影院的和在电脑上看就可以的。</p>
-
-<p><code>9:00</code> 准备上班<br />
+<p><code>9:00</code> 准备上班<br>
 打算路上看看有什么吃的，胃有点不舒服。</p>
-
-<p><code>9:30</code> 班车<br />
-公司有班车，算是个福利。<br />
+<p><code>9:30</code> 班车<br>
+公司有班车，算是个福利。<br>
 半路买了个煎饼，当做早餐</p>
-
-<p><code>9:45</code> 公司<br />
-15分钟车程，到公司了<br />
-路上和老妈聊了一路。聊家里的事，聊我这边的事<br />
+<p><code>9:45</code> 公司<br>
+15分钟车程，到公司了<br>
+路上和老妈聊了一路。聊家里的事，聊我这边的事<br>
 有几条报警，一台nginx的flume堵了，应该问题不大，size在逐渐变少</p>
-
-<p><code>10:00</code> 报警报警报警<br />
+<p><code>10:00</code> 报警报警报警<br>
 一个集群连接db出现问题，导致有2分钟的meantime抖动</p>
-
-<p><code>10:10</code> 沟通<br />
-凌晨的报警，rd回复，凌晨时有全量同步，消费不了就会触发报警<br />
+<p><code>10:10</code> 沟通<br>
+凌晨的报警，rd回复，凌晨时有全量同步，消费不了就会触发报警<br>
 优化点 &amp;&amp; 报警策略调整点</p>
-
-<p><code>10:20</code> 优化<br />
+<p><code>10:20</code> 优化<br>
 rd发来消息，问起某接口http调用公网改内网的资源准备进度，事实上已经准备ok了，rd会在今天上线。</p>
-
-<p><code>10:30</code> 资源<br />
+<p><code>10:30</code> 资源<br>
 rd申请vm用于多机房部署，但b机房资源紧张，需要从线上挤出几台vm</p>
-
-<p><code>10:40</code> oom<br />
-一台hbase机器，有个Python程序占用大量mem和swap。机器归属人员不明<br />
-IM上询问，无人响应。<br />
-最后那个Python程序被oom了。。<br />
-看了下最近登录情况，只有我一个人登录。<br />
+<p><code>10:40</code> oom<br>
+一台hbase机器，有个Python程序占用大量mem和swap。机器归属人员不明<br>
+IM上询问，无人响应。<br>
+最后那个Python程序被oom了。。<br>
+看了下最近登录情况，只有我一个人登录。<br>
 机器调用关系链也没看到有业务机器连接，IM上打声招呼，开始准备下线了。</p>
-
-<p><code>11:20</code> idea<br />
-服务在应用层上的调用关系不明朗，决定将负责的服务都整理一下。<br />
-工具暂定为graphviz + Python<br />
+<p><code>11:20</code> idea<br>
+服务在应用层上的调用关系不明朗，决定将负责的服务都整理一下。<br>
+工具暂定为graphviz + Python<br>
 下午知道我们有同事在做这方面东西，直接使用，不造轮子了</p>
-
-<p><code>11:40</code> 沟通<br />
+<p><code>11:40</code> 沟通<br>
 和rd讨论了几个关于服务、资源的问题</p>
-
-<p><code>11:50</code> 学习<br />
+<p><code>11:50</code> 学习<br>
 看了下淘宝的关于鹰眼的分享ppt</p>
-
-<p><code>12:00</code> 返程票<br />
+<p><code>12:00</code> 返程票<br>
 抢个返程票</p>
-
 <p><code>12:20</code> 午饭</p>
-
 <p><code>13:30</code> 休息</p>
-
-<p><code>15:00</code> 串讲<br />
-rd串讲了几个服务，thrift的http的都有。<br />
-边讲边讨论，6、7个服务，2个小时时间<br />
+<p><code>15:00</code> 串讲<br>
+rd串讲了几个服务，thrift的http的都有。<br>
+边讲边讨论，6、7个服务，2个小时时间<br>
 谈了下如何整理接口关系和运维的手段</p>
-
-<p><code>17:00</code> 整理<br />
+<p><code>17:00</code> 整理<br>
 看了下上面串讲那些服务的wiki描述、监控、现有一个半成品的类似taobao鹰眼的工具看了看调用关系</p>
-
-<p><code>18:50</code> 资源<br />
-上午提到的资源紧张问题，释放了我用于上报nginx状态的机器，这机器原来是用于线上测试的，配置较高，非常时期，又申请了一台低配节点完成原来的功能，前后花了10分钟不到。且包括了沟通的时间。<br />
+<p><code>18:50</code> 资源<br>
+上午提到的资源紧张问题，释放了我用于上报nginx状态的机器，这机器原来是用于线上测试的，配置较高，非常时期，又申请了一台低配节点完成原来的功能，前后花了10分钟不到。且包括了沟通的时间。<br>
 观察上报服务正常运行</p>
-
-<p><code>19:10</code> 下班。<br />
+<p><code>19:10</code> 下班。<br>
 回家叫个外卖</p>
-
-<p><code>20:00</code> shit<br />
+<p><code>20:00</code> shit<br>
 上面说的nginx状态上报服务，因新申请的vm配置太低，而网络请求又比较频繁，所以cpu sys time 100%。请同事升级下cpu。</p>
-
-<p><code>20:20</code> 计划<br />
-今日工作整理一下，再列一下明天的计划。<br />
+<p><code>20:20</code> 计划<br>
+今日工作整理一下，再列一下明天的计划。<br>
 收工</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -643,7 +601,7 @@ rd串讲了几个服务，thrift的http的都有。<br />
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

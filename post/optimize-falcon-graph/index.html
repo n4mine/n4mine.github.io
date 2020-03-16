@@ -35,7 +35,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/optimize-falcon-graph/" />
@@ -54,7 +54,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -62,9 +62,7 @@
 
 <meta property="og:title" content="Falcon存储做过的那些优化" />
 <meta property="og:description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
-
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。
-
 本文从一个开发者的角度，阐述自本人接手以来对 graph(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://n4mine.github.io/post/optimize-falcon-graph/" />
@@ -72,25 +70,18 @@
 <meta property="article:modified_time" content="2019-02-21T15:03:20+08:00" />
 <meta itemprop="name" content="Falcon存储做过的那些优化">
 <meta itemprop="description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
-
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。
-
 本文从一个开发者的角度，阐述自本人接手以来对 graph(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。">
-
-
 <meta itemprop="datePublished" content="2019-02-21T15:03:20&#43;08:00" />
 <meta itemprop="dateModified" content="2019-02-21T15:03:20&#43;08:00" />
-<meta itemprop="wordCount" content="3120">
+<meta itemprop="wordCount" content="3118">
 
 
 
-<meta itemprop="keywords" content="技术,监控系统," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="技术,监控系统," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Falcon存储做过的那些优化"/>
 <meta name="twitter:description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
-
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。
-
 本文从一个开发者的角度，阐述自本人接手以来对 graph(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。"/>
 
 <!--[if lte IE 9]>
@@ -356,36 +347,37 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#多路i-o">多路I/O</a>
-<ul>
-<li><a href="#背景">背景</a></li>
-<li><a href="#分析">分析</a></li>
-<li><a href="#小结">小结</a></li>
-</ul></li>
-<li><a href="#sprint问题">Sprint问题</a>
-<ul>
-<li><a href="#背景-1">背景</a></li>
-<li><a href="#分析-1">分析</a></li>
-<li><a href="#小结-1">小结</a></li>
-</ul></li>
-<li><a href="#hash不均问题">hash不均问题</a>
-<ul>
-<li><a href="#背景-2">背景</a></li>
-<li><a href="#分析-2">分析</a></li>
-<li><a href="#小结-2">小结</a></li>
-</ul></li>
-<li><a href="#内存-泄漏-问题">内存&rdquo;泄漏&rdquo;问题</a>
-<ul>
-<li><a href="#背景-3">背景</a></li>
-<li><a href="#分析-3">分析</a></li>
-<li><a href="#小结-3">小结</a></li>
-</ul></li>
-<li><a href="#结尾了">结尾了</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#多路io">多路I/O</a>
+      <ul>
+        <li><a href="#背景">背景</a></li>
+        <li><a href="#分析">分析</a></li>
+        <li><a href="#小结">小结</a></li>
+      </ul>
+    </li>
+    <li><a href="#sprint问题">Sprint问题</a>
+      <ul>
+        <li><a href="#背景-1">背景</a></li>
+        <li><a href="#分析-1">分析</a></li>
+        <li><a href="#小结-1">小结</a></li>
+      </ul>
+    </li>
+    <li><a href="#hash不均问题">hash不均问题</a>
+      <ul>
+        <li><a href="#背景-2">背景</a></li>
+        <li><a href="#分析-2">分析</a></li>
+        <li><a href="#小结-2">小结</a></li>
+      </ul>
+    </li>
+    <li><a href="#内存泄漏问题">内存&quot;泄漏&quot;问题</a>
+      <ul>
+        <li><a href="#背景-3">背景</a></li>
+        <li><a href="#分析-3">分析</a></li>
+        <li><a href="#小结-3">小结</a></li>
+      </ul>
+    </li>
+    <li><a href="#结尾了">结尾了</a></li>
+  </ul>
 </nav>
   </div>
 </div>
@@ -393,81 +385,52 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <p>我司监控系统的底层存储架构使用的是 <a href="https://github.com/open-falcon/falcon-plus">open-falcon</a>，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。</p>
-
 <p>但在我司，指标量一度达到3亿+，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。</p>
-
 <p>本文从一个开发者的角度，阐述自本人接手以来对 <code>graph</code>(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。</p>
-
-<h2 id="多路i-o">多路I/O</h2>
-
+<h2 id="多路io">多路I/O</h2>
 <h3 id="背景">背景</h3>
-
 <p>2017年下半年。</p>
-
 <p>当时我们看图的latency tp95一直在<code>5s</code>以上，为了提升用户体验，要将这个延迟降下来。此为背景。</p>
-
 <h3 id="分析">分析</h3>
-
 <p>graph的查询逻辑是，先读cache，cache不满足再从RRD文件中获取。</p>
-
 <p>因此我们在代码中埋点，分别统计了<code>readFromCache</code>和<code>readFromRRD</code>的latency，结果<code>readFromCache</code>的tp95在300ms左右，而<code>readFromRRD</code>的对应值则达到了1s+。</p>
-
 <p>所以接下来重点跟进方向就是<code>读取RRD文件</code>的逻辑。从代码上看，从RRD文件获取数据的读路径如下:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">api/graph.go::*Graph.Query(...)  
---&gt; rrdtool/rrdtool.go::Fetch(...)  </pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">api/graph.go::*Graph.Query(...)  
+--&gt; rrdtool/rrdtool.go::Fetch(...)  
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>参见 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/api/graph.go#L125">api/graph.go</a> 和 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/rrdtool/rrdtool.go#L186">rrdtool/rrdtool.go</a></p>
-
+</div><p>参见 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/api/graph.go#L125">api/graph.go</a> 和 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/rrdtool/rrdtool.go#L186">rrdtool/rrdtool.go</a></p>
 <p>然后<code>rrdtool.go/sync_disk.go::ioWorker()</code>从<code>io_task_chan</code>获取对应<code>task</code>后进行I/O操作。</p>
-
 <p>参见 <a href="https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/rrdtool/sync_disk.go#L89">rrdtool/sync_disk.go</a></p>
-
 <p>读路径经过<code>pprof</code>分析后，并没有耗时太多的地方。</p>
-
 <p>而经过分析<code>ioWorker()</code>这个函数，发现 <code>ioWorker()</code> 只有<code>1个goroutine</code>在工作。而如果只是为了避免同时读写同一RRD文件这么做，似乎有些太低效了。</p>
-
 <p>有了这样的思路后，问题就变成了如何拆分I/O，使得一把锁变成多把锁。当时在组内有2种思路:</p>
-
 <ol>
 <li>进行读写拆分</li>
-<li>按<code>series ID</code>进行拆分<br /></li>
+<li>按<code>series ID</code>进行拆分</li>
 </ol>
-
 <p>如果按照读写拆分，就由1路I/O变成了2路I/O，读 + 写。这样的拆分，在读写拆分仍不能满足性能的需求时，不可避免的要进行再次拆分。而且，读写2路拆分，要考虑对一个RRD文件的同时读写问题，就变得更加复杂了。</p>
-
 <p>基于上面的考虑，决定按照<code>series ID</code>进行I/O拆分。代码很简单，参见 <a href="https://github.com/open-falcon/falcon-plus/compare/23001be...20084b4">这个diff</a></p>
-
 <p>而优化后的效果，如下图所示。tp95 latency的值达到了预期。</p>
-
-<p><img src="/img/graph_tp95.png" alt="多路I/O效果" /></p>
-
+<p><img src="/img/graph_tp95.png" alt="多路I/O效果"></p>
 <h3 id="小结">小结</h3>
-
 <p>其实，理解多路I/O的优化思路很简单，如下图所示，从只能1个1个投入的存钱罐，变为多路分拣的硬币分拣机。</p>
-
-<p><img src="/img/m_io.png" alt="多路I/O思路" /></p>
-
+<p><img src="/img/m_io.png" alt="多路I/O思路"></p>
 <h2 id="sprint问题">Sprint问题</h2>
-
 <h3 id="背景-1">背景</h3>
-
 <p>同样是2017年下半年。</p>
-
 <p>早期graph为了方便，在代码的很多地方使用<code>fmt.Sprintf</code>函数，而这个函数的性能是很烂的。</p>
-
 <h3 id="分析-1">分析</h3>
-
 <p>直接show一个benchmark:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -480,9 +443,9 @@ if (!doNotTrack) {
 </span><span class="lnt">11
 </span><span class="lnt">12
 </span><span class="lnt">13
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">func Benchmark_sprintf(b *testing.B) {
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">func Benchmark_sprintf(b *testing.B) {
 	for i := 0; i &lt; b.N; i++ {
 		a := fmt.Sprintf(&#34;a%s&#34;, &#34;a&#34;)
 		_ = a
@@ -494,52 +457,43 @@ func Benchmark_add(b *testing.B) {
 		a := &#34;a&#34; + &#34;a&#34;
 		_ = a
 	}
-}</pre></td></tr></table>
+}
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>bench的结果:</p>
+</div><p>bench的结果:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ go test -run &#39;^$&#39; -benchmem  -bench .
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ go test -run &#39;^$&#39; -benchmem  -bench .
 goos: darwin
 goarch: amd64
 Benchmark_sprintf-4   	20000000	        83.0 ns/op	       2 B/op	       1 allocs/op
 Benchmark_add-4       	2000000000	         0.34 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	_/tmp/cat	2.484s</pre></td></tr></table>
+ok  	_/tmp/cat	2.484s
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>可以看出，对于字符串的连接，使用<code>+</code>比使用<code>Sprintf</code>性能要好上2个数量级，同时减少了内存分配。</p>
-
+</div><p>可以看出，对于字符串的连接，使用<code>+</code>比使用<code>Sprintf</code>性能要好上2个数量级，同时减少了内存分配。</p>
 <h3 id="小结-1">小结</h3>
-
 <p>优化的效果参见 <a href="https://github.com/open-falcon/falcon-plus/pull/287/files">这个PR</a>。</p>
-
 <p>对于golang等gc类语言来说，<code>减少内存分配次数</code>、<code>复用对象</code>等，是减轻gc压力非常有效的手段。<a href="https://github.com/open-falcon/falcon-plus/pull/393">这个PR</a> 也佐证了这个理论。</p>
-
 <h2 id="hash不均问题">hash不均问题</h2>
-
 <h3 id="背景-2">背景</h3>
-
 <p>2018年上半年。</p>
-
 <p>在解决了latency高等问题之后，又遇到了新的问题。graph的实例，流量非常不均匀。<code>points_in</code>这个代表每秒进入graph实例点数的指标，在不同实例间相差很大，最大的值是最小值的2倍以上。</p>
-
 <h3 id="分析-2">分析</h3>
-
 <p>使用一个小demo描述这个问题:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -570,9 +524,9 @@ ok  	_/tmp/cat	2.484s</pre></td></tr></table>
 </span><span class="lnt">29
 </span><span class="lnt">30
 </span><span class="lnt">31
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="p">(</span>
 	<span class="s">&#34;fmt&#34;</span>
@@ -602,45 +556,42 @@ ok  	_/tmp/cat	2.484s</pre></td></tr></table>
 	<span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">result</span> <span class="p">{</span>
 		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;node: %v, count: %v\n&#34;</span><span class="p">,</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span><span class="p">)</span>
 	<span class="p">}</span>
-<span class="p">}</span></pre></td></tr></table>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>了解 <code>open-falcon</code> 的同学可能知道，<code>open-falcon</code> 监控数据点的写路径，是将监控数据点的<code>series ID</code>通过<code>一致性哈希</code>计算，再push到对应的graph实例。而上述代码，就是写路径<code>GetNodes</code>(获取graph实例) 的核心逻辑。</p>
-
+</div><p>了解 <code>open-falcon</code> 的同学可能知道，<code>open-falcon</code> 监控数据点的写路径，是将监控数据点的<code>series ID</code>通过<code>一致性哈希</code>计算，再push到对应的graph实例。而上述代码，就是写路径<code>GetNodes</code>(获取graph实例) 的核心逻辑。</p>
 <p>上面将实例数设置为<code>50</code>，样本数设置为<code>500w</code>，虚拟节点则与<code>open-falcon</code>的官方设置相同，设置为<code>500</code>。那么这50个实例，分配结果是如何的呢？</p>
-
 <p>为了方便，直接看最大值和最小值的差异。结果如下，最小值为<code>65286</code>，最大值为<code>134657</code>。相差较大，graph实例的流量差异，就是从这里产生的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ go run hash.go | sort -nk 4 | gsed -n -e &#39;1p&#39; -e &#39;$p&#39;
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ go run hash.go | sort -nk 4 | gsed -n -e &#39;1p&#39; -e &#39;$p&#39;
 node: node-18, count: 65286
-node: node-7, count: 134657</pre></td></tr></table>
+node: node-7, count: 134657
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>而经过验证，简单的将虚拟节点的数量提高，并不会提高均匀度。以下是将虚拟节点设置为<code>10000</code>的结果:</p>
+</div><p>而经过验证，简单的将虚拟节点的数量提高，并不会提高均匀度。以下是将虚拟节点设置为<code>10000</code>的结果:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ go run hash.go | sort -nk 4 | gsed -n -e &#39;1p&#39; -e &#39;$p&#39;
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ go run hash.go | sort -nk 4 | gsed -n -e &#39;1p&#39; -e &#39;$p&#39;
 node: node-15, count: 80273
-node: node-27, count: 126070</pre></td></tr></table>
+node: node-27, count: 126070
+</code></pre></td></tr></table>
 </div>
-</div>
-<p><code>open-falcon</code> 使用的一致性哈希实现是 <a href="https://github.com/stathat/consistent">stathat/consistent</a>，一个非常简单的一致性hash实现，其hash算法使用的是 <a href="https://github.com/stathat/consistent/blob/master/consistent.go#L244">crc32</a>。</p>
-
+</div><p><code>open-falcon</code> 使用的一致性哈希实现是 <a href="https://github.com/stathat/consistent">stathat/consistent</a>，一个非常简单的一致性hash实现，其hash算法使用的是 <a href="https://github.com/stathat/consistent/blob/master/consistent.go#L244">crc32</a>。</p>
 <p>在非加密hash算法的实现中，crc32无论是在性能还是均匀度上都不是优选。下面对比了几种常见的hash算法在性能上的差异:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -649,9 +600,9 @@ node: node-27, count: 126070</pre></td></tr></table>
 </span><span class="lnt">7
 </span><span class="lnt">8
 </span><span class="lnt">9
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ go test -run &#39;^$&#39; -benchmem  -bench .
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ go test -run &#39;^$&#39; -benchmem  -bench .
 goos: darwin
 goarch: amd64
 Benchmark_crcHashKeyByString-4        	20000000	        74.0 ns/op	      64 B/op	       1 allocs/op
@@ -659,79 +610,50 @@ Benchmark_fnv32HashKeyByString-4      	500000000	         3.76 ns/op	       0 B/
 Benchmark_murmur32HashKeyByString-4   	100000000	        23.8 ns/op	       0 B/op	       0 allocs/op
 Benchmark_sha1-4                      	 5000000	       392 ns/op	      96 B/op	       2 allocs/op
 PASS
-ok  	_/tmp/hash	8.541s</pre></td></tr></table>
+ok  	_/tmp/hash	8.541s
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>可以看到，相对<code>fnv32</code>和<code>murmur32</code>，<code>crc32</code>在性能方面完败。</p>
-
+</div><p>可以看到，相对<code>fnv32</code>和<code>murmur32</code>，<code>crc32</code>在性能方面完败。</p>
 <p>最后还加入了<code>sha1</code>的对比，相对于非加密hash算法，<code>sha1</code>的性能更弱一些。</p>
-
 <p>除了考量性能，还需要看各个hash算法均匀度，是否满足需求。以下是在上述模拟场景之下，几个流行hash算法的<code>均匀度</code>对比结果，仍是模拟500w样本，使用50个node，计算结果:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">murmur32 &gt; fnv1 &gt; fnv1a &gt; xxHash &gt; crc32</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">murmur32 &gt; fnv1 &gt; fnv1a &gt; xxHash &gt; crc32
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>上述结果，表现最差的是<code>crc32</code>，表现最好的是<code>murmur32</code>。因为时间久远，具体的结果没有记录下来，感兴趣的同学可以自行验证。</p>
-
+</div><p>上述结果，表现最差的是<code>crc32</code>，表现最好的是<code>murmur32</code>。因为时间久远，具体的结果没有记录下来，感兴趣的同学可以自行验证。</p>
 <p><strong>BTW，上述结果只代表本文所述环境，不具通用性。</strong></p>
-
 <h3 id="小结-2">小结</h3>
-
 <p>综合性能和均匀度2个方面的考量，最终我们选用了<code>murmur32</code>替换原有的<code>crc32</code>。</p>
-
 <p>虚拟节点数则设置为10000。经过验证，虚拟节点数从500到10000，计算进入graph实例的样本数的方差值，后者是前者的<code>1/5</code>，会更均匀一些。而更高的虚拟节点数，虽然能得到更均匀的结果，但初始化的时间开销会增加很多，例如10000个虚拟节点需要13s左右，而20000个虚拟节点则需要28s，设置为50000个虚拟节点，则需要75s。</p>
-
 <p>下图是优化的效果对比，可以看到在切换前后，进入graph实例的点数均匀程度，有了明显的提升。</p>
-
-<p><img src="/img/hash_change.png" alt="hash优化" /></p>
-
+<p><img src="/img/hash_change.png" alt="hash优化"></p>
 <p>替换的过程也不麻烦，感兴趣的可以参考 <a href="https://n4mine.github.io/post/open-falcon-change-hash-algorithm/">open-falcon 更换hash算法</a> 一文。</p>
-
-<h2 id="内存-泄漏-问题">内存&rdquo;泄漏&rdquo;问题</h2>
-
+<h2 id="内存泄漏问题">内存&quot;泄漏&quot;问题</h2>
 <h3 id="背景-3">背景</h3>
-
 <p>2018年下半年。</p>
-
 <p>经过上述的几番优化，graph已经解决了因单路I/O导致的I/O瓶颈，替换掉了浪费性能的<code>Sprintf</code>，更换了更优更均匀的<code>murmur32</code> hash算法。</p>
-
 <p>但仍有一个问题一直在困扰着我，如鲠在喉。那就是随着时间的增长，graph实例的内存使用量会<code>慢慢的</code>涨上来。</p>
-
 <h3 id="分析-3">分析</h3>
-
 <p>既然是慢慢的涨，那首先考虑到的肯定是内存泄漏问题。</p>
-
 <p>经过对heap的<code>inuse</code>分析之后，发现问题出在graph的<code>cache</code>逻辑。graph的<code>cache</code>是只增加不减少的，也就是说，所有series，无论是活跃的还是不活跃的，都会一直常驻于堆内存中。</p>
-
 <p>找到问题点，就很好解决了。解决方案如下:</p>
-
 <ol>
-<li>干掉无用的 <a href="https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/api/graph.go#L123">History store</a><br /></li>
-<li>对<a href="https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/store/store.go#L29"> cache对象</a>，做定期清理，例如<code>每30分钟清理过去12小时不活跃的series</code>。<br /></li>
+<li>干掉无用的 <a href="https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/api/graph.go#L123">History store</a></li>
+<li>对<a href="https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/store/store.go#L29"> cache对象</a>，做定期清理，例如<code>每30分钟清理过去12小时不活跃的series</code>。</li>
 </ol>
-
 <p>如下图描述的是过去4个月graph实例的内存使用情况，前面3个<code>红框</code>的内存都是缓慢增长的，而<code>绿框</code>位置则是优化后的效果，已经相对平稳:</p>
-
-<p><img src="/img/graph_mem.png" alt="graph内存" /></p>
-
+<p><img src="/img/graph_mem.png" alt="graph内存"></p>
 <h3 id="小结-3">小结</h3>
-
 <p>优化要结合业务特点进行。</p>
-
 <p>是的，这个小结只有上面这么一句话 :)。</p>
-
 <h2 id="结尾了">结尾了</h2>
-
 <p>对于监控系统的优化，还在进行中。当然也有很多case没有放在这里。</p>
-
 <p>例如使用基于 <a href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Gorilla</a> 开发的cacheserver，承载了50%以上的查询请求，latency却仅是graph的<code>1/10</code>等。</p>
-
 <p>这些优化留待后续再慢慢分享吧。</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -863,7 +785,7 @@ ok  	_/tmp/hash	8.541s</pre></td></tr></table>
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

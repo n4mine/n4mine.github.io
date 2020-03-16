@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/" />
@@ -51,7 +51,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -59,7 +59,6 @@
 
 <meta property="og:title" content="cacheserver - 内存TSDB的设计思想" />
 <meta property="og:description" content="cacheserver是什么?
-
 
 基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库
 其原理在以前的blog中有过描述, 见 Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现
@@ -72,24 +71,19 @@
 <meta itemprop="name" content="cacheserver - 内存TSDB的设计思想">
 <meta itemprop="description" content="cacheserver是什么?
 
-
 基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库
 其原理在以前的blog中有过描述, 见 Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现
 本文主要描述在设计 cacheserver 过程中的一些思考
 ">
-
-
 <meta itemprop="datePublished" content="2019-07-22T22:14:31&#43;08:00" />
 <meta itemprop="dateModified" content="2019-07-22T22:14:31&#43;08:00" />
 <meta itemprop="wordCount" content="680">
 
 
 
-<meta itemprop="keywords" content="技术,监控系统," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="技术,监控系统," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="cacheserver - 内存TSDB的设计思想"/>
 <meta name="twitter:description" content="cacheserver是什么?
-
 
 基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库
 其原理在以前的blog中有过描述, 见 Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现
@@ -359,25 +353,24 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#cacheserver是什么">cacheserver是什么?</a></li>
-<li><a href="#核心架构">核心架构</a>
-<ul>
-<li><a href="#instance">instance</a></li>
-<li><a href="#shard">shard</a></li>
-<li><a href="#chunks-chunk">chunks/chunk</a></li>
-</ul></li>
-<li><a href="#设计思想">设计思想</a>
-<ul>
-<li><a href="#为什么独立成一个服务-而不是嵌入到现有存储中">为什么独立成一个服务，而不是嵌入到现有存储中</a></li>
-<li><a href="#为什么将数据放在内存中">为什么将数据放在内存中</a></li>
-<li><a href="#怎么解决-series-爆炸问题">怎么解决 series 爆炸问题</a></li>
-<li><a href="#怎么解决-series-identify">怎么解决 series identify</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#cacheserver是什么">cacheserver是什么?</a></li>
+    <li><a href="#核心架构">核心架构</a>
+      <ul>
+        <li><a href="#instance">instance</a></li>
+        <li><a href="#shard">shard</a></li>
+        <li><a href="#chunkschunk">chunks/chunk</a></li>
+      </ul>
+    </li>
+    <li><a href="#设计思想">设计思想</a>
+      <ul>
+        <li><a href="#为什么独立成一个服务而不是嵌入到现有存储中">为什么独立成一个服务，而不是嵌入到现有存储中</a></li>
+        <li><a href="#为什么将数据放在内存中">为什么将数据放在内存中</a></li>
+        <li><a href="#怎么解决-series-爆炸问题">怎么解决 series 爆炸问题</a></li>
+        <li><a href="#怎么解决-series-identify">怎么解决 series identify</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
   </div>
 </div>
@@ -385,19 +378,14 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h2 id="cacheserver是什么">cacheserver是什么?</h2>
-
 <ul>
 <li>基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库</li>
 <li>其原理在以前的blog中有过描述, 见 <a href="https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0">Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现</a></li>
 <li>本文主要描述在设计 cacheserver 过程中的一些思考</li>
 </ul>
-
-<p><img src="/img/cacheserver.png" alt="cacheserver" /></p>
-
+<p><img src="/img/cacheserver.png" alt="cacheserver"></p>
 <h2 id="核心架构">核心架构</h2>
-
 <p>如上图</p>
-
 <ol>
 <li>instance: cacheserver的实例</li>
 <li>shard: 一个 cacheserver instance 内的多组series chunks</li>
@@ -405,50 +393,32 @@ if (!doNotTrack) {
 <li>chunk: 一段时间的(ts, value)数据</li>
 <li>series: 一条监控曲线</li>
 </ol>
-
 <p>下面依次介绍以上每个组件, 详细的内容仍可到 <a href="https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0">Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现</a> 中查看。</p>
-
 <h3 id="instance">instance</h3>
-
 <p>instance 即 cacheserver 部署的实例。</p>
-
 <p>集群还是分片？分片。</p>
-
 <h3 id="shard">shard</h3>
-
 <p>为什么需要 shard？分片锁降低锁冲突。</p>
-
-<h3 id="chunks-chunk">chunks/chunk</h3>
-
+<h3 id="chunkschunk">chunks/chunk</h3>
 <p>chunk 是真正存放 series 数据的结构。chunk 内存放 series 的 bit 流。
 chunks 只是 chunk 的 slice，使用 ringbuffer 技术，这样可以使用固定空间来存储多个 chunk。</p>
-
 <h2 id="设计思想">设计思想</h2>
-
-<h3 id="为什么独立成一个服务-而不是嵌入到现有存储中">为什么独立成一个服务，而不是嵌入到现有存储中</h3>
-
+<h3 id="为什么独立成一个服务而不是嵌入到现有存储中">为什么独立成一个服务，而不是嵌入到现有存储中</h3>
 <p>设计之初，cacheserver 的定位就是一个独立服务。
 这样它可以与<code>graph</code>互相兜底。
 例如<code>graph</code>挂掉了，仍可以调用cacheserver来给用户呈现最近的数据。而<code>graph</code>本身就是cacheserver的主存。</p>
-
 <h3 id="为什么将数据放在内存中">为什么将数据放在内存中</h3>
-
 <ol>
 <li>快</li>
 <li>gorilla 论文实现的算法压缩比高(11:1)，存放热数据，内存已经足够</li>
 <li>redis？据了解，<code>baidu</code>内部的tsdb。热数据就是放在<code>redis</code>中的。</li>
 </ol>
-
 <h3 id="怎么解决-series-爆炸问题">怎么解决 series 爆炸问题</h3>
-
 <p>周期检测, 不活跃数据直接从内存中清除</p>
-
 <h3 id="怎么解决-series-identify">怎么解决 series identify</h3>
-
 <p>什么是<code>series identify</code>, 即根据tags搜索对应的 series。
 cacheserver 不解决这个问题！这是索引要解决的问题, 本质上是一个搜索问题，不该在这里解决。
 cacheserver 中，每个series都是用户定义的，没有业务含义。</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -580,7 +550,7 @@ cacheserver 中，每个series都是用户定义的，没有业务含义。</p>
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

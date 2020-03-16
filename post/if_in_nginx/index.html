@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/if_in_nginx/" />
@@ -51,7 +51,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -60,13 +60,10 @@
 <meta property="og:title" content="nginx使用if实现多重判断case一例" />
 <meta property="og:description" content="场景
 
-
 根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&hellip;，有则upstream到指定backend
 根据来源IP区分production环境和preview环境
 
-
 问题
-
 
 上面提到的参数可能重复出现
 if不支持复杂的逻辑运算
@@ -79,38 +76,29 @@ if is evil
 <meta itemprop="name" content="nginx使用if实现多重判断case一例">
 <meta itemprop="description" content="场景
 
-
 根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&hellip;，有则upstream到指定backend
 根据来源IP区分production环境和preview环境
 
-
 问题
-
 
 上面提到的参数可能重复出现
 if不支持复杂的逻辑运算
 if is evil
 ">
-
-
 <meta itemprop="datePublished" content="2014-11-13T17:53:55&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-13T17:53:55&#43;00:00" />
 <meta itemprop="wordCount" content="726">
 
 
 
-<meta itemprop="keywords" content="nginx," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="nginx," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="nginx使用if实现多重判断case一例"/>
 <meta name="twitter:description" content="场景
-
 
 根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&hellip;，有则upstream到指定backend
 根据来源IP区分production环境和preview环境
 
-
 问题
-
 
 上面提到的参数可能重复出现
 if不支持复杂的逻辑运算
@@ -379,39 +367,28 @@ if (!doNotTrack) {
 <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
-    <nav id="TableOfContents">
-<ul>
-<li><a href="#场景">场景</a></li>
-<li><a href="#问题">问题</a></li>
-<li><a href="#方案">方案</a></li>
-</ul>
-</nav>
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
 
     
     <div class="post-content">
       <h1 id="场景">场景</h1>
-
 <ul>
 <li>根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&hellip;，有则upstream到指定backend</li>
 <li>根据来源IP区分production环境和preview环境</li>
 </ul>
-
 <h1 id="问题">问题</h1>
-
 <ul>
 <li>上面提到的参数可能重复出现</li>
 <li>if不支持复杂的逻辑运算</li>
 <li>if is evil</li>
 </ul>
-
 <h1 id="方案">方案</h1>
-
 <p>先写最终实现，然后解释</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -429,9 +406,9 @@ if (!doNotTrack) {
 </span><span class="lnt">16
 </span><span class="lnt">17
 </span><span class="lnt">18
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">set code &#34;&#34;;
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">set code &#34;&#34;;
 if ( $args ~ &#34;code=[^&amp;]*.*code=[^&amp;]*&#34; ) {
     set $code &#34;${code}Y&#34;;
 }
@@ -448,15 +425,14 @@ if ( $address_type ~ &#34;lan&#34; ) {
     proxy_pass http://lan;
 }
 
-proxy_pass http://wan;</pre></td></tr></table>
+proxy_pass http://wan;
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>nginx的set指令和if指令都工作在rewrite阶段。<code>rewrite阶段的指令会按照config文件中的书写顺序依次执行</code></p>
-
+</div><p>nginx的set指令和if指令都工作在rewrite阶段。<code>rewrite阶段的指令会按照config文件中的书写顺序依次执行</code></p>
 <p>先从最简单实现开始，最开始想到的是如下写法</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -465,9 +441,9 @@ proxy_pass http://wan;</pre></td></tr></table>
 </span><span class="lnt">7
 </span><span class="lnt">8
 </span><span class="lnt">9
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
     proxy_pass http://oversea;
 }
 
@@ -475,31 +451,25 @@ if ( $address_type ~ &#34;lan&#34; ) {
     proxy_pass http://lan;
 }
 
-proxy_pass http://wan;</pre></td></tr></table>
+proxy_pass http://wan;
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>但会带来一个问题，如果请求参数有两个CODE，不管是代码写土了还是恶意，这种行为都是可能出现的。<br />
-如何解析args就成了问题。<br />
+</div><p>但会带来一个问题，如果请求参数有两个CODE，不管是代码写土了还是恶意，这种行为都是可能出现的。<br>
+如何解析args就成了问题。<br>
 据我实验<code>$arg_xxx</code>这种方式取到的值的应该是在参数列表中xxx第一次出现时的value。</p>
-
 <p>为防止多个CODE参数出现时直接打流量到oversea，写出了上述<code>最终实现</code>。逻辑很简单，相信看一遍就明白了。</p>
-
 <p>为什么写成这个鸟德行。</p>
-
 <ol>
 <li>nginx的if不支持逻辑运算</li>
 <li>如果恶意的带上CODE=OVERSEA，可能会增加到oversea backend的非必要流量（该后端在国外，也会影响响应时间）。这里的逻辑是带2个及以上数量CODE参数的流量直接打到本国IDC</li>
 <li>$address_type的判断是很武断的，应该与$CODE变量一起参与判断</li>
 <li>如何判断address_type，会另起一篇文章</li>
 </ol>
-
 <p>关于if is evil，可看下如下两篇文章</p>
-
 <ul>
-<li><a href="http://wiki.nginx.org/IfIsEvil">If Is Evil</a><br /></li>
-<li><a href="http://forum.nginx.org/read.php?2,174917,174917">How nginx’s “location if” works</a><br /></li>
+<li><a href="http://wiki.nginx.org/IfIsEvil">If Is Evil</a></li>
+<li><a href="http://forum.nginx.org/read.php?2,174917,174917">How nginx’s “location if” works</a></li>
 </ul>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -643,7 +613,7 @@ proxy_pass http://wan;</pre></td></tr></table>
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

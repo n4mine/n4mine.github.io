@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>tcp on n4mine&#39;s blog</title>
@@ -18,16 +18,13 @@
       
       <guid>https://n4mine.github.io/post/random-connection-timeout/</guid>
       <description>&lt;h1 id=&#34;现象&#34;&gt;现象&lt;/h1&gt;
-
 &lt;p&gt;业务同学反馈，A服务调用B服务有连接超时&lt;/p&gt;
-
 &lt;h1 id=&#34;环境&#34;&gt;环境&lt;/h1&gt;
-
 &lt;ul&gt;
-&lt;li&gt;src：A服务, 以下均用src代指&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;dst：B服务, 以下均用dst代指&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;B服务通过lvs + nginx的方式对外服务&lt;br /&gt;&lt;/li&gt;
-&lt;li&gt;A服务连接超时设置为500ms&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;src：A服务, 以下均用src代指&lt;/li&gt;
+&lt;li&gt;dst：B服务, 以下均用dst代指&lt;/li&gt;
+&lt;li&gt;B服务通过lvs + nginx的方式对外服务&lt;/li&gt;
+&lt;li&gt;A服务连接超时设置为500ms&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     

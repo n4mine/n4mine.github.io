@@ -34,7 +34,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-transfer/" />
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -69,16 +69,13 @@
 <meta itemprop="name" content="监控系统构建实践之传输篇">
 <meta itemprop="description" content="在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。
 本文结合我司在传输链路的建设，简述一下期间的一点思考。">
-
-
 <meta itemprop="datePublished" content="2018-12-05T14:43:45&#43;08:00" />
 <meta itemprop="dateModified" content="2018-12-05T14:43:45&#43;08:00" />
 <meta itemprop="wordCount" content="1125">
 
 
 
-<meta itemprop="keywords" content="技术,监控系统," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="技术,监控系统," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="监控系统构建实践之传输篇"/>
 <meta name="twitter:description" content="在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。
 本文结合我司在传输链路的建设，简述一下期间的一点思考。"/>
@@ -346,80 +343,63 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#推模型">推模型</a></li>
-<li><a href="#拉模型">拉模型</a></li>
-<li><a href="#传输的功能">传输的功能</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#推模型">推模型</a></li>
+        <li><a href="#拉模型">拉模型</a></li>
+        <li><a href="#传输的功能">传输的功能</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
   </div>
 </div>
 
     
     <div class="post-content">
-      <p>在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。<br />
+      <p>在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。<br>
 本文结合我司在传输链路的建设，简述一下期间的一点思考。</p>
-
 <p>先来说传输链路的实现方式，业界关于传输的实现主要有2种:</p>
-
 <ol>
-<li>推模型<br /></li>
-<li>拉模型<br /></li>
+<li>推模型</li>
+<li>拉模型</li>
 </ol>
-
 <h3 id="推模型">推模型</h3>
-
 <p>推模型典型的系统代表就是<code>open-falcon</code>，即agent通过rpc将采集到的数据推给上游。</p>
-
 <h3 id="拉模型">拉模型</h3>
-
 <p>拉模型是<code>prometheus</code>带起的节奏, 即每个target提供一个<code>/metrics</code>的接口，由中心主动并定期的去<code>scrape</code>。</p>
-
 <p>关于两个模型的对比, 网上有很多争论。但实际上在不同的场景下，使用的模型是不同的，没有银弹。</p>
-
 <p>也如 <a href="https://www.slideshare.net/GianlucaArbezzano/monitoring-pull-vs-push-influxdb-and-prometheus">这个slide</a> 所述，“no winner”</p>
-
-<p>而在我司的实现方式，在传输模块和采集之间，有一层queue，用于解耦。<br />
+<p>而在我司的实现方式，在传输模块和采集之间，有一层queue，用于解耦。<br>
 目前这个queue的选型是 <a href="https://github.com/nsqio/nsq">nsq</a>。之所以使用nsq而不是其他的消息队列, 因为建立传输链路时本人还未加入，所以以下均属个人猜测:</p>
-
 <ol>
-<li>nsq轻小易维护。最小部署只需<code>nsqd</code>、<code>nsqlookup</code> 2个二进制文件就可以快速部署。<br /></li>
-<li>当年有同事做相关分享时，有人问为什么不用kafka。<br />
-其实关于这类问题，还是那个答案，没有银弹，够用即可。<br />
-永远没有依靠一种技术就吃遍天下的。<br /></li>
+<li>nsq轻小易维护。最小部署只需<code>nsqd</code>、<code>nsqlookup</code> 2个二进制文件就可以快速部署。</li>
+<li>当年有同事做相关分享时，有人问为什么不用kafka。<br>
+其实关于这类问题，还是那个答案，没有银弹，够用即可。<br>
+永远没有依靠一种技术就吃遍天下的。</li>
 </ol>
-
 <h3 id="传输的功能">传输的功能</h3>
-
 <p>传输最主要的功能，当然就是把采集端的数据打入存储。</p>
-
 <p>除此之外，我司的传输链路还加入了以下的功能:</p>
-
 <ol>
-<li>filter: 过滤特征比较明显的垃圾指标<br /></li>
-<li>quota: 限制增长量急、速度快的上报<br /></li>
+<li>filter: 过滤特征比较明显的垃圾指标</li>
+<li>quota: 限制增长量急、速度快的上报</li>
 </ol>
-
 <p>另外，传输还有2点功能需要描述一下：</p>
-
 <ol>
-<li><p>传输应提供基于queue的订阅功能，即除了api等方式提供数据查询的功能之外，也提供流式的数据接口(当然前提是在根源做好垃圾指标的防范工作)。<br />
-但我司目前是没有提供这样的功能的。原因？因为这样势必会带来queue的运维成本。而且现在的相关需求不强烈，以后相关需求较多时，再行考虑。</p></li>
-
-<li><p>这里存在一个涉及采集、传输、存储、查询的数据流转问题，我们知道凡是时序数据都可以抽象为KV对的组合，例如<code>name=cpu.idle.core core=1 instance=job1 timestamp=1500000000 value=1.234</code> 这样的一个point，其中<code>name=cpu.idle.core core=1 instance=job1</code> 这部分可以称为<code>meta data</code>, 这个信息会被整个系统系统使用。<br />
-而我们的存储又是使用的<code>open-falcon</code>的<code>query/transfer+graph</code>的老几套。由于种种原因，在系统内部充斥着KV map和uuid(排序过的KVs 生成的字符串)的相互转换代码。如此造成了极大的性能损耗。<br />
-一个解决办法是，在采集端，就计算好每个指标的uuid, 及对应的meta数据。这样任意环节均可取用，而即使整个链路中都携带meta数据和uuid。也好过大几百甚至上千<code>ns/op</code>的计算开销和相同量级的<code>B/op</code>内存开销。<br />
-这部分内容也会在存储篇再次谈及。</p></li>
+<li>
+<p>传输应提供基于queue的订阅功能，即除了api等方式提供数据查询的功能之外，也提供流式的数据接口(当然前提是在根源做好垃圾指标的防范工作)。<br>
+但我司目前是没有提供这样的功能的。原因？因为这样势必会带来queue的运维成本。而且现在的相关需求不强烈，以后相关需求较多时，再行考虑。</p>
+</li>
+<li>
+<p>这里存在一个涉及采集、传输、存储、查询的数据流转问题，我们知道凡是时序数据都可以抽象为KV对的组合，例如<code>name=cpu.idle.core core=1 instance=job1 timestamp=1500000000 value=1.234</code> 这样的一个point，其中<code>name=cpu.idle.core core=1 instance=job1</code> 这部分可以称为<code>meta data</code>, 这个信息会被整个系统系统使用。<br>
+而我们的存储又是使用的<code>open-falcon</code>的<code>query/transfer+graph</code>的老几套。由于种种原因，在系统内部充斥着KV map和uuid(排序过的KVs 生成的字符串)的相互转换代码。如此造成了极大的性能损耗。<br>
+一个解决办法是，在采集端，就计算好每个指标的uuid, 及对应的meta数据。这样任意环节均可取用，而即使整个链路中都携带meta数据和uuid。也好过大几百甚至上千<code>ns/op</code>的计算开销和相同量级的<code>B/op</code>内存开销。<br>
+这部分内容也会在存储篇再次谈及。</p>
+</li>
 </ol>
-
 <p>传输部分就说到这里，下一篇会说说存储。</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -551,7 +531,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

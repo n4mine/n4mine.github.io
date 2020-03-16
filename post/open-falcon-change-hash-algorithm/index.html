@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/open-falcon-change-hash-algorithm/" />
@@ -56,7 +56,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -64,12 +64,10 @@
 
 <meta property="og:title" content="Open-Falcon更换hash算法" />
 <meta property="og:description" content="背景
-
 原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是github.com/stathat/consistent
 这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。
 而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k&#43;。
 更换hash算法成为当务之急。
-
 我们将CRC32 &#43; 500虚拟节点，变成了murmur3 &#43; 10000虚拟节点, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://n4mine.github.io/post/open-falcon-change-hash-algorithm/" />
@@ -77,31 +75,24 @@
 <meta property="article:modified_time" content="2018-03-10T17:06:29+08:00" />
 <meta itemprop="name" content="Open-Falcon更换hash算法">
 <meta itemprop="description" content="背景
-
 原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是github.com/stathat/consistent
 这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。
 而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k&#43;。
 更换hash算法成为当务之急。
-
 我们将CRC32 &#43; 500虚拟节点，变成了murmur3 &#43; 10000虚拟节点, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼">
-
-
 <meta itemprop="datePublished" content="2018-03-10T17:06:29&#43;08:00" />
 <meta itemprop="dateModified" content="2018-03-10T17:06:29&#43;08:00" />
 <meta itemprop="wordCount" content="485">
 
 
 
-<meta itemprop="keywords" content="open-falcon,一致性哈希," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="open-falcon,一致性哈希," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Open-Falcon更换hash算法"/>
 <meta name="twitter:description" content="背景
-
 原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是github.com/stathat/consistent
 这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。
 而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k&#43;。
 更换hash算法成为当务之急。
-
 我们将CRC32 &#43; 500虚拟节点，变成了murmur3 &#43; 10000虚拟节点, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼"/>
 
 <!--[if lte IE 9]>
@@ -367,30 +358,22 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h2 id="背景">背景</h2>
-
-<p>原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是<a href="https://github.com/stathat/consistent">github.com/stathat/consistent</a><br />
-这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。<br />
-而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。<br />
+<p>原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是<a href="https://github.com/stathat/consistent">github.com/stathat/consistent</a><br>
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。<br>
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。<br>
 更换hash算法成为当务之急。</p>
-
 <p>我们将<code>CRC32 + 500虚拟节点</code>，变成了<code>murmur3 + 10000虚拟节点</code>, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼</p>
-
 <h2 id="方案">方案</h2>
-
 <p>得益于open-falcon的自动扩容(即graph的merge逻辑), 更换hash算法不过是另外一种意义上的扩容罢了，整个过程如下:</p>
-
 <ol>
-<li>更改transfer和query的一致性哈希算法。graph merge逻辑部分的hash算法和虚拟节点个数保持不变<br /></li>
-<li>开启graph的merge开关<br /></li>
-<li>上线graph<br /></li>
-<li>同时上线transfer和query<br /></li>
-<li>关闭graph merge开关，重新上线graph<br /></li>
+<li>更改transfer和query的一致性哈希算法。graph merge逻辑部分的hash算法和虚拟节点个数保持不变</li>
+<li>开启graph的merge开关</li>
+<li>上线graph</li>
+<li>同时上线transfer和query</li>
+<li>关闭graph merge开关，重新上线graph</li>
 </ol>
-
 <p>经统计，进到graph的点数速度标准差结果变为原来的1/10</p>
-
 <p>完成了。</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -522,7 +505,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

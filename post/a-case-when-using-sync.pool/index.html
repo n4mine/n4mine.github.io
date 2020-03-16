@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/a-case-when-using-sync.pool/" />
@@ -52,7 +52,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -60,7 +60,6 @@
 
 <meta property="og:title" content="使用sync.Pool引起的case一例" />
 <meta property="og:description" content="背景
-
 open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://n4mine.github.io/post/a-case-when-using-sync.pool/" />
@@ -68,21 +67,16 @@ open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，
 <meta property="article:modified_time" content="2018-02-27T15:12:20+08:00" />
 <meta itemprop="name" content="使用sync.Pool引起的case一例">
 <meta itemprop="description" content="背景
-
 open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题">
-
-
 <meta itemprop="datePublished" content="2018-02-27T15:12:20&#43;08:00" />
 <meta itemprop="dateModified" content="2018-02-27T15:12:20&#43;08:00" />
 <meta itemprop="wordCount" content="711">
 
 
 
-<meta itemprop="keywords" content="golang,sync.Pool," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="golang,sync.Pool," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="使用sync.Pool引起的case一例"/>
 <meta name="twitter:description" content="背景
-
 open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题"/>
 
 <!--[if lte IE 9]>
@@ -348,13 +342,11 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h2 id="背景">背景</h2>
-
 <p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
-
 <h2 id="过程">过程</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -362,27 +354,25 @@ if (!doNotTrack) {
 </span><span class="lnt">6
 </span><span class="lnt">7
 </span><span class="lnt">8
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
 -       v := smodel.GraphItemPoint{}.New(item)
 +       v := smodel.NewPointObjFromPool(item)
 +       defer smodel.PutPointObjBack2Pool(v)
 
 ...
 
-    this.L.PushFront(v)</pre></td></tr></table>
+    this.L.PushFront(v)
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>上述代码中, <code>PushFront</code>是每个点到来都需要操作的函数, 即每上报一个点, <code>smodel.GraphItemPoint{}.New(item)</code> 都需要执行一次<br />
+</div><p>上述代码中, <code>PushFront</code>是每个点到来都需要操作的函数, 即每上报一个点, <code>smodel.GraphItemPoint{}.New(item)</code> 都需要执行一次<br>
 因为这里是一个临时对象，所以尝试使用对象池来优化(虽然后面证明优化无效，但整个过程值得分享)，以期望减少内存的分配及申请对象的次数，进而减少gc</p>
-
 <p>注意上面的<code>this.L.PushFront(v)</code>，这里是一个关键点</p>
-
 <p>另外为对象池增加了helper函数，方便进行对象的Get和Put操作，如下</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -400,9 +390,9 @@ if (!doNotTrack) {
 </span><span class="lnt">16
 </span><span class="lnt">17
 </span><span class="lnt">18
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">+var pointObjPool = sync.Pool{New: func() interface{} { return &amp;GraphItemPoint{} }}
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">+var pointObjPool = sync.Pool{New: func() interface{} { return &amp;GraphItemPoint{} }}
 +
 +func NewPointObjFromPool(item *cmodel.GraphItem) *GraphItemPoint {
 +       ret := pointObjPool.Get().(*GraphItemPoint)
@@ -419,24 +409,19 @@ if (!doNotTrack) {
 +func PutPointObjBack2Pool(p *GraphItemPoint) {
 +       pointObjPool.Put(p)
 +}
-+</pre></td></tr></table>
++
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>在这种场景下，使用sync.Pool对象池Get一个新的对象后，使用this.L.PushFront将对象的地址（因为返回的是一个指针），放在了内存cache中。</p>
-
+</div><p>在这种场景下，使用sync.Pool对象池Get一个新的对象后，使用this.L.PushFront将对象的地址（因为返回的是一个指针），放在了内存cache中。</p>
 <p>当执行查询操作时，在内存cache中获取到的是一个地址，将这个地址解引用获取内容时，就会出现问题。</p>
-
-<p>因为这个对象地址是从对象池申请的，该地址在执行Put操作后，对于对象池而言就没什么用了。<br />
+<p>因为这个对象地址是从对象池申请的，该地址在执行Put操作后，对于对象池而言就没什么用了。<br>
 而对象池的再次Get操作，很有可能分配出相同的地址。而在实际业务中，这个地址是有意义的，所以造成了从地址解引用实际内容时出现了问题。</p>
-
 <p>整个过程有些类似C里面野指针的概念。</p>
-
 <h2 id="解决">解决</h2>
-
 <p>如果从对象池获取值而非指针的话，那么这个问题就解了，如下</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -453,9 +438,9 @@ if (!doNotTrack) {
 </span><span class="lnt">15
 </span><span class="lnt">16
 </span><span class="lnt">17
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
     if item == nil {
         return
     }
@@ -471,29 +456,29 @@ if (!doNotTrack) {
 ...
 
     this.L.PushFront(&amp;v)
-    smodel.PutPointObjBack2Pool(v)</pre></td></tr></table>
+    smodel.PutPointObjBack2Pool(v)
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>关于对象池的更改，如下</p>
+</div><p>关于对象池的更改，如下</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">func NewPointObjFromPool() GraphItemPoint {
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">func NewPointObjFromPool() GraphItemPoint {
     return pointObjPool.Get().(GraphItemPoint)
 }
 func PutPointObjBack2Pool(p GraphItemPoint) {
     pointObjPool.Put(p)
-}</pre></td></tr></table>
+}
+</code></pre></td></tr></table>
 </div>
-</div>
-<p><em>-EOF-</em></p>
+</div><p><em>-EOF-</em></p>
     </div>
 
     
@@ -624,7 +609,7 @@ func PutPointObjBack2Pool(p GraphItemPoint) {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

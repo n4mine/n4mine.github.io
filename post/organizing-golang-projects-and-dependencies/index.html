@@ -35,7 +35,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/" />
@@ -54,7 +54,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -62,16 +62,13 @@
 
 <meta property="og:title" content="organizing golang projects and dependencies" />
 <meta property="og:description" content="背景
-
 golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一
 而对于一个公司内部项目来讲, 主要的需求有以下几点
-
 
 方便的依赖包版本管理
 方便协同开发
 尽可能不依赖其编译所在环境
 除基础包之外, 第三方包尽可能的自包含
-
 
 基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects" />
 <meta property="og:type" content="article" />
@@ -80,40 +77,31 @@ golang的依赖一直是让人头疼的问题, 大家对其自有的package管�
 <meta property="article:modified_time" content="2017-01-15T14:49:18+00:00" />
 <meta itemprop="name" content="organizing golang projects and dependencies">
 <meta itemprop="description" content="背景
-
 golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一
 而对于一个公司内部项目来讲, 主要的需求有以下几点
-
 
 方便的依赖包版本管理
 方便协同开发
 尽可能不依赖其编译所在环境
 除基础包之外, 第三方包尽可能的自包含
 
-
 基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects">
-
-
 <meta itemprop="datePublished" content="2017-01-15T14:49:18&#43;00:00" />
 <meta itemprop="dateModified" content="2017-01-15T14:49:18&#43;00:00" />
 <meta itemprop="wordCount" content="614">
 
 
 
-<meta itemprop="keywords" content="golang," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="golang," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="organizing golang projects and dependencies"/>
 <meta name="twitter:description" content="背景
-
 golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一
 而对于一个公司内部项目来讲, 主要的需求有以下几点
-
 
 方便的依赖包版本管理
 方便协同开发
 尽可能不依赖其编译所在环境
 除基础包之外, 第三方包尽可能的自包含
-
 
 基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects"/>
 
@@ -379,107 +367,86 @@ if (!doNotTrack) {
 <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
-    <nav id="TableOfContents">
-<ul>
-<li><a href="#背景">背景</a></li>
-<li><a href="#依赖工具">依赖工具</a></li>
-<li><a href="#优势">优势</a></li>
-<li><a href="#项目创建者">项目创建者</a></li>
-<li><a href="#项目协同者">项目协同者</a></li>
-<li><a href="#依赖已有的包">依赖已有的包</a></li>
-<li><a href="#锁定依赖包的版本">锁定依赖包的版本</a></li>
-</ul>
-</nav>
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
 
     
     <div class="post-content">
       <h1 id="背景">背景</h1>
-
-<p>golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一<br />
+<p>golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一<br>
 而对于一个公司内部项目来讲, 主要的需求有以下几点</p>
-
 <ol>
 <li>方便的依赖包版本管理</li>
 <li>方便协同开发</li>
 <li>尽可能不依赖其编译所在环境</li>
 <li>除基础包之外, 第三方包尽可能的自包含</li>
 </ol>
-
 <p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects</p>
-
 <h1 id="依赖工具">依赖工具</h1>
-
 <ul>
 <li><a href="https://glide.sh">glide</a></li>
 </ul>
-
 <h1 id="优势">优势</h1>
-
 <ul>
 <li>不依赖默认GOPATH，只需设置GOPATH为<strong>当前目录及指定子目录</strong>即可。即项目无需放在默认$GOPATH下面</li>
 <li>经测试支持go 1.5, go1.6, go1.7
-
 <ul>
 <li>go 1.5需<code>unset GO15VENDOREXPERIMENT</code>或者设置<code>GO15VENDOREXPERIMENT=1</code></li>
-</ul></li>
+</ul>
+</li>
 <li>不依赖GOROOT
-
 <ul>
 <li>当然使用<code>godef</code>等工具还是需要设置GOROOT的</li>
-</ul></li>
 </ul>
-
+</li>
+</ul>
 <h1 id="项目创建者">项目创建者</h1>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">export GOPATH=$PWD:$PWD/deps
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">export GOPATH=$PWD:$PWD/deps
 mkdir -p deps
 ln -sf ../vendor deps/src
 
 glide init --non-interactive
-glide install</pre></td></tr></table>
+glide install
+</code></pre></td></tr></table>
 </div>
-</div>
-<h1 id="项目协同者">项目协同者</h1>
+</div><h1 id="项目协同者">项目协同者</h1>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">git clone
-glide install</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">git clone
+glide install
+</code></pre></td></tr></table>
 </div>
-</div>
-<h1 id="依赖已有的包">依赖已有的包</h1>
-
+</div><h1 id="依赖已有的包">依赖已有的包</h1>
 <p>可能一些包你已经下载过了，例如golang.org/x/ 下的一系列包，不想再辛苦重新下载，可以使用<code>glide mirrors</code>，然后再<code>glide install</code>即可</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">glide mirror set https://gopkg.in/go-playground/validator.v8 file:///path/to/gopkg.in/go-playground/validator.v8 --vcs git
-glide mirror set https://gopkg.in/yaml.v2 file:///path/to/gopkg.in/yaml.v2 --vcs git</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">glide mirror set https://gopkg.in/go-playground/validator.v8 file:///path/to/gopkg.in/go-playground/validator.v8 --vcs git
+glide mirror set https://gopkg.in/yaml.v2 file:///path/to/gopkg.in/yaml.v2 --vcs git
+</code></pre></td></tr></table>
 </div>
-</div>
-<h1 id="锁定依赖包的版本">锁定依赖包的版本</h1>
-
-<p>当执行<code>glide up</code>时，glide的思路是更新你项目的所有依赖到最新版本。这个结果往往不是我们想要的，生产环境中往往只是依赖一个稳定的版本。<br />
-<a href="https://github.com/multiplay/glide-pin">glide-pin</a> 是一个glide的插件，提供了从lock文件转换成yaml文件的功能。<br />
+</div><h1 id="锁定依赖包的版本">锁定依赖包的版本</h1>
+<p>当执行<code>glide up</code>时，glide的思路是更新你项目的所有依赖到最新版本。这个结果往往不是我们想要的，生产环境中往往只是依赖一个稳定的版本。<br>
+<a href="https://github.com/multiplay/glide-pin">glide-pin</a> 是一个glide的插件，提供了从lock文件转换成yaml文件的功能。<br>
 可以利用这个工具，生成具有具体版本的glide.yaml文件，就能达到锁定依赖包版本的目的。</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -623,7 +590,7 @@ glide mirror set https://gopkg.in/yaml.v2 file:///path/to/gopkg.in/yaml.v2 --vcs
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

@@ -35,7 +35,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/ansible_install_jdk/" />
@@ -54,7 +54,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -63,7 +63,6 @@
 <meta property="og:title" content="ansible安装JDK" />
 <meta property="og:description" content="JDK这东西，简单来说就是一个包，主要生效的还是环境变量。
 直接上实现
-
 目录结构
 
 
@@ -89,7 +88,6 @@ $ tree
 <meta itemprop="name" content="ansible安装JDK">
 <meta itemprop="description" content="JDK这东西，简单来说就是一个包，主要生效的还是环境变量。
 直接上实现
-
 目录结构
 
 
@@ -108,20 +106,16 @@ $ tree
 
 
 简单的一个说明而已，没有必要搞什么最佳实践了。^_^">
-
-
 <meta itemprop="datePublished" content="2014-10-18T20:53:49&#43;00:00" />
 <meta itemprop="dateModified" content="2014-10-18T20:53:49&#43;00:00" />
 <meta itemprop="wordCount" content="336">
 
 
 
-<meta itemprop="keywords" content="ansible," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="ansible," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="ansible安装JDK"/>
 <meta name="twitter:description" content="JDK这东西，简单来说就是一个包，主要生效的还是环境变量。
 直接上实现
-
 目录结构
 
 
@@ -404,45 +398,40 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#目录结构">目录结构</a></li>
-<li><a href="#main-yaml">main.yaml</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#目录结构">目录结构</a></li>
+    <li><a href="#mainyaml">main.yaml</a></li>
+  </ul>
 </nav>
   </div>
 </div>
 
     
     <div class="post-content">
-      <p>JDK这东西，简单来说就是一个包，主要生效的还是环境变量。<br />
+      <p>JDK这东西，简单来说就是一个包，主要生效的还是环境变量。<br>
 直接上实现</p>
-
 <h2 id="目录结构">目录结构</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ tree
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ tree
 .
 ├── files
 │   └── jdk1.6-centos6.tar.gz
-└── main.yaml</pre></td></tr></table>
+└── main.yaml
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>简单的一个说明而已，没有必要搞什么最佳实践了。^_^</p>
-
-<h2 id="main-yaml">main.yaml</h2>
+</div><p>简单的一个说明而已，没有必要搞什么最佳实践了。^_^</p>
+<h2 id="mainyaml">main.yaml</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -467,9 +456,9 @@ if (!doNotTrack) {
 </span><span class="lnt">23
 </span><span class="lnt">24
 </span><span class="lnt">25
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">---
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">---
 - hosts: test_group
   sudo: yes
   sudo_user: root
@@ -493,18 +482,16 @@ if (!doNotTrack) {
     - {position: EOF, value: &#34;\n&#34;}
     - {position: EOF, value: &#39;export JAVA_HOME=/opt/soft/jdk&#39;}
     - {position: EOF, value: &#39;export PATH=$JAVA_HOME/bin:$PATH&#39;}
-    - {position: EOF, value: &#39;export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/rt.jar&#39;}</pre></td></tr></table>
+    - {position: EOF, value: &#39;export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/rt.jar&#39;}
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>以上。</p>
-
+</div><p>以上。</p>
 <ul>
 <li>注释部分可看出原打算使用sed来实现替换profile文件的环境变量替换。但太麻烦，需要考虑转义什么的。后来找到了lineinfile这个好东西。</li>
 <li>fact要是不用的话，就no掉吧，机器数量多了，会节省很多时间。</li>
 <li>简单使用了loop</li>
 <li>没啥技术含量，边查文档边搞弄出这么一个东西，算是备忘</li>
 </ul>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -648,7 +635,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

@@ -38,7 +38,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/fs-size-eta/" />
@@ -57,7 +57,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -65,12 +65,9 @@
 
 <meta property="og:title" content="动态监控磁盘分区使用ETA" />
 <meta property="og:description" content="名词解释
-
 eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。
 拿到运维系统中，含义即为某个分区预计还有多长时间被打满。（暂定为此名字，还没想到其他贴切的词）
-
 背景
-
 为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？
 原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。
 而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。
@@ -81,34 +78,25 @@ eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预�
 <meta property="article:modified_time" content="2016-01-22T12:43:29+00:00" />
 <meta itemprop="name" content="动态监控磁盘分区使用ETA">
 <meta itemprop="description" content="名词解释
-
 eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。
 拿到运维系统中，含义即为某个分区预计还有多长时间被打满。（暂定为此名字，还没想到其他贴切的词）
-
 背景
-
 为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？
 原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。
 而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。
 数学上有很多求平均数的方法[1]，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。">
-
-
 <meta itemprop="datePublished" content="2016-01-22T12:43:29&#43;00:00" />
 <meta itemprop="dateModified" content="2016-01-22T12:43:29&#43;00:00" />
 <meta itemprop="wordCount" content="699">
 
 
 
-<meta itemprop="keywords" content="zabbix," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="zabbix," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="动态监控磁盘分区使用ETA"/>
 <meta name="twitter:description" content="名词解释
-
 eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。
 拿到运维系统中，含义即为某个分区预计还有多长时间被打满。（暂定为此名字，还没想到其他贴切的词）
-
 背景
-
 为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？
 原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。
 而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。
@@ -377,15 +365,12 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#名词解释">名词解释</a></li>
-<li><a href="#背景">背景</a></li>
-<li><a href="#实现">实现</a></li>
-<li><a href="#参考">参考</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#名词解释">名词解释</a></li>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#实现">实现</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
 </nav>
   </div>
 </div>
@@ -393,60 +378,48 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h2 id="名词解释">名词解释</h2>
-
-<p>eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。<br />
+<p>eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。<br>
 拿到运维系统中，含义即为某个分区预计还有多长时间被打满。（暂定为此名字，还没想到其他贴切的词）</p>
-
 <h2 id="背景">背景</h2>
-
-<p>为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？<br />
-原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。<br />
-而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。<br />
-数学上有很多求平均数的方法<sup>[1]</sup>，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。</p>
-
+<p>为什么搞这个监控，我们不是有现成的剩余空间监控（vfs.fs.size[/,free]和剩余空间百分比监控（vfs.fs.size[/,pfree]）么？<br>
+原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。<br>
+而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。<br>
+数学上有很多求平均数的方法<!-- raw HTML omitted -->[1]<!-- raw HTML omitted -->，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。</p>
 <h2 id="实现">实现</h2>
-
-<p><img src="/img/eta.png" alt="" /></p>
-
+<p><img src="/img/eta.png" alt=""></p>
 <ul>
 <li>如上图，增加item，description和key随便填</li>
 <li>Type选择calculated，因为是calculated类型，所以key不是zabbix预定义的，可以自定义</li>
-
-<li><p>formula解析如下</p>
+<li>formula解析如下</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">last(&#34;vfs.fs.size[/test,free]&#34;) / ### @1
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">last(&#34;vfs.fs.size[/test,free]&#34;) / ### @1
 (
-( last(&#34;vfs.fs.size[/test,free]&#34;, #4) - last(&#34;vfs.fs.size[/test,free]&#34;) ) / 3 ### @2
-+ 0.0001 ### @3
-) * 2 ### @4</pre></td></tr></table>
+  ( last(&#34;vfs.fs.size[/test,free]&#34;, #4) - last(&#34;vfs.fs.size[/test,free]&#34;) ) / 3 ### @2
+  + 0.0001 ### @3
+) * 2 ### @4
+</code></pre></td></tr></table>
 </div>
-</div></li>
-</ul>
-
-<p>@1 代表某个分区的最后检测到的剩余空间<br />
-@2 / 3的原因是，last(#4) ~ last(#1)，一共是3个周期，求平均数<br />
-@3 + 0.0001的目的是为了规避除0错误<br />
+</div><p>@1 代表某个分区的最后检测到的剩余空间<br>
+@2 / 3的原因是，last(#4) ~ last(#1)，一共是3个周期，求平均数<br>
+@3 + 0.0001的目的是为了规避除0错误<br>
 @4 * 2的目的是xfs.fs.size的上报周期是2分钟，这里没找到能替代的变量或宏。</p>
-
 <ul>
 <li>选择float类型；加个单位。</li>
 <li>报警，因为磁盘可能出现释放空间的情况，所以报警需考虑value一定要大于0才行。</li>
 </ul>
-
 <h2 id="参考">参考</h2>
-
 <ul>
 <li><a href="http://zh.wikipedia.org/zh-cn/%E7%A7%BB%E5%8B%95%E5%B9%B3%E5%9D%87">移动平均</a></li>
 </ul>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -590,7 +563,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

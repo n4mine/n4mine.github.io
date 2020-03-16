@@ -34,7 +34,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/get-funcname-and-callername-in-golang/" />
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -61,9 +61,7 @@
 
 <meta property="og:title" content="Get Funcname and Callername in Golang" />
 <meta property="og:description" content="背景
-
 在 golang 中，往往需要获知当前的函数名及其调用者。
-
 例如在监控场景，自动获取函数名的需求比较常见。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://n4mine.github.io/post/get-funcname-and-callername-in-golang/" />
@@ -71,25 +69,18 @@
 <meta property="article:modified_time" content="2019-08-21T17:48:57+08:00" />
 <meta itemprop="name" content="Get Funcname and Callername in Golang">
 <meta itemprop="description" content="背景
-
 在 golang 中，往往需要获知当前的函数名及其调用者。
-
 例如在监控场景，自动获取函数名的需求比较常见。">
-
-
 <meta itemprop="datePublished" content="2019-08-21T17:48:57&#43;08:00" />
 <meta itemprop="dateModified" content="2019-08-21T17:48:57&#43;08:00" />
 <meta itemprop="wordCount" content="223">
 
 
 
-<meta itemprop="keywords" content="golang," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="golang," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Get Funcname and Callername in Golang"/>
 <meta name="twitter:description" content="背景
-
 在 golang 中，往往需要获知当前的函数名及其调用者。
-
 例如在监控场景，自动获取函数名的需求比较常见。"/>
 
 <!--[if lte IE 9]>
@@ -354,29 +345,20 @@ if (!doNotTrack) {
 <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
-    <nav id="TableOfContents">
-<ul>
-<li><a href="#背景">背景</a></li>
-<li><a href="#实现">实现</a></li>
-</ul>
-</nav>
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
 
     
     <div class="post-content">
       <h1 id="背景">背景</h1>
-
 <p>在 golang 中，往往需要获知当前的函数名及其调用者。</p>
-
 <p>例如在监控场景，自动获取函数名的需求比较常见。</p>
-
 <h1 id="实现">实现</h1>
-
 <p>直接上代码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -392,30 +374,30 @@ if (!doNotTrack) {
 </span><span class="lnt">14
 </span><span class="lnt">15
 </span><span class="lnt">16
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">func FuncAndCallerFunc() (string, string) {
-	pc := make([]uintptr, 15)
-	n := runtime.Callers(2, pc)
-	frames := runtime.CallersFrames(pc[:n])
-	frame, more := frames.Next()
-	var caller string
-	if more {
-		callerFra, _ := frames.Next()
-		caller = callerFra.Function
-	}
-	if len(caller) == 0 {
-		caller = &#34;-&#34;
-	}
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">pc</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">uintptr</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+	<span class="nx">n</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">Callers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">pc</span><span class="p">)</span>
+	<span class="nx">frames</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">CallersFrames</span><span class="p">(</span><span class="nx">pc</span><span class="p">[:</span><span class="nx">n</span><span class="p">])</span>
+	<span class="nx">frame</span><span class="p">,</span> <span class="nx">more</span> <span class="o">:=</span> <span class="nx">frames</span><span class="p">.</span><span class="nf">Next</span><span class="p">()</span>
+	<span class="kd">var</span> <span class="nx">caller</span> <span class="kt">string</span>
+	<span class="k">if</span> <span class="nx">more</span> <span class="p">{</span>
+		<span class="nx">callerFra</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">frames</span><span class="p">.</span><span class="nf">Next</span><span class="p">()</span>
+		<span class="nx">caller</span> <span class="p">=</span> <span class="nx">callerFra</span><span class="p">.</span><span class="nx">Function</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">caller</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">caller</span> <span class="p">=</span> <span class="s">&#34;-&#34;</span>
+	<span class="p">}</span>
 
-	return frame.Function, caller
-}</pre></td></tr></table>
+	<span class="k">return</span> <span class="nx">frame</span><span class="p">.</span><span class="nx">Function</span><span class="p">,</span> <span class="nx">caller</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>测试一下</p>
+</div><p>测试一下</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -434,43 +416,43 @@ if (!doNotTrack) {
 </span><span class="lnt">17
 </span><span class="lnt">18
 </span><span class="lnt">19
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">type A struct{}
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">A</span> <span class="kd">struct</span><span class="p">{}</span>
 
-func main() {
-	_f, _c := FuncAndCallerFunc()
-	fmt.Printf(&#34;in func: %v, caller is: %v\n&#34;, _f, _c)
-	a := A{}
-	x(a)
-}
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
+	<span class="nx">a</span> <span class="o">:=</span> <span class="nx">A</span><span class="p">{}</span>
+	<span class="nf">x</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+<span class="p">}</span>
 
-func x(a A) {
-	_f, _c := FuncAndCallerFunc()
-	fmt.Printf(&#34;in func: %v, caller is: %v\n&#34;, _f, _c)
-	a.print()
-}
+<span class="kd">func</span> <span class="nf">x</span><span class="p">(</span><span class="nx">a</span> <span class="nx">A</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
+	<span class="nx">a</span><span class="p">.</span><span class="nb">print</span><span class="p">()</span>
+<span class="p">}</span>
 
-func (A) print() {
-	_f, _c := FuncAndCallerFunc()
-	fmt.Printf(&#34;in func: %v, caller is: %v\n&#34;, _f, _c)
-}</pre></td></tr></table>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">A</span><span class="p">)</span> <span class="nb">print</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>输出为</p>
+</div><p>输出为</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">in func: main.main, caller is: runtime.main
-in func: main.x, caller is: main.main
-in func: main.A.print, caller is: main.x</pre></td></tr></table>
+<pre class="chroma"><code class="language-shell" data-lang="shell">in func: main.main, <span class="nb">caller</span> is: runtime.main
+in func: main.x, <span class="nb">caller</span> is: main.main
+in func: main.A.print, <span class="nb">caller</span> is: main.x
+</code></pre></td></tr></table>
 </div>
-</div>
-<p><em>-EOF-</em></p>
+</div><p><em>-EOF-</em></p>
     </div>
 
     
@@ -507,6 +489,19 @@ in func: main.A.print, caller is: main.x</pre></td></tr></table>
       
       <nav class="post-nav">
         
+          <a class="prev" href="/post/nginx-dynamic-upstream-use-map/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">用 map 实现 nginx 的动态 upstream</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
         
           <a class="next" href="/post/understand-container-in-15-minutes/">
             <span class="next-text nav-default">15 分钟了解容器</span>
@@ -587,7 +582,7 @@ in func: main.A.print, caller is: main.x</pre></td></tr></table>
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

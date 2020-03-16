@@ -34,7 +34,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/run-out-of-memory/" />
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -61,7 +61,6 @@
 
 <meta property="og:title" content="监控进程卡住导致内存耗尽" />
 <meta property="og:description" content="起因
-
 大早上收到报警，几台机器内存不足
 想上去查原因，已登录不上" />
 <meta property="og:type" content="article" />
@@ -70,22 +69,17 @@
 <meta property="article:modified_time" content="2015-01-02T10:22:31+00:00" />
 <meta itemprop="name" content="监控进程卡住导致内存耗尽">
 <meta itemprop="description" content="起因
-
 大早上收到报警，几台机器内存不足
 想上去查原因，已登录不上">
-
-
 <meta itemprop="datePublished" content="2015-01-02T10:22:31&#43;00:00" />
 <meta itemprop="dateModified" content="2015-01-02T10:22:31&#43;00:00" />
 <meta itemprop="wordCount" content="286">
 
 
 
-<meta itemprop="keywords" content="内存耗尽," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="内存耗尽," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="监控进程卡住导致内存耗尽"/>
 <meta name="twitter:description" content="起因
-
 大早上收到报警，几台机器内存不足
 想上去查原因，已登录不上"/>
 
@@ -352,14 +346,11 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#起因">起因</a></li>
-<li><a href="#排查">排查</a></li>
-<li><a href="#改进">改进</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#起因">起因</a></li>
+    <li><a href="#排查">排查</a></li>
+    <li><a href="#改进">改进</a></li>
+  </ul>
 </nav>
   </div>
 </div>
@@ -367,41 +358,30 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h2 id="起因">起因</h2>
-
-<p>大早上收到报警，几台机器内存不足<br />
+<p>大早上收到报警，几台机器内存不足<br>
 想上去查原因，已登录不上</p>
-
 <h2 id="排查">排查</h2>
-
 <p>查看监控，发现以下现象</p>
-
 <ul>
 <li>内存耗尽</li>
 <li>cpu cs在某个时间开始飙高</li>
 <li>其他部分机器也有内存使用开始下降的趋势</li>
 </ul>
-
-<p>找了1台还能登录的机器看了下，sleep状态的进程数目6000+<br />
-都是监控上报进程<br />
-messages里面没什么有用的信息，cron的log中有如下条目<br />
-<code>crond[21657]: (root) INFO (Job execution of per-minute job scheduled for 18:08 delayed into subsequent minute 18:13. Skipping job run.)</code><br />
+<p>找了1台还能登录的机器看了下，sleep状态的进程数目6000+<br>
+都是监控上报进程<br>
+messages里面没什么有用的信息，cron的log中有如下条目<br>
+<code>crond[21657]: (root) INFO (Job execution of per-minute job scheduled for 18:08 delayed into subsequent minute 18:13. Skipping job run.)</code><br>
 说明是cron任务卡住</p>
-
-<p>另外strace跟了下监控上报进程，全在wait状态<br />
+<p>另外strace跟了下监控上报进程，全在wait状态<br>
 杀对应进程，故障恢复</p>
-
 <p>ansible批量<code>pkill -f $PATTERN</code></p>
-
 <h2 id="改进">改进</h2>
-
 <ul>
 <li>加入task数量监控</li>
 <li>监控上报程序自防御措施</li>
 <li>OOM监控，但此例未见OOM</li>
 </ul>
-
 <p>BTW: 这篇水文主要是测试hexo ^_^</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -545,7 +525,7 @@ messages里面没什么有用的信息，cron的log中有如下条目<br />
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

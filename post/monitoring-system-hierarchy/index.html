@@ -23,8 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="开局一张图，剩下全靠编。
-" />
+  <meta name="description" content="开局一张图，剩下全靠编。" />
 <meta name="keywords" content="监控系统" />
 
 
@@ -33,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/monitoring-system-hierarchy/" />
@@ -52,7 +51,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -66,16 +65,13 @@
 <meta property="article:modified_time" content="2019-07-18T15:37:11+08:00" />
 <meta itemprop="name" content="浅谈监控层次模型">
 <meta itemprop="description" content="开局一张图，剩下全靠编。">
-
-
 <meta itemprop="datePublished" content="2019-07-18T15:37:11&#43;08:00" />
 <meta itemprop="dateModified" content="2019-07-18T15:37:11&#43;08:00" />
 <meta itemprop="wordCount" content="514">
 
 
 
-<meta itemprop="keywords" content="技术,监控系统," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="技术,监控系统," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="浅谈监控层次模型"/>
 <meta name="twitter:description" content="开局一张图，剩下全靠编。"/>
 
@@ -341,72 +337,72 @@ if (!doNotTrack) {
 <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
-    
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
 
     
     <div class="post-content">
-      <p><del>开局一张图，剩下全靠编。</del></p>
-
-<p><img src="/img/monitoring_system_hierarchy.png" alt="Monitoring System Hierarchy" /></p>
-
+      <p><!-- raw HTML omitted -->开局一张图，剩下全靠编。<!-- raw HTML omitted --></p>
+<p><img src="/img/monitoring_system_hierarchy.png" alt="Monitoring System Hierarchy"></p>
 <ul>
-<li><p>监控系统从使用者角度，一般可分为客户和开发同学</p>
-
+<li>
+<p>监控系统从使用者角度，一般可分为客户和开发同学</p>
 <ul>
-<li>客户，只关注业务<br /></li>
-<li>开发同学，关注应用、服务与<del>基础设施</del>（9102年了，不应该再关注，下文详谈）<br /></li>
-</ul></li>
-
-<li><p>对监控的使用方式应该是 <code>Top-down</code> 的，而不应该是 <code>Bottom-up</code></p></li>
-
-<li><p>监控开发者在建立其基础框架后，应尽快满足用户 <code>Top-down</code> 的需求</p>
-
-<ul>
-<li>实时聚合，无论是效率还是成本，一定是无法满足需求的（例如动辄单次上万条曲线的实时计算）<br /></li>
-<li>预聚合是业界的趋势，例如 prometheus 的 <code>recording rules</code><br /></li>
-</ul></li>
-
-<li><p><code>drill down</code> 一定是解决开发同学使用监控系统最大痛点的有效手段</p>
-
-<ul>
-<li><p>问题在哪里？</p>
-
-<ul>
-<li>监控系统只提供数值型的一条条曲线，而开发同学想在曲线上看 <code>raw logs</code><br /></li>
-<li>开发同学想上报 traceID。而携带 traceID 的曲线可能会打爆监控系统的时序数据库<br /></li>
-</ul></li>
-
-<li><p>如何解？</p>
-
-<ul>
-<li>监控系统提供能力（异构的存储模型），能从应用曲线下钻到服务，再到下游服务。见上图红框的 <code>drill down</code><br /></li>
-</ul></li>
-</ul></li>
-
-<li><p>为什么说开发同学同学不应该再关注基础设施？上图到基础设置的 <code>drill down</code> 为何是灰色？</p>
-
-<ul>
-<li>单体时代早已过去，如今已经是容器化时代，十个八个的实例挂掉，不应该影响全局<br /></li>
-<li>应该关注什么？<br />
-
-<ul>
-<li>应用是否健康<br /></li>
-<li>SLO 是否达标<br /></li>
-<li>本季度还有多少分钟的不可用时长供你<code>挥霍</code>，用于创新与开拓<br /></li>
-<li>至于单个实例用多少内存、cpu 是否掉底，随它去吧<br /></li>
-</ul></li>
-</ul></li>
-
-<li><p>未来的监控应该是什么样的？</p>
-
-<ul>
-<li><code>drilllllllllll down</code>, 甚至 down 到 log（开发同学的最爱）<br /></li>
-<li><code>observability</code> 是大势所趋<br /></li>
-</ul></li>
+<li>客户，只关注业务</li>
+<li>开发同学，关注应用、服务与<!-- raw HTML omitted -->基础设施<!-- raw HTML omitted -->（9102年了，不应该再关注，下文详谈）</li>
 </ul>
-
+</li>
+<li>
+<p>对监控的使用方式应该是 <code>Top-down</code> 的，而不应该是 <code>Bottom-up</code></p>
+</li>
+<li>
+<p>监控开发者在建立其基础框架后，应尽快满足用户 <code>Top-down</code> 的需求</p>
+<ul>
+<li>实时聚合，无论是效率还是成本，一定是无法满足需求的（例如动辄单次上万条曲线的实时计算）</li>
+<li>预聚合是业界的趋势，例如 prometheus 的 <code>recording rules</code></li>
+</ul>
+</li>
+<li>
+<p><code>drill down</code> 一定是解决开发同学使用监控系统最大痛点的有效手段</p>
+<ul>
+<li>
+<p>问题在哪里？</p>
+<ul>
+<li>监控系统只提供数值型的一条条曲线，而开发同学想在曲线上看 <code>raw logs</code></li>
+<li>开发同学想上报 traceID。而携带 traceID 的曲线可能会打爆监控系统的时序数据库</li>
+</ul>
+</li>
+<li>
+<p>如何解？</p>
+<ul>
+<li>监控系统提供能力（异构的存储模型），能从应用曲线下钻到服务，再到下游服务。见上图红框的 <code>drill down</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>为什么说开发同学同学不应该再关注基础设施？上图到基础设置的 <code>drill down</code> 为何是灰色？</p>
+<ul>
+<li>单体时代早已过去，如今已经是容器化时代，十个八个的实例挂掉，不应该影响全局</li>
+<li>应该关注什么？
+<ul>
+<li>应用是否健康</li>
+<li>SLO 是否达标</li>
+<li>本季度还有多少分钟的不可用时长供你<code>挥霍</code>，用于创新与开拓</li>
+<li>至于单个实例用多少内存、cpu 是否掉底，随它去吧</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>未来的监控应该是什么样的？</p>
+<ul>
+<li><code>drilllllllllll down</code>, 甚至 down 到 log（开发同学的最爱）</li>
+<li><code>observability</code> 是大势所趋</li>
+</ul>
+</li>
+</ul>
 <p><em>-EOF-</em></p>
     </div>
 
@@ -538,7 +534,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

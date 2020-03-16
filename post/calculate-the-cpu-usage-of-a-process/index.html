@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率 1 2 3 4 5 6 7 8 9 10 11 12 13 14  #!/bin/sh  corenum=$(nproc --all) p=xxx pid=$(pidof $p) p_totaltime1=$(awk &amp;#39;{print $14&#43;$15}&amp;#39; /proc/${pid}/stat) totaltime1=$(awk &amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&amp;#39; /proc/stat) sleep 3 # 为什么是3, 要得到与top相同的结果 p_totaltime2=$(awk &amp;#39;{print $14&#43;$15}&amp;#39; /proc/${pid}/stat) totaltime2=$(awk &amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&amp;#39; /proc/stat) res=$(awk &amp;#39;BEGIN{print &amp;#39;&amp;#34;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;#34;&amp;#39;}&amp;#39;) echo $res  " />
+  <meta name="description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率 1 2 3 4 5 6 7 8 9 10 11 12 13 14  #!/bin/sh  corenum=$(nproc --all) p=xxx pid=$(pidof $p) p_totaltime1=$(awk &amp;#39;{print $14&#43;$15}&amp;#39; /proc/${pid}/stat) totaltime1=$(awk &amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&amp;#39; /proc/stat) sleep 3 # 为什么是3, 要得到与top相同的结果 p_totaltime2=$(awk &amp;#39;{print $14&#43;$15}&amp;#39; /proc/${pid}/stat) totaltime2=$(awk &amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&amp;#39; /proc/stat) res=$(awk &amp;#39;BEGIN{print &amp;#39;&amp;#34;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;#34;&amp;#39;}&amp;#39;) echo $res   " />
 <meta name="keywords" content="top, /proc, process, cpu" />
 
 
@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/" />
@@ -51,7 +51,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -91,6 +91,7 @@ totaltime2=$(awk &#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i&#43;&#43;){sum&#
 res=$(awk &#39;BEGIN{print &#39;&#34;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&#34;&#39;}&#39;)
 
 echo $res
+
 
 " />
 <meta property="og:type" content="article" />
@@ -132,17 +133,15 @@ res=$(awk &#39;BEGIN{print &#39;&#34;($p_totaltime2-$p_totaltime1)*100/($totalti
 
 echo $res
 
+
 ">
-
-
 <meta itemprop="datePublished" content="2018-07-03T11:28:34&#43;08:00" />
 <meta itemprop="dateModified" content="2018-07-03T11:28:34&#43;08:00" />
 <meta itemprop="wordCount" content="121">
 
 
 
-<meta itemprop="keywords" content="监控," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="监控," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="计算进程的CPU占用率"/>
 <meta name="twitter:description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率
 
@@ -177,6 +176,7 @@ totaltime2=$(awk &#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i&#43;&#43;){sum&#
 res=$(awk &#39;BEGIN{print &#39;&#34;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&#34;&#39;}&#39;)
 
 echo $res
+
 
 "/>
 
@@ -443,23 +443,20 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#基于-proc-pid-stat和-proc-stat计算指定进程的cpu利用率">基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率</a></li>
-<li><a href="#相对应的top命令">相对应的top命令</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#基于procpidstat和procstat计算指定进程的cpu利用率">基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率</a></li>
+    <li><a href="#相对应的top命令">相对应的top命令</a></li>
+  </ul>
 </nav>
   </div>
 </div>
 
     
     <div class="post-content">
-      <h2 id="基于-proc-pid-stat和-proc-stat计算指定进程的cpu利用率">基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率</h2>
+      <h2 id="基于procpidstat和procstat计算指定进程的cpu利用率">基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -473,9 +470,9 @@ if (!doNotTrack) {
 </span><span class="lnt">12
 </span><span class="lnt">13
 </span><span class="lnt">14
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><span class="cp">#!/bin/sh
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/sh
 </span><span class="cp"></span>
 <span class="nv">corenum</span><span class="o">=</span><span class="k">$(</span>nproc --all<span class="k">)</span>
 <span class="nv">p</span><span class="o">=</span>xxx
@@ -488,19 +485,19 @@ sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top
 
 <span class="nv">res</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;BEGIN{print &#39;</span><span class="s2">&#34;(</span><span class="nv">$p_totaltime2</span><span class="s2">-</span><span class="nv">$p_totaltime1</span><span class="s2">)*100/(</span><span class="nv">$totaltime2</span><span class="s2">-</span><span class="nv">$totaltime1</span><span class="s2">)*</span><span class="nv">$corenum</span><span class="s2">&#34;</span><span class="s1">&#39;}&#39;</span><span class="k">)</span>
 
-<span class="nb">echo</span> <span class="nv">$res</span></pre></td></tr></table>
+<span class="nb">echo</span> <span class="nv">$res</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<h2 id="相对应的top命令">相对应的top命令</h2>
+</div><h2 id="相对应的top命令">相对应的top命令</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">p=xxx; top -p $(pidof $p) -b</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">p=xxx; top -p $(pidof $p) -b
+</code></pre></td></tr></table>
 </div>
-</div>
-<p><em>-EOF-</em></p>
+</div><p><em>-EOF-</em></p>
     </div>
 
     
@@ -630,7 +627,7 @@ sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

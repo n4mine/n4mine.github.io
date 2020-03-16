@@ -35,7 +35,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-collector/" />
@@ -54,7 +54,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -62,7 +62,6 @@
 
 <meta property="og:title" content="监控系统构建实践-采集篇" />
 <meta property="og:description" content="写在前面
-
 监控系统这个话题很大。
 但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。
 本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的最佳实践解法，及本人对各个模块在实践中的一些思考。" />
@@ -72,23 +71,18 @@
 <meta property="article:modified_time" content="2018-04-30T17:12:45+08:00" />
 <meta itemprop="name" content="监控系统构建实践-采集篇">
 <meta itemprop="description" content="写在前面
-
 监控系统这个话题很大。
 但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。
 本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的最佳实践解法，及本人对各个模块在实践中的一些思考。">
-
-
 <meta itemprop="datePublished" content="2018-04-30T17:12:45&#43;08:00" />
 <meta itemprop="dateModified" content="2018-04-30T17:12:45&#43;08:00" />
 <meta itemprop="wordCount" content="1959">
 
 
 
-<meta itemprop="keywords" content="技术,监控系统," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="技术,监控系统," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="监控系统构建实践-采集篇"/>
 <meta name="twitter:description" content="写在前面
-
 监控系统这个话题很大。
 但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。
 本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的最佳实践解法，及本人对各个模块在实践中的一些思考。"/>
@@ -356,18 +350,16 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#写在前面">写在前面</a></li>
-<li><a href="#采集">采集</a>
-<ul>
-<li><a href="#预定义指标">预定义指标</a></li>
-<li><a href="#自定义指标">自定义指标</a></li>
-</ul></li>
-<li><a href="#篇尾语">篇尾语</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#写在前面">写在前面</a></li>
+    <li><a href="#采集">采集</a>
+      <ul>
+        <li><a href="#预定义指标">预定义指标</a></li>
+        <li><a href="#自定义指标">自定义指标</a></li>
+      </ul>
+    </li>
+    <li><a href="#篇尾语">篇尾语</a></li>
+  </ul>
 </nav>
   </div>
 </div>
@@ -375,63 +367,42 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h2 id="写在前面">写在前面</h2>
-
-<p>监控系统这个话题很大。<br />
-但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。<br />
+<p>监控系统这个话题很大。<br>
+但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。<br>
 本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的<del>最佳实践</del>解法，及本人对各个模块在实践中的一些思考。</p>
-
 <h2 id="采集">采集</h2>
-
-<p>可以说，凡采集必定有一个(多个)采集agent在后台工作。<br />
+<p>可以说，凡采集必定有一个(多个)采集agent在后台工作。<br>
 而采集从数据来源上分类，分为2种:</p>
-
 <ol>
-<li>预定义指标<br /></li>
-<li>自定义指标<br /></li>
+<li>预定义指标</li>
+<li>自定义指标</li>
 </ol>
-
 <h3 id="预定义指标">预定义指标</h3>
-
 <p>凡是预置在采集agent内部的，例如cpu、mem、io等基础资源，都可归于预定义指标。</p>
-
 <p>预定义指标有2个重要的特点:</p>
-
 <ol>
-<li>数量可控<br /></li>
-<li>增加预定义指标相对较贵<br /></li>
+<li>数量可控</li>
+<li>增加预定义指标相对较贵</li>
 </ol>
-
 <p><code>数量可控</code>是指，无论是<code>cpu.idle</code>、<code>io.util</code>这些固定数量的指标，还是<code>disk.used{mount=/}</code>、<code>cpu.idle.core{core=1}</code>这些变化范围有限的指标, 都是有限数量的指标。</p>
-
 <p>还有一类指标，虽然来源是用户自定义，但反映在指标量上，也应该归于预定义指标的范畴。例如端口监控、进程监控等。每增加一个端口监控，那么只会多产出一个指标。每增加一个进程监控，也只会多出有限的几个指标，例如proc1.cpu、proc1.mem.used等。</p>
-
-<p><code>预定义指标的增加</code>，因为是预置在采集agent中的采集，所以预定义指标的增加就相对麻烦一些。<br />
-例如原来有cpu.idle、cpu.user、cpu.sys了，但现在推进虚拟化，需要增加cpu.steal，而面对已经在线上几万、甚至是几十万台已经部署好了的agent，在存在网络分区、差异化配置等场景下的升级，就成为了一个问题。<br />
+<p><code>预定义指标的增加</code>，因为是预置在采集agent中的采集，所以预定义指标的增加就相对麻烦一些。<br>
+例如原来有cpu.idle、cpu.user、cpu.sys了，但现在推进虚拟化，需要增加cpu.steal，而面对已经在线上几万、甚至是几十万台已经部署好了的agent，在存在网络分区、差异化配置等场景下的升级，就成为了一个问题。<br>
 这个升级的动作在我司曾进行了几个月之久，原因就是业务线对监控对依赖太重了，重到有任何的风吹草动，都可能引起业务<code>恐慌</code>。</p>
-
 <p>一个解决方案是，如果有<code>配置化采集目标</code>的手段，这个痛就可以大大缓解了。当然这也只是一个脑洞，目前还未看到有类似此类解法的实现。</p>
-
 <h3 id="自定义指标">自定义指标</h3>
-
 <p>说完了预定义指标，再来说自定义指标。</p>
-
 <p>相对预定义指标，自定义指标的一大特点也是令人头疼的特点就是，自定义指标的<code>数量完全不受控</code>。</p>
-
 <p>例如在我司，可以看到各种令人哭笑不得的指标:</p>
-
 <ul>
 <li>带有session id、订单id及各种id的指标。这种指标往往一个tag key中就有几十万、上百万的tag value</li>
 <li>带有tcp source端临时端口的指标</li>
 <li>带有公网上尝试sql注入、尝试寻找管理后台入口的url的指标</li>
 <li>将响应时间作为tag value的指标</li>
 </ul>
-
 <p>我司的指标量曾有几千万增长/天的记录。对于整个监控系统尤其时序数据库和监控开发同学来说，都是灾难。</p>
-
 <p>可以说，对于现有的任何时序数据库来讲，上述的几种指标，都是令人头疼和难以处理的。</p>
-
 <p>如何应对这种低质量指标(我们定义为垃圾指标)数量的快速增长。回顾我司的监控系统发展，大概经历了这么几个阶段:</p>
-
 <ol>
 <li>重启存储模块</li>
 <li>黑名单机制</li>
@@ -439,35 +410,24 @@ if (!doNotTrack) {
 <li>quota机制</li>
 <li>智能拦截</li>
 </ol>
-
 <p>在我司还是使用<code>influxdb</code>作为存储模块的时代，存储很容易被这种突然增长的指标搞挂掉，那么解决办法是什么，<code>重启influxdb...</code>，除了重启存储模块， 面对这种垃圾指标上报，我们当时可以说没有有效的办法。</p>
-
 <p>随着监控系统的重构、升级，在完成基于<code>open-falcon</code>存储的监控系统重构后，我们随之也建设了一套黑名单机制，在传输链路中插入了一个过滤逻辑。在基于增量统计的<code>统计模块</code>发现垃圾指标后，我们手工配置在黑名单系统中，这样对应的指标就不能再上报。</p>
-
 <p>但黑名单机制仍然需要<code>人工介入</code>，所以有了接下来的<code>拦截机制</code>，即发现了垃圾指标后，对这个指标<code>自动</code>进行<code>随机丢弃</code>。</p>
-
-<p>但这种方式是有问题的，指标量仍然在<code>缓慢</code>的增长，而且对用户来说也非常不友好。<br />
-此时，<code>quota机制</code>成为我们治理垃圾指标的另一个选择。<br />
-quota机制很简单，甚至说是粗暴。即在某个<code>维度</code>上，只能上报<code>指定数量的指标</code>。<br />
+<p>但这种方式是有问题的，指标量仍然在<code>缓慢</code>的增长，而且对用户来说也非常不友好。<br>
+此时，<code>quota机制</code>成为我们治理垃圾指标的另一个选择。<br>
+quota机制很简单，甚至说是粗暴。即在某个<code>维度</code>上，只能上报<code>指定数量的指标</code>。<br>
 大于这个数量的新增指标，那么直接被丢弃。而原来未触发上限的指标，仍可继续上报。</p>
-
 <p>quota机制一方面可以减轻监控系统的压力，另一方面，也能push用户自己提高上报的监控指标的质量。</p>
-
 <p><code>智能拦截</code>这个方向，是我们一直努力但又由于种种原因而未施行的方向。其难度与反爬虫和接入层的waf都是相当的。</p>
-
 <p>可以看出，整个对于垃圾指标的拦截、治理总结起来有2点:</p>
-
 <ol>
-<li>拦截的动作，越靠近采集层越好。当垃圾数据已经走遍奇经八脉到了存储了，治理这个话题差不多就成为一个伪话题了。做系统的一定要<code>把风险扼杀于萌芽状态</code>。<br /></li>
-<li>人是不靠谱的。不管是忙于业务还是其他什么原因，用户从来都不会<code>主动</code>提升监控指标的质量。<br />
-对于这些用户来讲，监控系统和<code>casual sexual behavior</code>很像，从来都不会考虑与其<code>稳定发展</code>，而在<code>需要的时候</code>又希望其能给自己带来惊喜。<br />
-我想，很多的基础组件/服务，都会受到用户如此的看待吧。<em>sigh&hellip;</em><br /></li>
+<li>拦截的动作，越靠近采集层越好。当垃圾数据已经走遍奇经八脉到了存储了，治理这个话题差不多就成为一个伪话题了。做系统的一定要<code>把风险扼杀于萌芽状态</code>。</li>
+<li>人是不靠谱的。不管是忙于业务还是其他什么原因，用户从来都不会<code>主动</code>提升监控指标的质量。<br>
+对于这些用户来讲，监控系统和<code>casual sexual behavior</code>很像，从来都不会考虑与其<code>稳定发展</code>，而在<code>需要的时候</code>又希望其能给自己带来惊喜。<br>
+我想，很多的基础组件/服务，都会受到用户如此的看待吧。<em>sigh&hellip;</em></li>
 </ol>
-
 <h2 id="篇尾语">篇尾语</h2>
-
 <p>本文是&lt;监控系统构建实践&gt;系列的第一篇，以后还会有传输篇、存储篇、查询篇、报警篇等系列文章，敬请期待 。</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -599,7 +559,7 @@ quota机制很简单，甚至说是粗暴。即在某个<code>维度</code>上�
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

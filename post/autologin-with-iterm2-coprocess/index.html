@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/autologin-with-iterm2-coprocess/" />
@@ -56,7 +56,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -64,11 +64,9 @@
 
 <meta property="og:title" content="使用iterm2的coprocess完成自动登录" />
 <meta property="og:description" content="背景
-
 日常工作中，经常需要通过跳板机登录线上机器。
 而为了安全起见，系统部的同学又启用了otp，动态生成code
 给经常登录线上机器的使用者，带来了很大不便
-
 作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。
 什么是iterm2的coprocess，可参见其官方说明 coprocesses" />
 <meta property="og:type" content="article" />
@@ -77,30 +75,23 @@
 <meta property="article:modified_time" content="2017-09-25T18:10:41+00:00" />
 <meta itemprop="name" content="使用iterm2的coprocess完成自动登录">
 <meta itemprop="description" content="背景
-
 日常工作中，经常需要通过跳板机登录线上机器。
 而为了安全起见，系统部的同学又启用了otp，动态生成code
 给经常登录线上机器的使用者，带来了很大不便
-
 作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。
 什么是iterm2的coprocess，可参见其官方说明 coprocesses">
-
-
 <meta itemprop="datePublished" content="2017-09-25T18:10:41&#43;00:00" />
 <meta itemprop="dateModified" content="2017-09-25T18:10:41&#43;00:00" />
 <meta itemprop="wordCount" content="481">
 
 
 
-<meta itemprop="keywords" content="自动化,登录,iterm2," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="自动化,登录,iterm2," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="使用iterm2的coprocess完成自动登录"/>
 <meta name="twitter:description" content="背景
-
 日常工作中，经常需要通过跳板机登录线上机器。
 而为了安全起见，系统部的同学又启用了otp，动态生成code
 给经常登录线上机器的使用者，带来了很大不便
-
 作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。
 什么是iterm2的coprocess，可参见其官方说明 coprocesses"/>
 
@@ -366,57 +357,46 @@ if (!doNotTrack) {
 <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
-    <nav id="TableOfContents">
-<ul>
-<li><a href="#背景">背景</a></li>
-<li><a href="#实现">实现</a></li>
-</ul>
-</nav>
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
 
     
     <div class="post-content">
       <h1 id="背景">背景</h1>
-
-<p>日常工作中，经常需要通过跳板机登录线上机器。<br />
-而为了安全起见，系统部的同学又启用了otp，动态生成code<br />
+<p>日常工作中，经常需要通过跳板机登录线上机器。<br>
+而为了安全起见，系统部的同学又启用了otp，动态生成code<br>
 给经常登录线上机器的使用者，带来了很大不便</p>
-
-<p>作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。<br />
+<p>作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。<br>
 什么是iterm2的coprocess，可参见其官方说明 <a href="https://www.iterm2.com/documentation-coprocesses.html">coprocesses</a></p>
-
 <h1 id="实现">实现</h1>
-
-<p>一般的跳板机都是先让用户输入动态密码，然后输入个人密码。<br />
+<p>一般的跳板机都是先让用户输入动态密码，然后输入个人密码。<br>
 那么我们可以写个脚本如下，假设脚本名字为<code>fillme</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><span class="cp">#!/bin/bash
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
 </span><span class="cp"></span><span class="nv">code</span><span class="o">=</span><span class="k">$(</span>balabala<span class="k">)</span> <span class="c1"># 生成code的shell语句</span>
 <span class="nv">pass</span><span class="o">=</span><span class="k">$(</span>labalaba<span class="k">)</span> <span class="c1"># 生成你个人密码的语句</span>
 
 <span class="nb">echo</span> <span class="si">${</span><span class="nv">code</span><span class="si">}</span>
-sleep <span class="m">0</span>.5        <span class="c1"># sleep是防止输入太快跳板机来不及反应</span>
-<span class="nb">echo</span> <span class="si">${</span><span class="nv">pass</span><span class="si">}</span></pre></td></tr></table>
+sleep 0.5        <span class="c1"># sleep是防止输入太快跳板机来不及反应</span>
+<span class="nb">echo</span> <span class="si">${</span><span class="nv">pass</span><span class="si">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>设置iterm2，在<code>Preferences -&gt; keys</code>或<code>Preferences -&gt; Profiles -&gt; keys</code>下，增加一组<code>Key Mappings</code><br />
-快捷键为<code>⌘\</code>(这是本人前期使用sudolikeaboss的快捷键，现在sudolikeaboss与1password配合起来有问题就放弃了)<br />
-Action设置为<code>Run Coprocess</code><br />
+</div><p>设置iterm2，在<code>Preferences -&gt; keys</code>或<code>Preferences -&gt; Profiles -&gt; keys</code>下，增加一组<code>Key Mappings</code><br>
+快捷键为<code>⌘\</code>(这是本人前期使用sudolikeaboss的快捷键，现在sudolikeaboss与1password配合起来有问题就放弃了)<br>
+Action设置为<code>Run Coprocess</code><br>
 然后将第三个参数设置为上述脚本fillme的绝对路径</p>
-
 <p>接下来，就可以在跳板机的提示符下，按对应的快捷键输入动态口令及密码了。</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -562,7 +542,7 @@ Action设置为<code>Run Coprocess</code><br />
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

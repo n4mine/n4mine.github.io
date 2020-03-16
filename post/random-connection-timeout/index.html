@@ -24,11 +24,7 @@
 
 <meta name="author" content="n4mine" />
   <meta name="description" content="现象 业务同学反馈，A服务调用B服务有连接超时
-环境  src：A服务, 以下均用src代指
- dst：B服务, 以下均用dst代指
- B服务通过lvs &#43; nginx的方式对外服务
- A服务连接超时设置为500ms
- " />
+环境  src：A服务, 以下均用src代指 dst：B服务, 以下均用dst代指 B服务通过lvs &#43; nginx的方式对外服务 A服务连接超时设置为500ms " />
 
   <meta name="keywords" content="n4mine, blog" />
 
@@ -37,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/random-connection-timeout/" />
@@ -56,7 +52,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -64,11 +60,8 @@
 
 <meta property="og:title" content="调用服务端随机性连接超时case一例" />
 <meta property="og:description" content="现象
-
 业务同学反馈，A服务调用B服务有连接超时
-
 环境
-
 
 src：A服务, 以下均用src代指
 dst：B服务, 以下均用dst代指
@@ -81,34 +74,25 @@ A服务连接超时设置为500ms
 <meta property="article:modified_time" content="2016-10-05T09:47:13+00:00" />
 <meta itemprop="name" content="调用服务端随机性连接超时case一例">
 <meta itemprop="description" content="现象
-
 业务同学反馈，A服务调用B服务有连接超时
-
 环境
-
 
 src：A服务, 以下均用src代指
 dst：B服务, 以下均用dst代指
 B服务通过lvs &#43; nginx的方式对外服务
 A服务连接超时设置为500ms
 ">
-
-
 <meta itemprop="datePublished" content="2016-10-05T09:47:13&#43;00:00" />
 <meta itemprop="dateModified" content="2016-10-05T09:47:13&#43;00:00" />
 <meta itemprop="wordCount" content="1260">
 
 
 
-<meta itemprop="keywords" content="nginx,lvs,tcp,syn_cookie,listen_overflow," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="nginx,lvs,tcp,syn_cookie,listen_overflow," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="调用服务端随机性连接超时case一例"/>
 <meta name="twitter:description" content="现象
-
 业务同学反馈，A服务调用B服务有连接超时
-
 环境
-
 
 src：A服务, 以下均用src代指
 dst：B服务, 以下均用dst代指
@@ -379,38 +363,33 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#现象">现象</a></li>
-<li><a href="#环境">环境</a></li>
-<li><a href="#排查过程">排查过程</a>
-<ul>
-<li><a href="#测试命令">测试命令</a>
-<ul>
-<li><a href="#src表现如下">src表现如下</a></li>
-<li><a href="#dst表现如下">dst表现如下</a></li>
-</ul></li>
-<li><a href="#抓包分析">抓包分析</a></li>
-<li><a href="#阶段性结论">阶段性结论</a></li>
-<li><a href="#猜测">猜测</a></li>
-<li><a href="#恢复">恢复</a></li>
-<li><a href="#疑惑">疑惑</a></li>
-</ul></li>
-<li><a href="#结论">结论</a></li>
-<li><a href="#题外1-关于tcp-abort-on-overflow">题外1 关于tcp_abort_on_overflow</a>
-<ul>
-<li><a href="#accept-queue满了的场景抓包">accept queue满了的场景抓包</a>
-<ul>
-<li><a href="#tcp-abort-on-overflow-0-default">tcp_abort_on_overflow=0（default）</a></li>
-<li><a href="#tcp-abort-on-overflow-1">tcp_abort_on_overflow=1</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#题外2-关于ss的recv-q">题外2 关于ss的Recv-Q</a>
-<ul>
-<li><a href="#状态为listen时">状态为Listen时</a></li>
-<li><a href="#状态为非listen时">状态为非Listen时</a></li>
-</ul></li>
-<li><a href="#参考">参考</a></li>
-</ul>
+  <ul>
+    <li><a href="#测试命令">测试命令</a>
+      <ul>
+        <li><a href="#src表现如下">src表现如下</a></li>
+        <li><a href="#dst表现如下">dst表现如下</a></li>
+      </ul>
+    </li>
+    <li><a href="#抓包分析">抓包分析</a></li>
+    <li><a href="#阶段性结论">阶段性结论</a></li>
+    <li><a href="#猜测">猜测</a></li>
+    <li><a href="#恢复">恢复</a></li>
+    <li><a href="#疑惑">疑惑</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#accept-queue满了的场景抓包">accept queue满了的场景抓包</a>
+      <ul>
+        <li><a href="#tcp_abort_on_overflow0default">tcp_abort_on_overflow=0（default）</a></li>
+        <li><a href="#tcp_abort_on_overflow1">tcp_abort_on_overflow=1</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#状态为listen时">状态为Listen时</a></li>
+    <li><a href="#状态为非listen时">状态为非Listen时</a></li>
+  </ul>
 </nav>
   </div>
 </div>
@@ -418,57 +397,42 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h1 id="现象">现象</h1>
-
 <p>业务同学反馈，A服务调用B服务有连接超时</p>
-
 <h1 id="环境">环境</h1>
-
 <ul>
-<li>src：A服务, 以下均用src代指<br /></li>
-<li>dst：B服务, 以下均用dst代指<br /></li>
-<li>B服务通过lvs + nginx的方式对外服务<br /></li>
-<li>A服务连接超时设置为500ms<br /></li>
+<li>src：A服务, 以下均用src代指</li>
+<li>dst：B服务, 以下均用dst代指</li>
+<li>B服务通过lvs + nginx的方式对外服务</li>
+<li>A服务连接超时设置为500ms</li>
 </ul>
-
 <h1 id="排查过程">排查过程</h1>
-
 <ol>
 <li>因src表现为大量连接超时，所以应用层（包括nginx和均无应用层日志），遂直接抓传输层的包。</li>
 <li>使用其它机器而非线上机器测试并抓包（效果相同）</li>
 </ol>
-
 <h2 id="测试命令">测试命令</h2>
-
 <ul>
 <li>src不断的tcp连接dst（此处dst特指lvs vip）的8000端口</li>
 <li>每次设置递增源端口</li>
-
-<li><p>设置3s超时</p>
+<li>设置3s超时</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done
+</code></pre></td></tr></table>
 </div>
-</div></li>
-</ul>
-
-<h3 id="src表现如下">src表现如下</h3>
-
-<p><img src="/img/src.png" alt="" /></p>
-
+</div><h3 id="src表现如下">src表现如下</h3>
+<p><img src="/img/src.png" alt=""></p>
 <h3 id="dst表现如下">dst表现如下</h3>
-
 <ul>
 <li>如何判断相同tcp流: 使用tcp seq</li>
 <li>本处dst指lvs的某个backend, 即其中一个nginx节点</li>
 </ul>
-
-<p><img src="/img/dst.png" alt="" /></p>
-
+<p><img src="/img/dst.png" alt=""></p>
 <h2 id="抓包分析">抓包分析</h2>
-
 <ul>
 <li>14:39:38.043935, src发出syn</li>
 <li>14:39:38.069170, dst收到syn，但并未回syn,ack</li>
@@ -476,84 +440,59 @@ if (!doNotTrack) {
 <li>14:39:41.068833, dst收到重传syn</li>
 <li>14:39:41.068842, dst发出syn,ack</li>
 </ul>
-
 <p>此时src已经到达超时时间，发rst</p>
-
 <h2 id="阶段性结论">阶段性结论</h2>
-
-<p>dst明明收到syn，<strong>却没有立即回复syn,ack</strong>，有异常。<br />
-这种现象一般发生在syn半连接队列满了才会发生。（其实未必，还有一种场景，见<sup>[3]</sup>）<br />
-但我们线上的syn队列的长度是4096，且打开了syn_cookie，理论上，syn半连的数量是足够用的。<sup>[1]</sup><br />
-而且重要是的，<strong>syn,ack是tcp/ip协议栈回复的</strong>。<br />
+<p>dst明明收到syn，<strong>却没有立即回复syn,ack</strong>，有异常。<br>
+这种现象一般发生在syn半连接队列满了才会发生。（其实未必，还有一种场景，见<!-- raw HTML omitted -->[3]<!-- raw HTML omitted -->）<br>
+但我们线上的syn队列的长度是4096，且打开了syn_cookie，理论上，syn半连的数量是足够用的。<!-- raw HTML omitted -->[1]<!-- raw HTML omitted --><br>
+而且重要是的，<strong>syn,ack是tcp/ip协议栈回复的</strong>。<br>
 既然syn队列不是问题，而与syn队列最相关的就是accept队列，所以查看accpet队列情况</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ netstat -s | grep -i listen
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ netstat -s | grep -i listen
     80694004 times the listen queue of a socket overflowed
-    88476387 SYNs to LISTEN sockets ignored</pre></td></tr></table>
+    88476387 SYNs to LISTEN sockets ignored
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>上述返回结果，inrouter00这台机器的overflowed数量明显比其它节点的结果要大（大一个数量级）。<br />
-而且，在执行测试命令后，overflowed的数量增长明显。<br />
+</div><p>上述返回结果，inrouter00这台机器的overflowed数量明显比其它节点的结果要大（大一个数量级）。<br>
+而且，在执行测试命令后，overflowed的数量增长明显。<br>
 syn队列与accept队列的关系如下</p>
-
-<p><img src="/img/accept_q.png" alt="" /></p>
-
+<p><img src="/img/accept_q.png" alt=""></p>
 <h2 id="猜测">猜测</h2>
-
-<p>到这里能判断与应用（tengine）有关了，但tengine的error log。包括系统的message，kernel log，均没有任何的异常。<br />
+<p>到这里能判断与应用（tengine）有关了，但tengine的error log。包括系统的message，kernel log，均没有任何的异常。<br>
 所以只能尝试重启应用。</p>
-
 <h2 id="恢复">恢复</h2>
-
 <p>将nginx冷重启后，故障恢复。</p>
-
 <h2 id="疑惑">疑惑</h2>
-
 <ol>
-<li>诡异之处在于，不发syn,ack本应是syn队列满才有的行为，但发生在了一个syn队列不可能满的环境下！（这里其实不止一种场景，还是见<sup>[3]</sup>）</li>
-<li>在ss -nlt的结果对应nginx listen的端口，Recv-Q为0的情况下，accpet队列竟然一直overflow！（这里对Recv-Q的理解有误，见<sup>[4]</sup>）</li>
+<li>诡异之处在于，不发syn,ack本应是syn队列满才有的行为，但发生在了一个syn队列不可能满的环境下！（这里其实不止一种场景，还是见<!-- raw HTML omitted -->[3]<!-- raw HTML omitted -->）</li>
+<li>在ss -nlt的结果对应nginx listen的端口，Recv-Q为0的情况下，accpet队列竟然一直overflow！（这里对Recv-Q的理解有误，见<!-- raw HTML omitted -->[4]<!-- raw HTML omitted -->）</li>
 </ol>
-
 <h1 id="结论">结论</h1>
-
-<p>如<sup>[3]</sup>源码所示，当accept队列满了的时候，如果inet_csk_reqsk_queue_young(sk) &gt; 1，那么该syn还是会被丢弃。</p>
-
-<h1 id="题外1-关于tcp-abort-on-overflow">题外1 关于tcp_abort_on_overflow</h1>
-
+<p>如<!-- raw HTML omitted -->[3]<!-- raw HTML omitted -->源码所示，当accept队列满了的时候，如果inet_csk_reqsk_queue_young(sk) &gt; 1，那么该syn还是会被丢弃。</p>
+<h1 id="题外1-关于tcp_abort_on_overflow">题外1 关于tcp_abort_on_overflow</h1>
 <h2 id="accept-queue满了的场景抓包">accept queue满了的场景抓包</h2>
-
-<h3 id="tcp-abort-on-overflow-0-default">tcp_abort_on_overflow=0（default）</h3>
-
-<p><img src="/img/tcp_abort_on_overflow0.png" alt="" /></p>
-
-<h3 id="tcp-abort-on-overflow-1">tcp_abort_on_overflow=1</h3>
-
-<p><img src="/img/tcp_abort_on_overflow1.png" alt="" /></p>
-
+<h3 id="tcp_abort_on_overflow0default">tcp_abort_on_overflow=0（default）</h3>
+<p><img src="/img/tcp_abort_on_overflow0.png" alt=""></p>
+<h3 id="tcp_abort_on_overflow1">tcp_abort_on_overflow=1</h3>
+<p><img src="/img/tcp_abort_on_overflow1.png" alt=""></p>
 <h1 id="题外2-关于ss的recv-q">题外2 关于ss的Recv-Q</h1>
-
 <h2 id="状态为listen时">状态为Listen时</h2>
-
 <ul>
-<li>Recv-Q: 完成了3次握手，等待accept <sup>[4]</sup></li>
+<li>Recv-Q: 完成了3次握手，等待accept <!-- raw HTML omitted -->[4]<!-- raw HTML omitted --></li>
 <li>Send-Q: accept Queue的最大值</li>
 </ul>
-
 <h2 id="状态为非listen时">状态为非Listen时</h2>
-
 <ul>
 <li>字面含义</li>
 <li>2者均是在本地缓冲区</li>
 </ul>
-
 <h1 id="参考">参考</h1>
-
 <ol>
 <li><a href="https://zh.wikipedia.org/zh/SYN_cookie">SYN cookie</a></li>
 <li><a href="https://access.redhat.com/solutions/118233">Kernel dropping TCP connections due to LISTEN sockets buffer full in Red Hat Enterprise Linux</a></li>
@@ -561,7 +500,6 @@ syn队列与accept队列的关系如下</p>
 <li><a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_diag.c?v=2.6.32#L26">Linux 2.6.32 tcp_diag.c about &ldquo;Recv-Q&rdquo;</a></li>
 <li><a href="https://github.com/ton31337/tools/wiki/Is-net.ipv4.tcp_abort_on_overflow-good-or-not%3F">Is net.ipv4.tcp_abort_on_overflow good or not?</a></li>
 </ol>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -709,7 +647,7 @@ syn队列与accept队列的关系如下</p>
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

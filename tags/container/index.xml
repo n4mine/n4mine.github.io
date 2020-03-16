@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>container on n4mine&#39;s blog</title>
@@ -18,15 +18,11 @@
       
       <guid>https://n4mine.github.io/post/understand-container-in-15-minutes/</guid>
       <description>&lt;h2 id=&#34;什么是容器&#34;&gt;什么是容器？&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/upgrade-vr.png&#34; alt=&#34;upgrade vr&#34; /&gt;
-&lt;center&gt;图片来自 &lt;a href=&#34;https://movie.douban.com/subject/27093707/&#34;&gt;Upgrade (2018)&lt;/a&gt;&lt;/center&gt;&lt;/p&gt;
-
-&lt;p&gt;所谓容器，其实就像上图:&lt;br /&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/upgrade-vr.png&#34; alt=&#34;upgrade vr&#34;&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;所谓容器，其实就像上图:&lt;br&gt;
 把 VR 玩家放在一个其以为是家的地方(&lt;code&gt;chroot&lt;/code&gt;)，创造目标所需环境(&lt;code&gt;namespaces&lt;/code&gt;)，再定期定量的提供水、食物(&lt;code&gt;cgroups&lt;/code&gt;)供其维续生命。&lt;/p&gt;
-
 &lt;p&gt;chroot、namespace、cgroups，就是容器的核心技术。&lt;/p&gt;
-
 &lt;p&gt;本文将使用几个有限的命令，用 15 分钟的时间，让读者直观的了解&lt;code&gt;容器&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     

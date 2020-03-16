@@ -34,7 +34,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/lttb-downsample/" />
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -61,11 +61,8 @@
 
 <meta property="og:title" content="LTTB 降采样算法初试" />
 <meta property="og:description" content="降采样
-
 什么是降采样？在时序数据应用场景中，降采样通常是将原始的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。
-
 降采样带来的好处：
-
 
 降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。
 减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。
@@ -76,32 +73,23 @@
 <meta property="article:modified_time" content="2019-07-25T17:44:41+08:00" />
 <meta itemprop="name" content="LTTB 降采样算法初试">
 <meta itemprop="description" content="降采样
-
 什么是降采样？在时序数据应用场景中，降采样通常是将原始的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。
-
 降采样带来的好处：
-
 
 降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。
 减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。
 ">
-
-
 <meta itemprop="datePublished" content="2019-07-25T17:44:41&#43;08:00" />
 <meta itemprop="dateModified" content="2019-07-25T17:44:41&#43;08:00" />
 <meta itemprop="wordCount" content="914">
 
 
 
-<meta itemprop="keywords" content="技术,监控系统,降采样," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="技术,监控系统,降采样," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="LTTB 降采样算法初试"/>
 <meta name="twitter:description" content="降采样
-
 什么是降采样？在时序数据应用场景中，降采样通常是将原始的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。
-
 降采样带来的好处：
-
 
 降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。
 减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。
@@ -370,22 +358,20 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#降采样">降采样</a></li>
-<li><a href="#降采样算法">降采样算法</a></li>
-<li><a href="#lttb">LTTB</a></li>
-<li><a href="#lttb-在不同-threshold-下的表现">LTTB 在不同 threshold 下的表现</a>
-<ul>
-<li><a href="#原始-10s-降采至-60s">原始 10s -&gt; 降采至 60s</a></li>
-<li><a href="#原始-10s-降采至-90s">原始 10s -&gt; 降采至 90s</a></li>
-<li><a href="#原始-10s-降采至-180s">原始 10s -&gt; 降采至 180s</a></li>
-<li><a href="#原始-10s-降采至-300s">原始 10s -&gt; 降采至 300s</a></li>
-</ul></li>
-<li><a href="#总结">总结</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#降采样">降采样</a></li>
+    <li><a href="#降采样算法">降采样算法</a></li>
+    <li><a href="#lttb">LTTB</a></li>
+    <li><a href="#lttb-在不同-threshold-下的表现">LTTB 在不同 threshold 下的表现</a>
+      <ul>
+        <li><a href="#原始-10s---降采至-60s">原始 10s -&gt; 降采至 60s</a></li>
+        <li><a href="#原始-10s---降采至-90s">原始 10s -&gt; 降采至 90s</a></li>
+        <li><a href="#原始-10s---降采至-180s">原始 10s -&gt; 降采至 180s</a></li>
+        <li><a href="#原始-10s---降采至-300s">原始 10s -&gt; 降采至 300s</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
 </nav>
   </div>
 </div>
@@ -393,136 +379,94 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h2 id="降采样">降采样</h2>
-
 <p>什么是降采样？在时序数据应用场景中，降采样通常是将<code>原始</code>的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。</p>
-
 <p>降采样带来的好处：</p>
-
 <ol>
 <li>降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。</li>
 <li>减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。</li>
 </ol>
-
 <h2 id="降采样算法">降采样算法</h2>
-
 <p><code>求平均</code>是一个常见的降采算法，例如我写的一个 <a href="https://github.com/devtoolkits/downsample">demo</a>，就是将 N 个点求平均，得到 1 个新的数据点的实现。</p>
-
 <p>例如原始数据(周期为 10s)为</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">[]Point{
-    Point{10, 0.5},
-    Point{20, 0.3},
-    Point{30, 0.4},
-}</pre></td></tr></table>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="p">[]</span><span class="nx">Point</span><span class="p">{</span>
+    <span class="nx">Point</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">},</span>
+    <span class="nx">Point</span><span class="p">{</span><span class="mi">20</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">},</span>
+    <span class="nx">Point</span><span class="p">{</span><span class="mi">30</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">},</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>降采后(周期为 15s)的结果为</p>
+</div><p>降采后(周期为 15s)的结果为</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">[]Point{
-    Point{10, 0.4},
-    Point{25, 0.4},
-}</pre></td></tr></table>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="p">[]</span><span class="nx">Point</span><span class="p">{</span>
+    <span class="nx">Point</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">},</span>
+    <span class="nx">Point</span><span class="p">{</span><span class="mi">25</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">},</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<blockquote>
+</div><blockquote>
 <p>题外话：为什么上述实现的时间戳是向过去时间对齐的？
 主要原因是便于理解，例如当前时间是 <code>21:28:35</code>，在周期是 <code>30s</code> 的情况下，向过去时间对齐的结果是 <code>21:28:30</code>，而向未来时间对齐，结果则是 <code>21:29:00</code>，<code>21:29:00</code> 是未来的时间，很难向用户解释。</p>
 </blockquote>
-
 <p>那么<code>求平均</code>降采算法的问题是什么？我想放一张图会很直观(<code>以下数据均来自线上生产环境</code>)</p>
-
-<p><img src="/img/mix_origin_avg_60s.png" alt="origin vs avg 60s" /></p>
-
+<p><img src="/img/mix_origin_avg_60s.png" alt="origin vs avg 60s"></p>
 <p>上图中，将原始曲线的 6 个点，降采为 1 个点。</p>
-
 <p>红色是原始曲线，绿色是经过平均降采算法后的曲线。</p>
-
 <p>可以看出，细节<code>全部丢失</code>。</p>
-
 <p>那么，有没有一种算法，可以兼顾<code>保留细节</code>与<code>达到降采目的</code>的效果呢？</p>
-
 <h2 id="lttb">LTTB</h2>
-
 <p>LTTB(Largest Triangle Three Buckets) <a href="https://skemman.is/bitstream/1946/15343/3/SS_MSthesis.pdf">论文链接</a></p>
-
 <p>其实一句话就可以概括这个算法的功能：<strong>使用较少的数据点，保持原始曲线的<code>视觉特性</code></strong></p>
-
 <p>那么效果是否如此，看下图：</p>
-
-<p><img src="/img/mix_origin_lttb_60s.png" alt="origin vs lttb 60s" /></p>
-
+<p><img src="/img/mix_origin_lttb_60s.png" alt="origin vs lttb 60s"></p>
 <p>上图中，红色是原始曲线，绿色则是经过 LTTB 算法降采后的曲线。</p>
-
 <p>可以看出，细节<code>得以保留</code>。</p>
-
 <p>到这里，效果就已经验证。这个算法是满足我们的需求的。</p>
-
 <p>那么在追求更高压缩比的场景下，LTTB 的表现又如何？</p>
-
 <h2 id="lttb-在不同-threshold-下的表现">LTTB 在不同 threshold 下的表现</h2>
-
-<h3 id="原始-10s-降采至-60s">原始 10s -&gt; 降采至 60s</h3>
-
-<p><img src="/img/mix_origin_lttb_60s.png" alt="origin vs lttb 60s" /></p>
-
+<h3 id="原始-10s---降采至-60s">原始 10s -&gt; 降采至 60s</h3>
+<p><img src="/img/mix_origin_lttb_60s.png" alt="origin vs lttb 60s"></p>
 <ul>
 <li>压缩比 6:1</li>
 <li>绝大部分<code>细节</code>均得以保留</li>
 </ul>
-
-<h3 id="原始-10s-降采至-90s">原始 10s -&gt; 降采至 90s</h3>
-
-<p><img src="/img/mix_origin_lttb_90s.png" alt="origin vs lttb 90s" /></p>
-
+<h3 id="原始-10s---降采至-90s">原始 10s -&gt; 降采至 90s</h3>
+<p><img src="/img/mix_origin_lttb_90s.png" alt="origin vs lttb 90s"></p>
 <ul>
 <li>压缩比 9:1</li>
 </ul>
-
-<h3 id="原始-10s-降采至-180s">原始 10s -&gt; 降采至 180s</h3>
-
-<p><img src="/img/mix_origin_lttb_180s.png" alt="origin vs lttb 180s" /></p>
-
+<h3 id="原始-10s---降采至-180s">原始 10s -&gt; 降采至 180s</h3>
+<p><img src="/img/mix_origin_lttb_180s.png" alt="origin vs lttb 180s"></p>
 <ul>
 <li>压缩比 18:1</li>
 </ul>
-
-<h3 id="原始-10s-降采至-300s">原始 10s -&gt; 降采至 300s</h3>
-
-<p><img src="/img/mix_origin_lttb_300s.png" alt="origin vs lttb 300s" /></p>
-
+<h3 id="原始-10s---降采至-300s">原始 10s -&gt; 降采至 300s</h3>
+<p><img src="/img/mix_origin_lttb_300s.png" alt="origin vs lttb 300s"></p>
 <ul>
 <li>压缩比 30:1</li>
 </ul>
-
 <p>在降采至 300s时，虽然很多细节都已丢失。但这时候的<code>平均</code>降采算法又是什么样的？</p>
-
-<p><img src="/img/mix_origin_avg_300s.png" alt="origin vs avg 300s" /></p>
-
+<p><img src="/img/mix_origin_avg_300s.png" alt="origin vs avg 300s"></p>
 <p>已经完全看不出原来曲线的样子，只能大概的看出一个<code>趋势</code>。</p>
-
 <h2 id="总结">总结</h2>
-
 <p>本文没有什么高深的内容，只是从一个用户的角度，简单的考察一下 LTTB 这个算法，在不同场景下的表现。</p>
-
 <p>总体来说是可以作为生产环境下的降采算法的，比<code>平均</code>降采算法要优秀得多。</p>
-
 <p>附: 相关代码均已放在 <a href="https://github.com/n4mine/lttb-practice">github</a></p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -655,7 +599,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

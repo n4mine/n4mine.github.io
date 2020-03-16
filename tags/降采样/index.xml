@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>降采样 on n4mine&#39;s blog</title>
@@ -18,11 +18,8 @@
       
       <guid>https://n4mine.github.io/post/lttb-downsample/</guid>
       <description>&lt;h2 id=&#34;降采样&#34;&gt;降采样&lt;/h2&gt;
-
 &lt;p&gt;什么是降采样？在时序数据应用场景中，降采样通常是将&lt;code&gt;原始&lt;/code&gt;的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。&lt;/p&gt;
-
 &lt;p&gt;降采样带来的好处：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。&lt;/li&gt;
 &lt;li&gt;减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。&lt;/li&gt;

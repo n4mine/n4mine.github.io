@@ -34,7 +34,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.56.3" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/nginx_route_by_upstream_status/" />
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -61,19 +61,14 @@
 
 <meta property="og:title" content="nginx根据后端返回状态进行upstream" />
 <meta property="og:description" content="需求
-
 某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
 由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。
-
 问题
-
 
 放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个
 nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识
 
-
 解决方案
-
 
 nginx &#43; lua &#43; subrequest
 要在content阶段完成
@@ -88,19 +83,14 @@ nginx根据后端的不同返回status code，进行逻辑判断，是直接返�
 <meta property="article:modified_time" content="2014-11-11T11:08:42+00:00" />
 <meta itemprop="name" content="nginx根据后端返回状态进行upstream">
 <meta itemprop="description" content="需求
-
 某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
 由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。
-
 问题
-
 
 放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个
 nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识
 
-
 解决方案
-
 
 nginx &#43; lua &#43; subrequest
 要在content阶段完成
@@ -109,31 +99,23 @@ GET和POST要区分对待
 POST的body和GET的args、cookie等处理
 nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家
 ">
-
-
 <meta itemprop="datePublished" content="2014-11-11T11:08:42&#43;00:00" />
 <meta itemprop="dateModified" content="2014-11-11T11:08:42&#43;00:00" />
 <meta itemprop="wordCount" content="1630">
 
 
 
-<meta itemprop="keywords" content="nginx,lua," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="nginx,lua," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="nginx根据后端返回状态进行upstream"/>
 <meta name="twitter:description" content="需求
-
 某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。
 由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。
-
 问题
-
 
 放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个
 nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识
 
-
 解决方案
-
 
 nginx &#43; lua &#43; subrequest
 要在content阶段完成
@@ -406,20 +388,16 @@ if (!doNotTrack) {
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#需求">需求</a></li>
-<li><a href="#问题">问题</a></li>
-<li><a href="#解决方案">解决方案</a>
-<ul>
-<li>
-<ul>
-<li><a href="#为什么是content阶段">为什么是content阶段</a></li>
-<li><a href="#为什么get和post要区分对待">为什么GET和POST要区分对待</a></li>
-<li><a href="#subrequest">subrequest</a></li>
-<li><a href="#为什么rewrite阶段也需要介入">为什么rewrite阶段也需要介入</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#为什么是content阶段">为什么是content阶段</a></li>
+        <li><a href="#为什么get和post要区分对待">为什么GET和POST要区分对待</a></li>
+        <li><a href="#subrequest">subrequest</a></li>
+        <li><a href="#为什么rewrite阶段也需要介入">为什么rewrite阶段也需要介入</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
   </div>
 </div>
@@ -427,19 +405,14 @@ if (!doNotTrack) {
     
     <div class="post-content">
       <h1 id="需求">需求</h1>
-
-<p>某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。<br />
+<p>某系统，需在国外建立完全独立的一套业务。且国内已有用户还需继续维护。<br>
 由于带宽、响应时间等原因，通过db主从的方式全球同步数据存在一系列问题。</p>
-
 <h1 id="问题">问题</h1>
-
 <ul>
 <li>放在前端的nginx不能判断用户归属国家，判断逻辑太重，nginx不适合做这个</li>
 <li>nginx后端的backend有自己的逻辑判断用户归属，用返回的status code来标识</li>
 </ul>
-
 <h1 id="解决方案">解决方案</h1>
-
 <ul>
 <li>nginx + lua + subrequest</li>
 <li>要在content阶段完成</li>
@@ -448,101 +421,91 @@ if (!doNotTrack) {
 <li>POST的body和GET的args、cookie等处理</li>
 <li>nginx根据后端的不同返回status code，进行逻辑判断，是直接返回给client还是重新proxy到其他国家</li>
 </ul>
-
 <h3 id="为什么是content阶段">为什么是content阶段</h3>
-
-<p>前期找了很多方案，目标就是在nginx upstream到后端的时候，将后端的响应拦截下来。然后根据响应的status code加以区分对待。<br />
-上面<code>响应</code>二字说明了问题。<br />
-引用网上找来的关于content阶段的说明，<code>nginx 在content阶段生成产生响应，并返回给client。</code><br />
+<p>前期找了很多方案，目标就是在nginx upstream到后端的时候，将后端的响应拦截下来。然后根据响应的status code加以区分对待。<br>
+上面<code>响应</code>二字说明了问题。<br>
+引用网上找来的关于content阶段的说明，<code>nginx 在content阶段生成产生响应，并返回给client。</code><br>
 所以猜想着在这个处理阶段，拦截下来后端的status code。然后过完我们自己的逻辑之后再次进行proxy或者返回给client。（没错，就是<code>猜</code>，只因水平太菜^_^）</p>
-
 <h3 id="为什么get和post要区分对待">为什么GET和POST要区分对待</h3>
-
-<p>GET所有args都在URI中体现。而POST有body的概念，默认做转发等逻辑时是不带这个body的。<br />
-这里有一个指令需要注意，<code>ngx.req.read_body</code><br />
-官方解释是<code>Reads the client request body synchronously without blocking the Nginx event loop.</code><br />
-我理解为需要做一个<code>读</code>的动作，才会将client POST的body取到。<br />
-当然如果使用<code>lua_need_request_body</code>或者类似module也可以实现。<br />
-读取body要使用的函数是<code>ngx.req.get_post_args</code><br />
-官方document的解释是<code>Returns a Lua table holding all the current request POST query arguments</code><br />
-这里还有一句叫做<code>Call ngx.req.read_body to read the request body first or turn on the lua_need_request_body directive to avoid errors</code><br />
+<p>GET所有args都在URI中体现。而POST有body的概念，默认做转发等逻辑时是不带这个body的。<br>
+这里有一个指令需要注意，<code>ngx.req.read_body</code><br>
+官方解释是<code>Reads the client request body synchronously without blocking the Nginx event loop.</code><br>
+我理解为需要做一个<code>读</code>的动作，才会将client POST的body取到。<br>
+当然如果使用<code>lua_need_request_body</code>或者类似module也可以实现。<br>
+读取body要使用的函数是<code>ngx.req.get_post_args</code><br>
+官方document的解释是<code>Returns a Lua table holding all the current request POST query arguments</code><br>
+这里还有一句叫做<code>Call ngx.req.read_body to read the request body first or turn on the lua_need_request_body directive to avoid errors</code><br>
 对应了上面使用<code>ngx.req.read_body</code>的原因。</p>
-
 <h3 id="subrequest">subrequest</h3>
-
-<p>关于subrequest直接看官方doc解释<br />
-<code>Nginx's subrequests provide a powerful way to make non-blocking internal requests to other locations configured with disk file directory or any other nginx C modules like ngx_proxy, ngx_fastcgi, ngx_memc, ngx_postgres, ngx_drizzle, and even ngx_lua itself and etc etc etc.</code><br />
-几个关键字，<code>non-blocking</code>, <code>internal</code>, <code>to other locations</code>, <code>ngx_proxy</code>，这些都符合我们的目标。原文下面还有一段话，<code>Everything works internally, efficiently, on the C level.</code><br />
-subrequest的返回值是一个lua的table<br />
-<code>Returns a Lua table with three slots (res.status, res.header, res.body, and res.truncated).</code><br />
-只看字面意思就知道了。注意这里res.header也是一个table，所以处理的时候需要loop<br />
+<p>关于subrequest直接看官方doc解释<br>
+<code>Nginx's subrequests provide a powerful way to make non-blocking internal requests to other locations configured with disk file directory or any other nginx C modules like ngx_proxy, ngx_fastcgi, ngx_memc, ngx_postgres, ngx_drizzle, and even ngx_lua itself and etc etc etc.</code><br>
+几个关键字，<code>non-blocking</code>, <code>internal</code>, <code>to other locations</code>, <code>ngx_proxy</code>，这些都符合我们的目标。原文下面还有一段话，<code>Everything works internally, efficiently, on the C level.</code><br>
+subrequest的返回值是一个lua的table<br>
+<code>Returns a Lua table with three slots (res.status, res.header, res.body, and res.truncated).</code><br>
+只看字面意思就知道了。注意这里res.header也是一个table，所以处理的时候需要loop<br>
 处理起来就差不多像下面的样子</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">args = ngx.req.get_body_data()
-res = ngx.location.capture(&#34;/fooPost&#34; .. ngx.var.request_uri,{ method = ngx.HTTP_POST , body = args })</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">args = ngx.req.get_body_data()
+res = ngx.location.capture(&#34;/fooPost&#34; .. ngx.var.request_uri,{ method = ngx.HTTP_POST , body = args })
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>注意<code>request_uri</code>和<code>uri</code>的区别，不细说了。<br />
+</div><p>注意<code>request_uri</code>和<code>uri</code>的区别，不细说了。<br>
 剩下的就是判断后端返回status code、各种if判断了。</p>
-
 <p>至于GET请求，直接搞<code>request_uri</code>就可以了。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">args = ngx.req.get_body_data()
-res = ngx.location.capture(&#34;/fooPost&#34; .. ngx.var.request_uri)</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">args = ngx.req.get_body_data()
+res = ngx.location.capture(&#34;/fooPost&#34; .. ngx.var.request_uri)
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>args什么的，直接都带过去了。</p>
-
-<p>GET和POST共同要处理就是header，上面说了是一个table，使用循环处理一下就可以了。<br />
+</div><p>args什么的，直接都带过去了。</p>
+<p>GET和POST共同要处理就是header，上面说了是一个table，使用循环处理一下就可以了。<br>
 lua里面的for语法和其他脚本语言没什么区别</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">for k, v in pairs(res.header) do
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">for k, v in pairs(res.header) do
     ngx.header[k] = v
-end</pre></td></tr></table>
+end
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>这里还有一个问题，如何将响应的body送回给client/backend。<br />
+</div><p>这里还有一个问题，如何将响应的body送回给client/backend。<br>
 我在官方doc中没找到对应的说明，但从各种例子看，直接使用<code>ngx.print</code>即可</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">ngx.print(res.body)</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">ngx.print(res.body)
+</code></pre></td></tr></table>
 </div>
-</div>
-<h3 id="为什么rewrite阶段也需要介入">为什么rewrite阶段也需要介入</h3>
-
-<p>上文我们看到，subrequest是打到/fooPost这个location的。<br />
-为什么需要另起一个location，答案是避免死循环，例如在<code>/</code>启用content_by_lua的逻辑，极可能引起死循环。这部分需要看下nginx如何处理多个location。<br />
+</div><h3 id="为什么rewrite阶段也需要介入">为什么rewrite阶段也需要介入</h3>
+<p>上文我们看到，subrequest是打到/fooPost这个location的。<br>
+为什么需要另起一个location，答案是避免死循环，例如在<code>/</code>启用content_by_lua的逻辑，极可能引起死循环。这部分需要看下nginx如何处理多个location。<br>
 那我原来的request_uri是/login，打到backend变成了/fooPost/login，肯定就要使用rewrite了。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">rewrite ^/fooPost(.*) $1 break;</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">rewrite ^/fooPost(.*) $1 break;
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>说到这里就差不多了。总之罗里罗嗦的说了一堆，连着思路带着实现都扔了出来。<br />
+</div><p>说到这里就差不多了。总之罗里罗嗦的说了一堆，连着思路带着实现都扔了出来。<br>
 看官自己理解吧^_^</p>
-
 <p><em>-EOF-</em></p>
     </div>
 
@@ -687,7 +650,7 @@ end</pre></td></tr></table>
     &copy;
     
       2014 -
-    2019
+    2020
     <span class="heart">
       
       <i class="iconfont">

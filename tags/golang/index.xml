@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>golang on n4mine&#39;s blog</title>
@@ -18,9 +18,7 @@
       
       <guid>https://n4mine.github.io/post/get-funcname-and-callername-in-golang/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
-
 &lt;p&gt;在 golang 中，往往需要获知当前的函数名及其调用者。&lt;/p&gt;
-
 &lt;p&gt;例如在监控场景，自动获取函数名的需求比较常见。&lt;/p&gt;</description>
     </item>
     
@@ -31,7 +29,6 @@
       
       <guid>https://n4mine.github.io/post/a-case-when-using-sync.pool/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
-
 &lt;p&gt;open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题&lt;/p&gt;</description>
     </item>
     
@@ -51,17 +48,14 @@
       
       <guid>https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</guid>
       <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
-
-&lt;p&gt;golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一&lt;br /&gt;
+&lt;p&gt;golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一&lt;br&gt;
 而对于一个公司内部项目来讲, 主要的需求有以下几点&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;方便的依赖包版本管理&lt;/li&gt;
 &lt;li&gt;方便协同开发&lt;/li&gt;
 &lt;li&gt;尽可能不依赖其编译所在环境&lt;/li&gt;
 &lt;li&gt;除基础包之外, 第三方包尽可能的自包含&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;</description>
     </item>
     
