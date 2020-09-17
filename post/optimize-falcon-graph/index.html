@@ -35,7 +35,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.67.1" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/optimize-falcon-graph/" />
@@ -72,13 +72,14 @@
 <meta itemprop="description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。
 本文从一个开发者的角度，阐述自本人接手以来对 graph(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。">
-<meta itemprop="datePublished" content="2019-02-21T15:03:20&#43;08:00" />
-<meta itemprop="dateModified" content="2019-02-21T15:03:20&#43;08:00" />
+<meta itemprop="datePublished" content="2019-02-21T15:03:20+08:00" />
+<meta itemprop="dateModified" content="2019-02-21T15:03:20+08:00" />
 <meta itemprop="wordCount" content="3118">
 
 
 
-<meta itemprop="keywords" content="技术,监控系统," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="技术,监控系统," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Falcon存储做过的那些优化"/>
 <meta name="twitter:description" content="我司监控系统的底层存储架构使用的是 open-falcon，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。
 但在我司，指标量一度达到3亿&#43;，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。

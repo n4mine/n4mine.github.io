@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.67.1" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/" />
@@ -72,13 +72,14 @@
 在我们的场景下，nginx 的 upstream servers 是一堆容器。
 容器的主机名不变，但其 ip 可能发生变化。
 我希望在容器 ip 发生变化时，无需变更 nginx 的配置。">
-<meta itemprop="datePublished" content="2020-03-16T18:40:57&#43;08:00" />
-<meta itemprop="dateModified" content="2020-03-16T18:40:57&#43;08:00" />
+<meta itemprop="datePublished" content="2020-03-16T18:40:57+08:00" />
+<meta itemprop="dateModified" content="2020-03-16T18:40:57+08:00" />
 <meta itemprop="wordCount" content="298">
 
 
 
-<meta itemprop="keywords" content="nginx," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="nginx," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="用 map 实现 nginx 的动态 upstream"/>
 <meta name="twitter:description" content="背景
 在我们的场景下，nginx 的 upstream servers 是一堆容器。
@@ -392,7 +393,7 @@ if (!doNotTrack) {
 <span class="k">server</span> <span class="p">{</span>
     <span class="kn">listen</span> <span class="mi">7777</span><span class="p">;</span>
 
-    <span class="kn">location</span> <span class="s">/r</span> <span class="p">{</span>
+    <span class="kn">location</span> <span class="s">/d</span> <span class="p">{</span>
         <span class="kn">resolver</span> <span class="mi">114</span><span class="s">.114.114.114</span> <span class="s">valid=60s</span> <span class="s">ipv6=off</span><span class="p">;</span>
         <span class="kn">set_by_lua_block</span> <span class="nv">$x</span> <span class="p">{</span> <span class="kn">return</span> <span class="s">math.random(3)</span> <span class="err">}</span>
         <span class="s">proxy_pass</span> <span class="s">http://</span><span class="nv">$backend</span><span class="p">;</span>

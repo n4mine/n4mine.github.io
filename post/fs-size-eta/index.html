@@ -38,7 +38,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.67.1" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/fs-size-eta/" />
@@ -85,13 +85,14 @@ eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预�
 原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。
 而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。
 数学上有很多求平均数的方法[1]，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。">
-<meta itemprop="datePublished" content="2016-01-22T12:43:29&#43;00:00" />
-<meta itemprop="dateModified" content="2016-01-22T12:43:29&#43;00:00" />
+<meta itemprop="datePublished" content="2016-01-22T12:43:29+00:00" />
+<meta itemprop="dateModified" content="2016-01-22T12:43:29+00:00" />
 <meta itemprop="wordCount" content="699">
 
 
 
-<meta itemprop="keywords" content="zabbix," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="zabbix," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="动态监控磁盘分区使用ETA"/>
 <meta name="twitter:description" content="名词解释
 eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。

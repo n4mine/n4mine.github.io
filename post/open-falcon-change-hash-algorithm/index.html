@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.67.1" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/open-falcon-change-hash-algorithm/" />
@@ -80,13 +80,14 @@
 而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k&#43;。
 更换hash算法成为当务之急。
 我们将CRC32 &#43; 500虚拟节点，变成了murmur3 &#43; 10000虚拟节点, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼">
-<meta itemprop="datePublished" content="2018-03-10T17:06:29&#43;08:00" />
-<meta itemprop="dateModified" content="2018-03-10T17:06:29&#43;08:00" />
+<meta itemprop="datePublished" content="2018-03-10T17:06:29+08:00" />
+<meta itemprop="dateModified" content="2018-03-10T17:06:29+08:00" />
 <meta itemprop="wordCount" content="485">
 
 
 
-<meta itemprop="keywords" content="open-falcon,一致性哈希," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="open-falcon,一致性哈希," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Open-Falcon更换hash算法"/>
 <meta name="twitter:description" content="背景
 原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是github.com/stathat/consistent
