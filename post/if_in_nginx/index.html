@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.74.3" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/if_in_nginx/" />
@@ -51,7 +51,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.444f741ba7b684e63dff9a3b61ec1fb750c9b563b5a0b64153f1af8025c5fac1.css" integrity="sha256-RE90G6e2hOY9/5o7Yewft1DJtWO1oLZBU/GvgCXF&#43;sE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -70,9 +70,10 @@ if不支持复杂的逻辑运算
 if is evil
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://n4mine.github.io/post/if_in_nginx/" />
+<meta property="og:url" content="https://n4mine.github.io/post/if_in_nginx/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2014-11-13T17:53:55+00:00" />
 <meta property="article:modified_time" content="2014-11-13T17:53:55+00:00" />
+
 <meta itemprop="name" content="nginx使用if实现多重判断case一例">
 <meta itemprop="description" content="场景
 
@@ -84,15 +85,10 @@ if is evil
 上面提到的参数可能重复出现
 if不支持复杂的逻辑运算
 if is evil
-">
-<meta itemprop="datePublished" content="2014-11-13T17:53:55+00:00" />
+"><meta itemprop="datePublished" content="2014-11-13T17:53:55+00:00" />
 <meta itemprop="dateModified" content="2014-11-13T17:53:55+00:00" />
 <meta itemprop="wordCount" content="726">
-
-
-
-<meta itemprop="keywords" content="nginx," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="nginx," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="nginx使用if实现多重判断case一例"/>
 <meta name="twitter:description" content="场景
 
@@ -389,7 +385,7 @@ if (!doNotTrack) {
 <p>先写最终实现，然后解释</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -409,7 +405,7 @@ if (!doNotTrack) {
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">set code &#34;&#34;;
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">set code &#34;&#34;;
 if ( $args ~ &#34;code=[^&amp;]*.*code=[^&amp;]*&#34; ) {
     set $code &#34;${code}Y&#34;;
 }
@@ -433,7 +429,7 @@ proxy_pass http://wan;
 <p>先从最简单实现开始，最开始想到的是如下写法</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -444,7 +440,7 @@ proxy_pass http://wan;
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
     proxy_pass http://oversea;
 }
 
@@ -614,7 +610,7 @@ proxy_pass http://wan;
     &copy;
     
       2014 -
-    2020
+    2021
     <span class="heart">
       
       <i class="iconfont">

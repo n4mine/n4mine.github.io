@@ -35,7 +35,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.74.3" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/" />
@@ -54,7 +54,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.444f741ba7b684e63dff9a3b61ec1fb750c9b563b5a0b64153f1af8025c5fac1.css" integrity="sha256-RE90G6e2hOY9/5o7Yewft1DJtWO1oLZBU/GvgCXF&#43;sE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -72,9 +72,10 @@ golang的依赖一直是让人头疼的问题, 大家对其自有的package管�
 
 基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/" />
+<meta property="og:url" content="https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2017-01-15T14:49:18+00:00" />
 <meta property="article:modified_time" content="2017-01-15T14:49:18+00:00" />
+
 <meta itemprop="name" content="organizing golang projects and dependencies">
 <meta itemprop="description" content="背景
 golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一
@@ -85,15 +86,10 @@ golang的依赖一直是让人头疼的问题, 大家对其自有的package管�
 尽可能不依赖其编译所在环境
 除基础包之外, 第三方包尽可能的自包含
 
-基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects">
-<meta itemprop="datePublished" content="2017-01-15T14:49:18+00:00" />
+基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects"><meta itemprop="datePublished" content="2017-01-15T14:49:18+00:00" />
 <meta itemprop="dateModified" content="2017-01-15T14:49:18+00:00" />
 <meta itemprop="wordCount" content="614">
-
-
-
-<meta itemprop="keywords" content="golang," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="golang," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="organizing golang projects and dependencies"/>
 <meta name="twitter:description" content="背景
 golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一
@@ -405,7 +401,7 @@ if (!doNotTrack) {
 <h1 id="项目创建者">项目创建者</h1>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -413,7 +409,7 @@ if (!doNotTrack) {
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">export GOPATH=$PWD:$PWD/deps
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">export GOPATH=$PWD:$PWD/deps
 mkdir -p deps
 ln -sf ../vendor deps/src
 
@@ -424,11 +420,11 @@ glide install
 </div><h1 id="项目协同者">项目协同者</h1>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">git clone
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">git clone
 glide install
 </code></pre></td></tr></table>
 </div>
@@ -436,11 +432,11 @@ glide install
 <p>可能一些包你已经下载过了，例如golang.org/x/ 下的一系列包，不想再辛苦重新下载，可以使用<code>glide mirrors</code>，然后再<code>glide install</code>即可</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">glide mirror set https://gopkg.in/go-playground/validator.v8 file:///path/to/gopkg.in/go-playground/validator.v8 --vcs git
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">glide mirror set https://gopkg.in/go-playground/validator.v8 file:///path/to/gopkg.in/go-playground/validator.v8 --vcs git
 glide mirror set https://gopkg.in/yaml.v2 file:///path/to/gopkg.in/yaml.v2 --vcs git
 </code></pre></td></tr></table>
 </div>
@@ -591,7 +587,7 @@ glide mirror set https://gopkg.in/yaml.v2 file:///path/to/gopkg.in/yaml.v2 --vcs
     &copy;
     
       2014 -
-    2020
+    2021
     <span class="heart">
       
       <i class="iconfont">

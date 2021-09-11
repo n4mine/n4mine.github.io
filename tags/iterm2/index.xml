@@ -6,11 +6,7 @@
     <description>Recent content in iterm2 on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 25 Sep 2017 18:10:41 +0000</lastBuildDate>
-    
-	<atom:link href="https://n4mine.github.io/tags/iterm2/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 25 Sep 2017 18:10:41 +0000</lastBuildDate><atom:link href="https://n4mine.github.io/tags/iterm2/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用iterm2的coprocess完成自动登录</title>
       <link>https://n4mine.github.io/post/autologin-with-iterm2-coprocess/</link>

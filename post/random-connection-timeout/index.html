@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.74.3" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/random-connection-timeout/" />
@@ -52,7 +52,7 @@
 
 
 
-<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
+<link rel="stylesheet" href="/sass/jane.min.444f741ba7b684e63dff9a3b61ec1fb750c9b563b5a0b64153f1af8025c5fac1.css" integrity="sha256-RE90G6e2hOY9/5o7Yewft1DJtWO1oLZBU/GvgCXF&#43;sE=" media="screen" crossorigin="anonymous">
 
 
 
@@ -69,9 +69,10 @@ B服务通过lvs &#43; nginx的方式对外服务
 A服务连接超时设置为500ms
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://n4mine.github.io/post/random-connection-timeout/" />
+<meta property="og:url" content="https://n4mine.github.io/post/random-connection-timeout/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2016-10-05T09:47:13+00:00" />
 <meta property="article:modified_time" content="2016-10-05T09:47:13+00:00" />
+
 <meta itemprop="name" content="调用服务端随机性连接超时case一例">
 <meta itemprop="description" content="现象
 业务同学反馈，A服务调用B服务有连接超时
@@ -81,15 +82,10 @@ src：A服务, 以下均用src代指
 dst：B服务, 以下均用dst代指
 B服务通过lvs &#43; nginx的方式对外服务
 A服务连接超时设置为500ms
-">
-<meta itemprop="datePublished" content="2016-10-05T09:47:13+00:00" />
+"><meta itemprop="datePublished" content="2016-10-05T09:47:13+00:00" />
 <meta itemprop="dateModified" content="2016-10-05T09:47:13+00:00" />
 <meta itemprop="wordCount" content="1260">
-
-
-
-<meta itemprop="keywords" content="nginx,lvs,tcp,syn_cookie,listen_overflow," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="nginx,lvs,tcp,syn_cookie,listen_overflow," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="调用服务端随机性连接超时case一例"/>
 <meta name="twitter:description" content="现象
 业务同学反馈，A服务调用B服务有连接超时
@@ -419,10 +415,10 @@ if (!doNotTrack) {
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done
 </code></pre></td></tr></table>
 </div>
 </div><h3 id="src表现如下">src表现如下</h3>
@@ -450,12 +446,12 @@ if (!doNotTrack) {
 既然syn队列不是问题，而与syn队列最相关的就是accept队列，所以查看accpet队列情况</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ netstat -s | grep -i listen
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ netstat -s | grep -i listen
     80694004 times the listen queue of a socket overflowed
     88476387 SYNs to LISTEN sockets ignored
 </code></pre></td></tr></table>
@@ -648,7 +644,7 @@ syn队列与accept队列的关系如下</p>
     &copy;
     
       2014 -
-    2020
+    2021
     <span class="heart">
       
       <i class="iconfont">

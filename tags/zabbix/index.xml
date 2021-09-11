@@ -6,11 +6,7 @@
     <description>Recent content in zabbix on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 22 Jan 2016 12:43:29 +0000</lastBuildDate>
-    
-	<atom:link href="https://n4mine.github.io/tags/zabbix/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Fri, 22 Jan 2016 12:43:29 +0000</lastBuildDate><atom:link href="https://n4mine.github.io/tags/zabbix/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>动态监控磁盘分区使用ETA</title>
       <link>https://n4mine.github.io/post/fs-size-eta/</link>

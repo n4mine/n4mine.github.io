@@ -6,10 +6,23 @@
     <description>Recent content in Posts on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 16 Mar 2020 18:40:57 +0800</lastBuildDate>
-    
-	<atom:link href="https://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Sat, 11 Sep 2021 09:50:48 +0800</lastBuildDate><atom:link href="https://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>nginx 对 2xx 日志采样</title>
+      <link>https://n4mine.github.io/post/nginx_sample_log_2xx_only/</link>
+      <pubDate>Sat, 11 Sep 2021 09:50:48 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/nginx_sample_log_2xx_only/</guid>
+      <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;一些场景下，我们并不需要记录 nginx 所有的 2xx 日志。
+但需记录&lt;code&gt;所有&lt;/code&gt; 4xx、5xx。
+网上搜索到的方案，要么不记录 2xx，要么采样所有日志，都不满足需求。
+下面我们使用 &lt;code&gt;ngx_lua&lt;/code&gt; 来达成这样的目标：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;对于 1xx、2xx、3xx，按照一定的百分比采样&lt;/li&gt;
+&lt;li&gt;对于 4xx、5xx，100% 的记录&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
     
     <item>
       <title>用 map 实现 nginx 的动态 upstream</title>
@@ -132,7 +145,7 @@
       <description>&lt;h2 id=&#34;基于procpidstat和procstat计算指定进程的cpu利用率&#34;&gt;基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
@@ -148,7 +161,7 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/sh
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/sh
 &lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
 &lt;span class=&#34;nv&#34;&gt;corenum&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;nproc --all&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
 &lt;span class=&#34;nv&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;xxx
@@ -286,19 +299,6 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
       <description>&lt;p&gt;又是一年终了时，又吸了一年的京霾，又老了一岁。&lt;br&gt;
 年龄愈长，越觉时间过得快。&lt;br&gt;
 毕业那刻，仿佛还在昨天，不过是梦一场，6年多的时间过去了。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>一个普通sre一天的工作记录</title>
-      <link>https://n4mine.github.io/post/sre-diary/</link>
-      <pubDate>Thu, 05 Mar 2015 20:49:00 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/sre-diary/</guid>
-      <description>&lt;p&gt;本文记录一个sre一天的工作&lt;br&gt;
-背景交代：80后、单身&lt;br&gt;
-职位：sre&lt;br&gt;
-公司：规模不小但sre团队组建不久&lt;/p&gt;
-&lt;p&gt;以下是正文&lt;/p&gt;</description>
     </item>
     
   </channel>
