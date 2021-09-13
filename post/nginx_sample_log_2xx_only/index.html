@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.88.0" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/nginx_sample_log_2xx_only/" />
@@ -423,9 +423,9 @@ server <span class="o">{</span>
             <span class="nb">local</span> <span class="nv">c</span> <span class="o">=</span> ngx.shared.c
             c:incr<span class="o">(</span><span class="s2">&#34;countme&#34;</span>, 1<span class="o">)</span>
 
-            <span class="nb">local</span> <span class="nv">sr</span> <span class="o">=</span> <span class="m">10</span> -- sample rate
+            <span class="nb">local</span> <span class="nv">ks</span> <span class="o">=</span> <span class="m">10</span> -- keep 1/10
 
-            <span class="k">if</span> <span class="o">(</span>ngx.status/100 &lt; <span class="m">4</span> and c:get<span class="o">(</span><span class="s2">&#34;countme&#34;</span><span class="o">)</span>%sr ~<span class="o">=</span> 0<span class="o">)</span>
+            <span class="k">if</span> <span class="o">(</span>ngx.status/100 &lt; <span class="m">4</span> and c:get<span class="o">(</span><span class="s2">&#34;countme&#34;</span><span class="o">)</span>%ks ~<span class="o">=</span> 0<span class="o">)</span>
             <span class="k">then</span>
                 ngx.var.logcon <span class="o">=</span> <span class="m">0</span>
             end
@@ -441,7 +441,7 @@ server <span class="o">{</span>
 
 </code></pre></td></tr></table>
 </div>
-</div><p>上面代码中，<code>sr = 10</code>，代表只记录 10% 的日志。
+</div><p>上面代码中，<code>ks = 10</code>，代表只记录 10% 的日志。
 测试过程就不写了，大家自己写个循环看下效果吧 :)</p>
 <p>玩得开心 :)</p>
 <p><em>-EOF-</em></p>
