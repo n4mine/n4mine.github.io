@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>falcon on n4mine&#39;s blog</title>
+    <link>https://n4mine.github.io/tags/falcon/</link>
+    <description>Recent content in falcon on n4mine&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 19 Feb 2022 11:22:37 +0800</lastBuildDate><atom:link href="https://n4mine.github.io/tags/falcon/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>读《监控的自我修养，过去十年和未来十年》有感</title>
+      <link>https://n4mine.github.io/post/reviews_of_monitoring/</link>
+      <pubDate>Sat, 19 Feb 2022 11:22:37 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/reviews_of_monitoring/</guid>
+      <description>&lt;p&gt;拜读&lt;a href=&#34;https://mp.weixin.qq.com/s/iOSc4jFRRv61kPdrZ85dnQ&#34;&gt;《监控的自我修养，过去十年和未来十年》&lt;/a&gt;，有一些感想。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

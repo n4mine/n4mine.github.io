@@ -6,7 +6,16 @@
     <description>Recent content in Posts on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 11 Sep 2021 09:50:48 +0800</lastBuildDate><atom:link href="https://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 19 Feb 2022 11:22:37 +0800</lastBuildDate><atom:link href="https://n4mine.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>读《监控的自我修养，过去十年和未来十年》有感</title>
+      <link>https://n4mine.github.io/post/reviews_of_monitoring/</link>
+      <pubDate>Sat, 19 Feb 2022 11:22:37 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/reviews_of_monitoring/</guid>
+      <description>&lt;p&gt;拜读&lt;a href=&#34;https://mp.weixin.qq.com/s/iOSc4jFRRv61kPdrZ85dnQ&#34;&gt;《监控的自我修养，过去十年和未来十年》&lt;/a&gt;，有一些感想。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>nginx 对 2xx 日志采样</title>
       <link>https://n4mine.github.io/post/nginx_sample_log_2xx_only/</link>
@@ -288,17 +297,6 @@ sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&g
 原因在于，上述两项监控，都是死的，例如我们设置某个分区剩余空间百分比小于10%时报警，那么在该分区剩余空间百分比大于10%时，我们不会收到任何报警。&lt;br&gt;
 而这种情况，不能基于磁盘最近的增长量来判断磁盘打满的eta。&lt;br&gt;
 数学上有很多求平均数的方法&lt;!-- raw HTML omitted --&gt;[1]&lt;!-- raw HTML omitted --&gt;，此处磁盘eta的算法更倾向于使用指数平均法，即“各数值的加权影响力随时间而指数式递减，越近期的数据加权影响力越重”，但我们只取最近N个值的平均数，直接砍掉N之前的历史数。所以只是形式上相像而已。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>2015</title>
-      <link>https://n4mine.github.io/post/2015/</link>
-      <pubDate>Thu, 31 Dec 2015 22:43:29 +0000</pubDate>
-      
-      <guid>https://n4mine.github.io/post/2015/</guid>
-      <description>&lt;p&gt;又是一年终了时，又吸了一年的京霾，又老了一岁。&lt;br&gt;
-年龄愈长，越觉时间过得快。&lt;br&gt;
-毕业那刻，仿佛还在昨天，不过是梦一场，6年多的时间过去了。&lt;/p&gt;</description>
     </item>
     
   </channel>

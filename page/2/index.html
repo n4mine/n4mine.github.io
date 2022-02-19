@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -313,6 +313,46 @@ if (!doNotTrack) {
   <header class="post-header">
     <h1 class="post-title">
       
+      <a class="post-link" href="/post/lttb-downsample/">LTTB 降采样算法初试</a>
+    </h1>
+    
+    <div class="post-meta">
+      <time datetime="2019-07-25" class="post-time">
+        2019-07-25
+      </time>
+      <div class="post-category">
+          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          
+        </div>
+      
+      
+      
+    </div>
+  </header>
+  
+  <div class="post-content">
+    
+    <div class="post-summary">
+      <h2 id="降采样">降采样</h2>
+<p>什么是降采样？在时序数据应用场景中，降采样通常是将<code>原始</code>的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。</p>
+<p>降采样带来的好处：</p>
+<ol>
+<li>降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。</li>
+<li>减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。</li>
+</ol>
+    </div>
+    <div class="read-more">
+      <a href="/post/lttb-downsample/" class="read-more-link">阅读全文</a>
+    </div>
+    
+  </div>
+</article>
+
+  
+    <article class="post bg-white">
+  <header class="post-header">
+    <h1 class="post-title">
+      
       <a class="post-link" href="/post/cacheserver-in-memory-tsdb-design/">cacheserver - 内存TSDB的设计思想</a>
     </h1>
     
@@ -458,41 +498,6 @@ if (!doNotTrack) {
 </article>
 
   
-    <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/the-practice-of-buiding-monitoring-system-transfer/">监控系统构建实践之传输篇</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2018-12-05" class="post-time">
-        2018-12-05
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <p>在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。<br>
-本文结合我司在传输链路的建设，简述一下期间的一点思考。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/the-practice-of-buiding-monitoring-system-transfer/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-  
 </section>
 
 
@@ -608,7 +613,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2021
+    2022
     <span class="heart">
       
       <i class="iconfont">
