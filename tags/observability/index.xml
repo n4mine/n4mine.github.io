@@ -14,7 +14,7 @@
       
       <guid>https://n4mine.github.io/post/observability_and_serverless/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
-&lt;p&gt;可观测（监控）的产品形态，注定了其数据是写 &amp;raquo; 读的&lt;/p&gt;
+&lt;p&gt;可观测（监控）的产品形态，注定了其数据是写 &amp;gt;&amp;gt; 读的&lt;/p&gt;
 &lt;p&gt;市面上大多数的技术，均都对写做了大量优化&lt;/p&gt;
 &lt;p&gt;而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈&lt;/p&gt;</description>
     </item>
