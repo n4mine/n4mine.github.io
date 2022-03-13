@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>n4mine&#39;s blog</title>
+  <title>当可观测遇到serverless - n4mine&#39;s blog</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -23,8 +23,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="n4mine&#39;s blog" />
-  <meta name="keywords" content="n4mine, blog" />
+  <meta name="description" content="背景 可观测（监控）的产品形态，注定了其数据是写 &amp;raquo; 读的
+市面上大多数的技术，均都对写做了大量优化
+而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈
+" />
+<meta name="keywords" content="observability, serverless" />
+
 
 
 
@@ -34,8 +38,7 @@
 <meta name="generator" content="Hugo 0.88.1" />
 
 
-<link rel="canonical" href="https://n4mine.github.io/" />
-<link href="%7balternate%20%7bRSS%20application/rss&#43;xml%20%20index%20alternate%20%20false%20false%20true%20false%20false%200%7d%20/index.xml%20https://n4mine.github.io/index.xml%7d" rel="alternate" type="application/rss+xml" title="n4mine&#39;s blog" />
+<link rel="canonical" href="https://n4mine.github.io/post/observability_and_serverless/" />
 
 
 
@@ -57,15 +60,29 @@
 
 
 
-<meta property="og:title" content="n4mine&#39;s blog" />
-<meta property="og:description" content="n4mine&#39;s blog" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://n4mine.github.io/" />
+<meta property="og:title" content="当可观测遇到serverless" />
+<meta property="og:description" content="背景
+可观测（监控）的产品形态，注定了其数据是写 &raquo; 读的
+市面上大多数的技术，均都对写做了大量优化
+而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://n4mine.github.io/post/observability_and_serverless/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-03-13T16:17:20+08:00" />
+<meta property="article:modified_time" content="2022-03-13T16:17:20+08:00" />
 
-<meta itemprop="name" content="n4mine&#39;s blog">
-<meta itemprop="description" content="n4mine&#39;s blog"><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="n4mine&#39;s blog"/>
-<meta name="twitter:description" content="n4mine&#39;s blog"/>
+<meta itemprop="name" content="当可观测遇到serverless">
+<meta itemprop="description" content="背景
+可观测（监控）的产品形态，注定了其数据是写 &raquo; 读的
+市面上大多数的技术，均都对写做了大量优化
+而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈"><meta itemprop="datePublished" content="2022-03-13T16:17:20+08:00" />
+<meta itemprop="dateModified" content="2022-03-13T16:17:20+08:00" />
+<meta itemprop="wordCount" content="644">
+<meta itemprop="keywords" content="observability,serverless," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="当可观测遇到serverless"/>
+<meta name="twitter:description" content="背景
+可观测（监控）的产品形态，注定了其数据是写 &raquo; 读的
+市面上大多数的技术，均都对写做了大量优化
+而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -301,265 +318,159 @@ if (!doNotTrack) {
     <main id="main" class="main bg-llight">
       <div class="content-wrapper">
         <div id="content" class="content container">
-          
-<section id="posts" class="posts">
-  
-  
+          <article class="post bg-white">
     
-  
-  
-  
-    <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
+    <header class="post-header">
+      <h1 class="post-title">当可观测遇到serverless</h1>
       
-      <a class="post-link" href="/post/a-case-when-using-sync.pool/">使用sync.Pool引起的case一例</a>
-    </h1>
+      <div class="post-meta">
+        <time datetime="2022-03-13" class="post-time">
+          2022-03-13
+        </time>
+        <div class="post-category">
+            <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            
+          </div>
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
     
-    <div class="post-meta">
-      <time datetime="2018-02-27" class="post-time">
-        2018-02-27
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
     
-    <div class="post-summary">
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#溯源">溯源</a></li>
+    <li><a href="#曙光">曙光</a></li>
+    <li><a href="#业界">业界</a>
+      <ul>
+        <li><a href="#cortex-query-frontend">Cortex Query Frontend</a></li>
+        <li><a href="#tempo-backend-search">Tempo Backend Search</a></li>
+        <li><a href="#honeycomb-retriever">Honeycomb Retriever</a></li>
+      </ul>
+    </li>
+    <li><a href="#结尾">结尾</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
       <h2 id="背景">背景</h2>
-<p>open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/a-case-when-using-sync.pool/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-  
-    <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/get-golang-gc-info-by-pprof/">通过pprof获取golang gc信息</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-11-04" class="post-time">
-        2017-11-04
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      背景 服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况 实现 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 #!/bin/bash _lastNumGC=0 _first=true while : ; do r=$(curl -s
-    </div>
-    <div class="read-more">
-      <a href="/post/get-golang-gc-info-by-pprof/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-  
-    <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/autologin-with-iterm2-coprocess/">使用iterm2的coprocess完成自动登录</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-09-25" class="post-time">
-        2017-09-25
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="背景">背景</h1>
-<p>日常工作中，经常需要通过跳板机登录线上机器。<br>
-而为了安全起见，系统部的同学又启用了otp，动态生成code<br>
-给经常登录线上机器的使用者，带来了很大不便</p>
-<p>作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。<br>
-什么是iterm2的coprocess，可参见其官方说明 <a href="https://www.iterm2.com/documentation-coprocesses.html">coprocesses</a></p>
-    </div>
-    <div class="read-more">
-      <a href="/post/autologin-with-iterm2-coprocess/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
-
-  
-    <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/organizing-golang-projects-and-dependencies/">organizing golang projects and dependencies</a>
-    </h1>
-    
-    <div class="post-meta">
-      <time datetime="2017-01-15" class="post-time">
-        2017-01-15
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          
-        </div>
-      
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="背景">背景</h1>
-<p>golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一<br>
-而对于一个公司内部项目来讲, 主要的需求有以下几点</p>
+<p>可观测（监控）的产品形态，注定了其数据是写 &raquo; 读的</p>
+<p>市面上大多数的技术，均都对写做了大量优化</p>
+<p>而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈</p>
+<p><img src="/img/read_and_write.png" alt="read and write"></p>
+<h2 id="溯源">溯源</h2>
+<p>读不能高性能的原因，其实可以大致归为以下几点：</p>
 <ol>
-<li>方便的依赖包版本管理</li>
-<li>方便协同开发</li>
-<li>尽可能不依赖其编译所在环境</li>
-<li>除基础包之外, 第三方包尽可能的自包含</li>
+<li>与局部性更高的写相比，读往往是”随机“的，而随机往往是性能受制的根本原因</li>
+<li>即使 ssd 技术已经出现多年，但硬盘的速度仍是大多数系统的瓶颈所在，所以才有了业界的<code>google monarch</code>, <code>facebook beringei</code> 等基于内存的 tsdb 出现</li>
+<li>企业发展到一定程度，成本问题就一定会摆在台面上，谈必及<code>ROI</code>，<code>降本提效</code></li>
 </ol>
-<p>基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects</p>
+<h2 id="曙光">曙光</h2>
+<p>serverless，自 aws 2014 年推出 Lambda，faas 大火。</p>
+<p>这里不细说 serverless、lambda、faas 的定义，只关注它的特性：</p>
+<ol>
+<li>事件驱动</li>
+<li>按量收费</li>
+<li>扩展性好</li>
+</ol>
+<p>再结合可观测的读场景：</p>
+<ol>
+<li>非长期运行</li>
+<li>有突发查询，并一次获取大量数据</li>
+<li>“成本敏感”</li>
+</ol>
+<p>似乎与 faas 的使用场景 match</p>
+<h2 id="业界">业界</h2>
+<h3 id="cortex-query-frontend">Cortex Query Frontend</h3>
+<p>Cortex Query Frontend 最早在 2019 年由 Tom Wilkie 提出，其设计其实可以用下面这张图表示</p>
+<p><img src="/img/frontend.jpg" alt="frontend"></p>
+<p>位于 query frontend 下方的 query 不直接提供服务，而是消费由 frontend 切割后的查询。</p>
+<p>这让我不由想起 golang 并行的趣图</p>
+<p><img src="/img/parallelism.png" alt="parallelism"></p>
+<h3 id="tempo-backend-search">Tempo Backend Search</h3>
+<p>与 Cortex 的架构一脉相承，用于 trace 的 tempo 最近推出了试验性质的<code>Backend search</code>，其中就有使用 serverless 的部分，其主要架构如下</p>
+<p><img src="/img/tempo.jpg" alt="tempo"></p>
+<h3 id="honeycomb-retriever">Honeycomb Retriever</h3>
+<p>如果说，cortex, tempo 还处于比较少人使用，或是试验阶段</p>
+<p>honeycomb 已将 lambda 用在了生产环境中，而且产出了很多生产级别的经验</p>
+<p>honeycomb 的顶层架构图如下描述，lambda 用于查询存储在 s3 上的数据</p>
+<p><img src="/img/hny.jpg" alt="hny"></p>
+<h2 id="结尾">结尾</h2>
+<p>serverless 作为近年来大火的技术/产品，很适合可观测数据查询场景使用。相信其可以在可观测领域中中大放异彩。</p>
+<p><em>-EOF-</em></p>
     </div>
-    <div class="read-more">
-      <a href="/post/organizing-golang-projects-and-dependencies/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
 
-  
-    <article class="post bg-white">
-  <header class="post-header">
-    <h1 class="post-title">
-      
-      <a class="post-link" href="/post/random-connection-timeout/">调用服务端随机性连接超时case一例</a>
-    </h1>
     
-    <div class="post-meta">
-      <time datetime="2016-10-05" class="post-time">
-        2016-10-05
-      </time>
-      <div class="post-category">
-          <a href="https://n4mine.github.io/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">n4mine</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2022-03-13
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://n4mine.github.io/tags/observability/">observability</a>
+          <a href="https://n4mine.github.io/tags/serverless/">serverless</a>
           
         </div>
+
       
-      
-      
-    </div>
-  </header>
-  
-  <div class="post-content">
-    
-    <div class="post-summary">
-      <h1 id="现象">现象</h1>
-<p>业务同学反馈，A服务调用B服务有连接超时</p>
-<h1 id="环境">环境</h1>
-<ul>
-<li>src：A服务, 以下均用src代指</li>
-<li>dst：B服务, 以下均用dst代指</li>
-<li>B服务通过lvs + nginx的方式对外服务</li>
-<li>A服务连接超时设置为500ms</li>
-</ul>
-    </div>
-    <div class="read-more">
-      <a href="/post/random-connection-timeout/" class="read-more-link">阅读全文</a>
-    </div>
-    
-  </div>
-</article>
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/reviews_of_monitoring/">
+            <span class="next-text nav-default">读《监控的自我修养，过去十年和未来十年》有感</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
 
-  
-</section>
-
-
-
-
-
-
-  
-  
-  
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
 
   
   
 
   
   
-
-  
-  
-
-  
-  
-  <nav class="pagination">
-    <ul>
-      
-      <li >
-        <a href="/">1</a>
-      </li>
-      
-      <li >
-        <a href="/page/2/">2</a>
-      </li>
-      
-      <li >
-        <a href="/page/3/">3</a>
-      </li>
-      
-      <li  class="active" >
-        <a href="/page/4/">4</a>
-      </li>
-      
-      <li >
-        <a href="/page/5/">5</a>
-      </li>
-      
-      <li >
-        <a href="/page/6/">6</a>
-      </li>
-      
-    </ul>
-  </nav>
-
-  
-  
-
-
-
-
 
         </div>
       </div>

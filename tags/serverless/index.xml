@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>observability on n4mine&#39;s blog</title>
-    <link>https://n4mine.github.io/tags/observability/</link>
-    <description>Recent content in observability on n4mine&#39;s blog</description>
+    <title>serverless on n4mine&#39;s blog</title>
+    <link>https://n4mine.github.io/tags/serverless/</link>
+    <description>Recent content in serverless on n4mine&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 13 Mar 2022 16:17:20 +0800</lastBuildDate><atom:link href="https://n4mine.github.io/tags/observability/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 13 Mar 2022 16:17:20 +0800</lastBuildDate><atom:link href="https://n4mine.github.io/tags/serverless/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>当可观测遇到serverless</title>
       <link>https://n4mine.github.io/post/observability_and_serverless/</link>
@@ -17,15 +17,6 @@
 &lt;p&gt;可观测（监控）的产品形态，注定了其数据是写 &amp;raquo; 读的&lt;/p&gt;
 &lt;p&gt;市面上大多数的技术，均都对写做了大量优化&lt;/p&gt;
 &lt;p&gt;而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>读《监控的自我修养，过去十年和未来十年》有感</title>
-      <link>https://n4mine.github.io/post/reviews_of_monitoring/</link>
-      <pubDate>Sat, 19 Feb 2022 11:22:37 +0800</pubDate>
-      
-      <guid>https://n4mine.github.io/post/reviews_of_monitoring/</guid>
-      <description>&lt;p&gt;拜读&lt;a href=&#34;https://mp.weixin.qq.com/s/iOSc4jFRRv61kPdrZ85dnQ&#34;&gt;《监控的自我修养，过去十年和未来十年》&lt;/a&gt;，有一些感想。&lt;/p&gt;</description>
     </item>
     
   </channel>
