@@ -76,7 +76,7 @@
 市面上大多数的技术，均都对写做了大量优化
 而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈"><meta itemprop="datePublished" content="2022-03-13T16:17:20+08:00" />
 <meta itemprop="dateModified" content="2022-03-13T16:17:20+08:00" />
-<meta itemprop="wordCount" content="644">
+<meta itemprop="wordCount" content="699">
 <meta itemprop="keywords" content="observability,serverless," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="当可观测遇到serverless"/>
 <meta name="twitter:description" content="背景
@@ -378,6 +378,7 @@ if (!doNotTrack) {
 <li>即使 ssd 技术已经出现多年，但硬盘的速度仍是大多数系统的瓶颈所在，所以才有了业界的<code>google monarch</code>, <code>facebook beringei</code> 等基于内存的 tsdb 出现</li>
 <li>企业发展到一定程度，成本问题就一定会摆在台面上，谈必及<code>ROI</code>，<code>降本提效</code></li>
 </ol>
+<p>那有什么方法/技术，是可以改善/解决这些问题的呢？</p>
 <h2 id="曙光">曙光</h2>
 <p>serverless，自 aws 2014 年推出 Lambda，faas 大火。</p>
 <p>这里不细说 serverless、lambda、faas 的定义，只关注它的特性：</p>
@@ -394,6 +395,7 @@ if (!doNotTrack) {
 </ol>
 <p>似乎与 faas 的使用场景 match</p>
 <h2 id="业界">业界</h2>
+<p>下面看看业界是怎么使用 serverless 解决可观测数据读取能力不足的问题的。</p>
 <h3 id="cortex-query-frontend">Cortex Query Frontend</h3>
 <p>Cortex Query Frontend 最早在 2019 年由 Tom Wilkie 提出，其设计其实可以用下面这张图表示</p>
 <p><img src="/img/frontend.jpg" alt="frontend"></p>
