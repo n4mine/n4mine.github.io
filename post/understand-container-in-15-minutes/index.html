@@ -36,7 +36,7 @@ chroot、namespace、cgroups，就是容器的核心技术。
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/understand-container-in-15-minutes/" />
@@ -73,7 +73,6 @@ chroot、namespace、cgroups，就是容器的核心技术。
 <meta property="og:url" content="https://n4mine.github.io/post/understand-container-in-15-minutes/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2019-07-27T20:02:57+08:00" />
 <meta property="article:modified_time" content="2019-07-27T20:02:57+08:00" />
-
 <meta itemprop="name" content="15 分钟了解容器">
 <meta itemprop="description" content="什么是容器？
 
@@ -444,11 +443,11 @@ if (!doNotTrack) {
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># hostname</span>
-outside
-<span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># readlink /proc/$$/ns/uts</span>
-uts:<span class="o">[</span>4026531838<span class="o">]</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># hostname</span>
+</span></span><span class="line"><span class="cl">outside
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># readlink /proc/$$/ns/uts</span>
+</span></span><span class="line"><span class="cl">uts:<span class="o">[</span>4026531838<span class="o">]</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ol start="2">
 <li>解除 namespaces share, 创建新的进程:</li>
@@ -464,14 +463,14 @@ uts:<span class="o">[</span>4026531838<span class="o">]</span>
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># unshare --uts /bin/sh</span>
-sh-4.2# hostname inside
-sh-4.2# hostname
-inside
-sh-4.2# readlink /proc/<span class="nv">$$</span>/ns/uts
-uts:<span class="o">[</span>4026532328<span class="o">]</span>
-sh-4.2# <span class="nb">exit</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># unshare --uts /bin/sh</span>
+</span></span><span class="line"><span class="cl">sh-4.2# hostname inside
+</span></span><span class="line"><span class="cl">sh-4.2# hostname
+</span></span><span class="line"><span class="cl">inside
+</span></span><span class="line"><span class="cl">sh-4.2# readlink /proc/<span class="nv">$$</span>/ns/uts
+</span></span><span class="line"><span class="cl">uts:<span class="o">[</span>4026532328<span class="o">]</span>
+</span></span><span class="line"><span class="cl">sh-4.2# <span class="nb">exit</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>以上可看到，新的 hostname 在内部已经生效，并且内部进程的 uts namespaces 已发生变化(<code>4026531838</code> -&gt; <code>4026532328</code>)。</p>
 <ol start="3">
@@ -483,9 +482,9 @@ sh-4.2# <span class="nb">exit</span>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># hostname</span>
-outside
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># hostname</span>
+</span></span><span class="line"><span class="cl">outside
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>那是如何实现的？下例说明:</p>
 <div class="highlight"><div class="chroma">
@@ -496,11 +495,11 @@ outside
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># strace -fe unshare,execve unshare --uts  /bin/sh</span>
-execve<span class="o">(</span><span class="s2">&#34;/usr/bin/unshare&#34;</span>, <span class="o">[</span><span class="s2">&#34;unshare&#34;</span>, <span class="s2">&#34;--uts&#34;</span>, <span class="s2">&#34;/bin/sh&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">27</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
-unshare<span class="o">(</span>CLONE_NEWUTS<span class="o">)</span>                   <span class="o">=</span> <span class="m">0</span>  <span class="c1"># &lt;-- 关键点</span>
-execve<span class="o">(</span><span class="s2">&#34;/bin/sh&#34;</span>, <span class="o">[</span><span class="s2">&#34;/bin/sh&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">27</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># strace -fe unshare,execve unshare --uts  /bin/sh</span>
+</span></span><span class="line"><span class="cl">execve<span class="o">(</span><span class="s2">&#34;/usr/bin/unshare&#34;</span>, <span class="o">[</span><span class="s2">&#34;unshare&#34;</span>, <span class="s2">&#34;--uts&#34;</span>, <span class="s2">&#34;/bin/sh&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">27</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">unshare<span class="o">(</span>CLONE_NEWUTS<span class="o">)</span>                   <span class="o">=</span> <span class="m">0</span>  <span class="c1"># &lt;-- 关键点</span>
+</span></span><span class="line"><span class="cl">execve<span class="o">(</span><span class="s2">&#34;/bin/sh&#34;</span>, <span class="o">[</span><span class="s2">&#34;/bin/sh&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">27</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>对于<code>unshare(2)</code>, 请参考 <a href="http://man7.org/linux/man-pages/man2/unshare.2.html">man page</a></p>
 <h3 id="pid-namespaces">pid namespaces</h3>
@@ -515,12 +514,12 @@ execve<span class="o">(</span><span class="s2">&#34;/bin/sh&#34;</span>, <span c
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># unshare --fork --pid --mount-proc  /bin/sh</span>
-sh-4.2# ps
-   PID TTY          TIME CMD
-     <span class="m">1</span> pts/5    00:00:00 sh
-     <span class="m">2</span> pts/5    00:00:00 ps
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># unshare --fork --pid --mount-proc  /bin/sh</span>
+</span></span><span class="line"><span class="cl">sh-4.2# ps
+</span></span><span class="line"><span class="cl">   PID TTY          TIME CMD
+</span></span><span class="line"><span class="cl">     <span class="m">1</span> pts/5    00:00:00 sh
+</span></span><span class="line"><span class="cl">     <span class="m">2</span> pts/5    00:00:00 ps
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>如此，我们就在新的 namespaces 中，隔离了 pids，在这个<code>容器</code>内部看来，就是全新的一套 pids(第一个 pid 为 1)。</p>
 <p>如何实现的呢？仍使用<code>strace</code>验证:</p>
@@ -535,14 +534,14 @@ sh-4.2# ps
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># strace -fe unshare,execve,mount unshare --fork --pid --mount-proc  /bin/sh</span>
-execve<span class="o">(</span><span class="s2">&#34;/usr/bin/unshare&#34;</span>, <span class="o">[</span><span class="s2">&#34;unshare&#34;</span>, <span class="s2">&#34;--fork&#34;</span>, <span class="s2">&#34;--pid&#34;</span>, <span class="s2">&#34;--mount-proc&#34;</span>, <span class="s2">&#34;/bin/sh&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">27</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
-unshare<span class="o">(</span>CLONE_NEWNS<span class="p">|</span>CLONE_NEWPID<span class="o">)</span>       <span class="o">=</span> <span class="m">0</span> <span class="c1"># &lt;-- 关键点</span>
-Process <span class="m">97554</span> attached
-<span class="o">[</span>pid 97554<span class="o">]</span> mount<span class="o">(</span><span class="s2">&#34;none&#34;</span>, <span class="s2">&#34;/proc&#34;</span>, NULL, MS_REC<span class="p">|</span>MS_PRIVATE, NULL<span class="o">)</span> <span class="o">=</span> <span class="m">0</span>
-<span class="o">[</span>pid 97554<span class="o">]</span> mount<span class="o">(</span><span class="s2">&#34;proc&#34;</span>, <span class="s2">&#34;/proc&#34;</span>, <span class="s2">&#34;proc&#34;</span>, MS_NOSUID<span class="p">|</span>MS_NODEV<span class="p">|</span>MS_NOEXEC, NULL<span class="o">)</span> <span class="o">=</span> <span class="m">0</span>
-<span class="o">[</span>pid 97554<span class="o">]</span> execve<span class="o">(</span><span class="s2">&#34;/bin/sh&#34;</span>, <span class="o">[</span><span class="s2">&#34;/bin/sh&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">27</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># strace -fe unshare,execve,mount unshare --fork --pid --mount-proc  /bin/sh</span>
+</span></span><span class="line"><span class="cl">execve<span class="o">(</span><span class="s2">&#34;/usr/bin/unshare&#34;</span>, <span class="o">[</span><span class="s2">&#34;unshare&#34;</span>, <span class="s2">&#34;--fork&#34;</span>, <span class="s2">&#34;--pid&#34;</span>, <span class="s2">&#34;--mount-proc&#34;</span>, <span class="s2">&#34;/bin/sh&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">27</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">unshare<span class="o">(</span>CLONE_NEWNS<span class="p">|</span>CLONE_NEWPID<span class="o">)</span>       <span class="o">=</span> <span class="m">0</span> <span class="c1"># &lt;-- 关键点</span>
+</span></span><span class="line"><span class="cl">Process <span class="m">97554</span> attached
+</span></span><span class="line"><span class="cl"><span class="o">[</span>pid 97554<span class="o">]</span> mount<span class="o">(</span><span class="s2">&#34;none&#34;</span>, <span class="s2">&#34;/proc&#34;</span>, NULL, MS_REC<span class="p">|</span>MS_PRIVATE, NULL<span class="o">)</span> <span class="o">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>pid 97554<span class="o">]</span> mount<span class="o">(</span><span class="s2">&#34;proc&#34;</span>, <span class="s2">&#34;/proc&#34;</span>, <span class="s2">&#34;proc&#34;</span>, MS_NOSUID<span class="p">|</span>MS_NODEV<span class="p">|</span>MS_NOEXEC, NULL<span class="o">)</span> <span class="o">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>pid 97554<span class="o">]</span> execve<span class="o">(</span><span class="s2">&#34;/bin/sh&#34;</span>, <span class="o">[</span><span class="s2">&#34;/bin/sh&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">27</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="cgroups">cgroups</h2>
 <p>cgroups，<a href="https://en.wikipedia.org/wiki/Cgroups">wikipedia</a> 定义: <code>cgroups is a Linux kernel feature that limits, accounts for, and isolates the resource usage (CPU, memory, disk I/O, network, etc.) of a collection of processes</code></p>
@@ -556,10 +555,10 @@ Process <span class="m">97554</span> attached
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># sh</span>
-sh-4.2# <span class="nb">echo</span> <span class="nv">$$</span>
-<span class="m">14838</span> <span class="c1"># &lt;-- 记住这个 pid</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># sh</span>
+</span></span><span class="line"><span class="cl">sh-4.2# <span class="nb">echo</span> <span class="nv">$$</span>
+</span></span><span class="line"><span class="cl"><span class="m">14838</span> <span class="c1"># &lt;-- 记住这个 pid</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>先挂载 cgroups(pids子系统):</p>
 <div class="highlight"><div class="chroma">
@@ -568,9 +567,9 @@ sh-4.2# <span class="nb">echo</span> <span class="nv">$$</span>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># mkdir -p cgroup/pids</span>
-<span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># mount -t cgroup -o pids pids ./cgroup/pids</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># mkdir -p cgroup/pids</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># mount -t cgroup -o pids pids ./cgroup/pids</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>配置 cgroups:</p>
 <div class="highlight"><div class="chroma">
@@ -581,11 +580,11 @@ sh-4.2# <span class="nb">echo</span> <span class="nv">$$</span>
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># cd ./cgroup/pids/</span>
-<span class="o">[</span>root@outside pids<span class="o">]</span><span class="c1"># mkdir x</span>
-<span class="o">[</span>root@outside pids<span class="o">]</span><span class="c1"># cd x</span>
-<span class="o">[</span>root@outside x<span class="o">]</span><span class="c1"># echo 3 &gt; pids.max # &lt;-- 限制只能启动 3 个进程</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside ~<span class="o">]</span><span class="c1"># cd ./cgroup/pids/</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@outside pids<span class="o">]</span><span class="c1"># mkdir x</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@outside pids<span class="o">]</span><span class="c1"># cd x</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@outside x<span class="o">]</span><span class="c1"># echo 3 &gt; pids.max # &lt;-- 限制只能启动 3 个进程</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>将上面的 sh 加入到我们新建立的 cgroups 中(默认也影响其子进程):</p>
 <div class="highlight"><div class="chroma">
@@ -593,8 +592,8 @@ sh-4.2# <span class="nb">echo</span> <span class="nv">$$</span>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside x<span class="o">]</span><span class="c1"># echo 14838 &gt; cgroup.procs</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside x<span class="o">]</span><span class="c1"># echo 14838 &gt; cgroup.procs</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>下面来看看效果:</p>
 <div class="highlight"><div class="chroma">
@@ -613,19 +612,19 @@ sh-4.2# <span class="nb">echo</span> <span class="nv">$$</span>
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">sh-4.2# pstree -p <span class="nv">$$</span>
-sh<span class="o">(</span>14838<span class="o">)</span>───pstree<span class="o">(</span>15421<span class="o">)</span>
-sh-4.2# sleep <span class="m">100</span> <span class="p">&amp;</span> <span class="c1"># &lt;-- 启动第 1 个进程</span>
-<span class="o">[</span>1<span class="o">]</span> <span class="m">15427</span>
-sh-4.2# sleep <span class="m">100</span> <span class="p">&amp;</span> <span class="c1"># &lt;-- 启动第 2 个进程</span>
-<span class="o">[</span>2<span class="o">]</span> <span class="m">15429</span>
-sh-4.2# sleep <span class="m">100</span> <span class="p">&amp;</span> <span class="c1"># &lt;-- 第 3 个进程启动失败, 因为最开始的 sh 进程也算</span>
-sh: fork: retry: Resource temporarily unavailable
-sh: fork: retry: Resource temporarily unavailable
-sh: fork: retry: Resource temporarily unavailable
-sh: fork: retry: Resource temporarily unavailable
-sh: fork: Resource temporarily unavailable
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">sh-4.2# pstree -p <span class="nv">$$</span>
+</span></span><span class="line"><span class="cl">sh<span class="o">(</span>14838<span class="o">)</span>───pstree<span class="o">(</span>15421<span class="o">)</span>
+</span></span><span class="line"><span class="cl">sh-4.2# sleep <span class="m">100</span> <span class="p">&amp;</span> <span class="c1"># &lt;-- 启动第 1 个进程</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>1<span class="o">]</span> <span class="m">15427</span>
+</span></span><span class="line"><span class="cl">sh-4.2# sleep <span class="m">100</span> <span class="p">&amp;</span> <span class="c1"># &lt;-- 启动第 2 个进程</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>2<span class="o">]</span> <span class="m">15429</span>
+</span></span><span class="line"><span class="cl">sh-4.2# sleep <span class="m">100</span> <span class="p">&amp;</span> <span class="c1"># &lt;-- 第 3 个进程启动失败, 因为最开始的 sh 进程也算</span>
+</span></span><span class="line"><span class="cl">sh: fork: retry: Resource temporarily unavailable
+</span></span><span class="line"><span class="cl">sh: fork: retry: Resource temporarily unavailable
+</span></span><span class="line"><span class="cl">sh: fork: retry: Resource temporarily unavailable
+</span></span><span class="line"><span class="cl">sh: fork: retry: Resource temporarily unavailable
+</span></span><span class="line"><span class="cl">sh: fork: Resource temporarily unavailable
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>可以查看一下当前的<code>pids</code>数量:</p>
 <div class="highlight"><div class="chroma">
@@ -634,9 +633,9 @@ sh: fork: Resource temporarily unavailable
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>root@outside x<span class="o">]</span><span class="c1"># cat pids.current</span>
-<span class="m">3</span>  <span class="c1"># &lt;-- 的确是 3 个</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">[</span>root@outside x<span class="o">]</span><span class="c1"># cat pids.current</span>
+</span></span><span class="line"><span class="cl"><span class="m">3</span>  <span class="c1"># &lt;-- 的确是 3 个</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="总结">总结</h2>
 <p>以上使用<code>unshare</code>命令与<code>cgroups</code>，初步了解了容器的几个基本技术。</p>
@@ -774,7 +773,7 @@ sh: fork: Resource temporarily unavailable
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

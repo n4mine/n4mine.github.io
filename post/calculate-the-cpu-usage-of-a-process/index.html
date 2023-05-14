@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率 1 2 3 4 5 6 7 8 9 10 11 12 13 14  #!/bin/sh  corenum=$(nproc --all) p=xxx pid=$(pidof $p) p_totaltime1=$(awk &amp;#39;{print $14&#43;$15}&amp;#39; /proc/${pid}/stat) totaltime1=$(awk &amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&amp;#39; /proc/stat) sleep 3 # 为什么是3, 要得到与top相同的结果 p_totaltime2=$(awk &amp;#39;{print $14&#43;$15}&amp;#39; /proc/${pid}/stat) totaltime2=$(awk &amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&amp;#39; /proc/stat) res=$(awk &amp;#39;BEGIN{print &amp;#39;&amp;#34;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;#34;&amp;#39;}&amp;#39;) echo $res   " />
+  <meta name="description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率 1 2 3 4 5 6 7 8 9 10 11 12 13 14 #!/bin/sh corenum=$(nproc --all) p=xxx pid=$(pidof $p) p_totaltime1=$(awk &amp;#39;{print $14&#43;$15}&amp;#39; /proc/${pid}/stat) totaltime1=$(awk &amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&amp;#39; /proc/stat) sleep 3 # 为什么是3, 要得到与top相同的结果 p_totaltime2=$(awk &amp;#39;{print $14&#43;$15}&amp;#39; /proc/${pid}/stat) totaltime2=$(awk &amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i&#43;&#43;){sum&#43;=$i}}}END{print sum}&amp;#39; /proc/stat) res=$(awk &amp;#39;BEGIN{print &amp;#39;&amp;#34;($p_totaltime2-$p_totaltime1)*100/($totaltime2-$totaltime1)*$corenum&amp;#34;&amp;#39;}&amp;#39;) echo $res " />
 <meta name="keywords" content="top, /proc, process, cpu" />
 
 
@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/" />
@@ -98,7 +98,6 @@ echo $res
 <meta property="og:url" content="https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2018-07-03T11:28:34+08:00" />
 <meta property="article:modified_time" content="2018-07-03T11:28:34+08:00" />
-
 <meta itemprop="name" content="计算进程的CPU占用率">
 <meta itemprop="description" content="基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率
 
@@ -469,21 +468,21 @@ if (!doNotTrack) {
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/sh
-</span><span class="cp"></span>
-<span class="nv">corenum</span><span class="o">=</span><span class="k">$(</span>nproc --all<span class="k">)</span>
-<span class="nv">p</span><span class="o">=</span>xxx
-<span class="nv">pid</span><span class="o">=</span><span class="k">$(</span>pidof <span class="nv">$p</span><span class="k">)</span>
-<span class="nv">p_totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
-<span class="nv">totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
-sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top相同的结果</span>
-<span class="nv">p_totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
-<span class="nv">totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
-
-<span class="nv">res</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;BEGIN{print &#39;</span><span class="s2">&#34;(</span><span class="nv">$p_totaltime2</span><span class="s2">-</span><span class="nv">$p_totaltime1</span><span class="s2">)*100/(</span><span class="nv">$totaltime2</span><span class="s2">-</span><span class="nv">$totaltime1</span><span class="s2">)*</span><span class="nv">$corenum</span><span class="s2">&#34;</span><span class="s1">&#39;}&#39;</span><span class="k">)</span>
-
-<span class="nb">echo</span> <span class="nv">$res</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="nv">corenum</span><span class="o">=</span><span class="k">$(</span>nproc --all<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">p</span><span class="o">=</span>xxx
+</span></span><span class="line"><span class="cl"><span class="nv">pid</span><span class="o">=</span><span class="k">$(</span>pidof <span class="nv">$p</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">p_totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
+</span></span><span class="line"><span class="cl">sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top相同的结果</span>
+</span></span><span class="line"><span class="cl"><span class="nv">p_totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">res</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;BEGIN{print &#39;</span><span class="s2">&#34;(</span><span class="nv">$p_totaltime2</span><span class="s2">-</span><span class="nv">$p_totaltime1</span><span class="s2">)*100/(</span><span class="nv">$totaltime2</span><span class="s2">-</span><span class="nv">$totaltime1</span><span class="s2">)*</span><span class="nv">$corenum</span><span class="s2">&#34;</span><span class="s1">&#39;}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$res</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="相对应的top命令">相对应的top命令</h2>
 <div class="highlight"><div class="chroma">
@@ -491,8 +490,8 @@ sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p=xxx; top -p $(pidof $p) -b
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p=xxx; top -p $(pidof $p) -b
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><em>-EOF-</em></p>
     </div>
@@ -624,7 +623,7 @@ sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

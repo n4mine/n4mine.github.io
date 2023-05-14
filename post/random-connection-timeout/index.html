@@ -24,7 +24,7 @@
 
 <meta name="author" content="n4mine" />
   <meta name="description" content="现象 业务同学反馈，A服务调用B服务有连接超时
-环境  src：A服务, 以下均用src代指 dst：B服务, 以下均用dst代指 B服务通过lvs &#43; nginx的方式对外服务 A服务连接超时设置为500ms " />
+环境 src：A服务, 以下均用src代指 dst：B服务, 以下均用dst代指 B服务通过lvs &#43; nginx的方式对外服务 A服务连接超时设置为500ms " />
 
   <meta name="keywords" content="n4mine, blog" />
 
@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/random-connection-timeout/" />
@@ -72,7 +72,6 @@ A服务连接超时设置为500ms
 <meta property="og:url" content="https://n4mine.github.io/post/random-connection-timeout/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2016-10-05T09:47:13+00:00" />
 <meta property="article:modified_time" content="2016-10-05T09:47:13+00:00" />
-
 <meta itemprop="name" content="调用服务端随机性连接超时case一例">
 <meta itemprop="description" content="现象
 业务同学反馈，A服务调用B服务有连接超时
@@ -418,8 +417,8 @@ if (!doNotTrack) {
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">for i in `seq 64000 65000` ; do nc -zv -p $i -w 3 $DST_IPADDR 8000 &gt; /dev/null || echo $i ; done
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="src表现如下">src表现如下</h3>
 <p><img src="/img/src.png" alt=""></p>
@@ -451,10 +450,10 @@ if (!doNotTrack) {
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ netstat -s | grep -i listen
-    80694004 times the listen queue of a socket overflowed
-    88476387 SYNs to LISTEN sockets ignored
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ netstat -s | grep -i listen
+</span></span><span class="line"><span class="cl">    80694004 times the listen queue of a socket overflowed
+</span></span><span class="line"><span class="cl">    88476387 SYNs to LISTEN sockets ignored
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>上述返回结果，inrouter00这台机器的overflowed数量明显比其它节点的结果要大（大一个数量级）。<br>
 而且，在执行测试命令后，overflowed的数量增长明显。<br>
@@ -644,7 +643,7 @@ syn队列与accept队列的关系如下</p>
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

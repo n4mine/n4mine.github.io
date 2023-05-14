@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/" />
@@ -61,7 +61,6 @@
 <meta property="og:description" content="n4mine&#39;s blog" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://n4mine.github.io/" />
-
 <meta itemprop="name" content="n4mine&#39;s blog">
 <meta itemprop="description" content="n4mine&#39;s blog"><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="n4mine&#39;s blog"/>
@@ -423,21 +422,21 @@ if (!doNotTrack) {
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/sh
-</span><span class="cp"></span>
-<span class="nv">corenum</span><span class="o">=</span><span class="k">$(</span>nproc --all<span class="k">)</span>
-<span class="nv">p</span><span class="o">=</span>xxx
-<span class="nv">pid</span><span class="o">=</span><span class="k">$(</span>pidof <span class="nv">$p</span><span class="k">)</span>
-<span class="nv">p_totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
-<span class="nv">totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
-sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top相同的结果</span>
-<span class="nv">p_totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
-<span class="nv">totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
-
-<span class="nv">res</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;BEGIN{print &#39;</span><span class="s2">&#34;(</span><span class="nv">$p_totaltime2</span><span class="s2">-</span><span class="nv">$p_totaltime1</span><span class="s2">)*100/(</span><span class="nv">$totaltime2</span><span class="s2">-</span><span class="nv">$totaltime1</span><span class="s2">)*</span><span class="nv">$corenum</span><span class="s2">&#34;</span><span class="s1">&#39;}&#39;</span><span class="k">)</span>
-
-<span class="nb">echo</span> <span class="nv">$res</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="nv">corenum</span><span class="o">=</span><span class="k">$(</span>nproc --all<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">p</span><span class="o">=</span>xxx
+</span></span><span class="line"><span class="cl"><span class="nv">pid</span><span class="o">=</span><span class="k">$(</span>pidof <span class="nv">$p</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">p_totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">totaltime1</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
+</span></span><span class="line"><span class="cl">sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top相同的结果</span>
+</span></span><span class="line"><span class="cl"><span class="nv">p_totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{print $14+$15}&#39;</span> /proc/<span class="si">${</span><span class="nv">pid</span><span class="si">}</span>/stat<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">totaltime2</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;{if($1==&#34;cpu&#34;){for(i=2;i&lt;=NF;i++){sum+=$i}}}END{print sum}&#39;</span> /proc/stat<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">res</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">&#39;BEGIN{print &#39;</span><span class="s2">&#34;(</span><span class="nv">$p_totaltime2</span><span class="s2">-</span><span class="nv">$p_totaltime1</span><span class="s2">)*100/(</span><span class="nv">$totaltime2</span><span class="s2">-</span><span class="nv">$totaltime1</span><span class="s2">)*</span><span class="nv">$corenum</span><span class="s2">&#34;</span><span class="s1">&#39;}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$res</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div>
     </div>
@@ -640,7 +639,7 @@ sleep <span class="m">3</span> <span class="c1"># 为什么是3, 要得到与top
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

@@ -25,7 +25,7 @@
 <meta name="author" content="n4mine" />
   <meta name="description" content="JDK这东西，简单来说就是一个包，主要生效的还是环境变量。
 直接上实现
-目录结构 1 2 3 4 5  $ tree . ├── files │ └── jdk1.6-centos6.tar.gz └── main.yaml   简单的一个说明而已，没有必要搞什么最佳实践了。^_^
+目录结构 1 2 3 4 5 $ tree . ├── files │ └── jdk1.6-centos6.tar.gz └── main.yaml 简单的一个说明而已，没有必要搞什么最佳实践了。^_^
 " />
 
   <meta name="keywords" content="n4mine, blog" />
@@ -35,7 +35,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/ansible_install_jdk/" />
@@ -85,7 +85,6 @@ $ tree
 <meta property="og:url" content="https://n4mine.github.io/post/ansible_install_jdk/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2014-10-18T20:53:49+00:00" />
 <meta property="article:modified_time" content="2014-10-18T20:53:49+00:00" />
-
 <meta itemprop="name" content="ansible安装JDK">
 <meta itemprop="description" content="JDK这东西，简单来说就是一个包，主要生效的还是环境变量。
 直接上实现
@@ -417,12 +416,12 @@ if (!doNotTrack) {
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ tree
-.
-├── files
-│   └── jdk1.6-centos6.tar.gz
-└── main.yaml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ tree
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── files
+</span></span><span class="line"><span class="cl">│   └── jdk1.6-centos6.tar.gz
+</span></span><span class="line"><span class="cl">└── main.yaml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>简单的一个说明而已，没有必要搞什么最佳实践了。^_^</p>
 <h2 id="mainyaml">main.yaml</h2>
@@ -455,32 +454,32 @@ if (!doNotTrack) {
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">---
-- hosts: test_group
-  sudo: yes
-  sudo_user: root
-  gather_facts: no
-  vars:
-    src_file: &#39;files/jdk1.6-centos6.tar.gz&#39;
-    dest_dir: /opt/soft/
-  tasks:
-  - name: copy and unzip
-    unarchive: src={{src_file}} dest={{dest_dir}}
-  - name: clear old env
-#    shell: /bin/sed -i &#39;/JAVA_HOME/d&#39; /etc/profile &amp;&amp; echo -e &#34;\nexport JAVA_HOME=/opt/soft/jdk\nexport PATH=\\$JAVA_HOME/bin:\\$PATH\nexport CLASSPATH=.:\\$JAVA_HOME/lib/tools.jar:\\$JAVA_HOME/lib/rt.jar&#34; &gt;&gt; /etc/profile
-    lineinfile: dest=/etc/profile regexp=&#39;JAVA_HOME&#39; state=absent
-  - name: set env
-    lineinfile:
-      dest=/etc/profile
-      insertafter=&#34;{{item.position}}&#34;
-      line=&#34;{{item.value}}&#34;
-      state=present
-    with_items:
-    - {position: EOF, value: &#34;\n&#34;}
-    - {position: EOF, value: &#39;export JAVA_HOME=/opt/soft/jdk&#39;}
-    - {position: EOF, value: &#39;export PATH=$JAVA_HOME/bin:$PATH&#39;}
-    - {position: EOF, value: &#39;export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/rt.jar&#39;}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">- hosts: test_group
+</span></span><span class="line"><span class="cl">  sudo: yes
+</span></span><span class="line"><span class="cl">  sudo_user: root
+</span></span><span class="line"><span class="cl">  gather_facts: no
+</span></span><span class="line"><span class="cl">  vars:
+</span></span><span class="line"><span class="cl">    src_file: &#39;files/jdk1.6-centos6.tar.gz&#39;
+</span></span><span class="line"><span class="cl">    dest_dir: /opt/soft/
+</span></span><span class="line"><span class="cl">  tasks:
+</span></span><span class="line"><span class="cl">  - name: copy and unzip
+</span></span><span class="line"><span class="cl">    unarchive: src={{src_file}} dest={{dest_dir}}
+</span></span><span class="line"><span class="cl">  - name: clear old env
+</span></span><span class="line"><span class="cl">#    shell: /bin/sed -i &#39;/JAVA_HOME/d&#39; /etc/profile &amp;&amp; echo -e &#34;\nexport JAVA_HOME=/opt/soft/jdk\nexport PATH=\\$JAVA_HOME/bin:\\$PATH\nexport CLASSPATH=.:\\$JAVA_HOME/lib/tools.jar:\\$JAVA_HOME/lib/rt.jar&#34; &gt;&gt; /etc/profile
+</span></span><span class="line"><span class="cl">    lineinfile: dest=/etc/profile regexp=&#39;JAVA_HOME&#39; state=absent
+</span></span><span class="line"><span class="cl">  - name: set env
+</span></span><span class="line"><span class="cl">    lineinfile:
+</span></span><span class="line"><span class="cl">      dest=/etc/profile
+</span></span><span class="line"><span class="cl">      insertafter=&#34;{{item.position}}&#34;
+</span></span><span class="line"><span class="cl">      line=&#34;{{item.value}}&#34;
+</span></span><span class="line"><span class="cl">      state=present
+</span></span><span class="line"><span class="cl">    with_items:
+</span></span><span class="line"><span class="cl">    - {position: EOF, value: &#34;\n&#34;}
+</span></span><span class="line"><span class="cl">    - {position: EOF, value: &#39;export JAVA_HOME=/opt/soft/jdk&#39;}
+</span></span><span class="line"><span class="cl">    - {position: EOF, value: &#39;export PATH=$JAVA_HOME/bin:$PATH&#39;}
+</span></span><span class="line"><span class="cl">    - {position: EOF, value: &#39;export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/rt.jar&#39;}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>以上。</p>
 <ul>
@@ -632,7 +631,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

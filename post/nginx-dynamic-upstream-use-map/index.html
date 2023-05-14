@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/" />
@@ -67,14 +67,13 @@
 <meta property="og:url" content="https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2020-03-16T18:40:57+08:00" />
 <meta property="article:modified_time" content="2020-03-16T18:40:57+08:00" />
-
 <meta itemprop="name" content="用 map 实现 nginx 的动态 upstream">
 <meta itemprop="description" content="背景
 在我们的场景下，nginx 的 upstream servers 是一堆容器。
 容器的主机名不变，但其 ip 可能发生变化。
 我希望在容器 ip 发生变化时，无需变更 nginx 的配置。"><meta itemprop="datePublished" content="2020-03-16T18:40:57+08:00" />
 <meta itemprop="dateModified" content="2020-03-16T18:40:57+08:00" />
-<meta itemprop="wordCount" content="298">
+<meta itemprop="wordCount" content="296">
 <meta itemprop="keywords" content="nginx," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="用 map 实现 nginx 的动态 upstream"/>
 <meta name="twitter:description" content="背景
@@ -375,28 +374,26 @@ if (!doNotTrack) {
 </span><span class="lnt">15
 </span><span class="lnt">16
 </span><span class="lnt">17
-</span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="k">map</span> <span class="nv">$x</span> <span class="nv">$backend</span> <span class="p">{</span>
-    <span class="kn">1</span>       <span class="n">server1</span><span class="p">:</span><span class="mi">12345</span><span class="p">;</span>
-    <span class="kn">2</span>       <span class="n">server2</span><span class="p">:</span><span class="mi">12345</span><span class="p">;</span>
-    <span class="kn">3</span>       <span class="n">server3</span><span class="p">:</span><span class="mi">12345</span><span class="p">;</span>
-    
-    <span class="kn">default</span> <span class="n">backupserver</span><span class="p">:</span><span class="mi">12345</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">server</span> <span class="p">{</span>
-    <span class="kn">listen</span> <span class="mi">7777</span><span class="p">;</span>
-
-    <span class="kn">location</span> <span class="s">/d</span> <span class="p">{</span>
-        <span class="kn">resolver</span> <span class="mi">114</span><span class="s">.114.114.114</span> <span class="s">valid=60s</span> <span class="s">ipv6=off</span><span class="p">;</span>
-        <span class="kn">set_by_lua_block</span> <span class="nv">$x</span> <span class="p">{</span> <span class="kn">return</span> <span class="s">math.random(3)</span> <span class="err">}</span>
-        <span class="s">proxy_pass</span> <span class="s">http://</span><span class="nv">$backend</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">map</span> <span class="nv">$x</span> <span class="nv">$backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">1</span>       <span class="n">server1</span><span class="p">:</span><span class="mi">12345</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">2</span>       <span class="n">server2</span><span class="p">:</span><span class="mi">12345</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">3</span>       <span class="n">server3</span><span class="p">:</span><span class="mi">12345</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kn">default</span> <span class="n">backupserver</span><span class="p">:</span><span class="mi">12345</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">7777</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/d</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">resolver</span> <span class="mi">114</span><span class="s">.114.114.114</span> <span class="s">valid=60s</span> <span class="s">ipv6=off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">set_by_lua_block</span> <span class="nv">$x</span> <span class="p">{</span> <span class="kn">return</span> <span class="s">math.random(3)</span> <span class="err">}</span>
+</span></span><span class="line"><span class="cl">        <span class="s">proxy_pass</span> <span class="s">http://</span><span class="nv">$backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>做一下性能测试</p>
 <p>静态 upstream</p>
@@ -417,26 +414,24 @@ if (!doNotTrack) {
 </span><span class="lnt">13
 </span><span class="lnt">14
 </span><span class="lnt">15
-</span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ ./wrk --latency -d 1m -t <span class="m">10</span> -c <span class="m">100</span>  http://127.0.0.1:7777/s
-Running 1m <span class="nb">test</span> @ http://127.0.0.1:7777/s
-  <span class="m">10</span> threads and <span class="m">100</span> connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     5.93ms    5.66ms 177.31ms   97.39%
-    Req/Sec     1.85k   238.42     2.30k    69.12%
-  Latency Distribution
-     50%    5.16ms
-     75%    5.85ms
-     90%    7.06ms
-     99%   27.34ms
-  <span class="m">1105047</span> requests in 1.00m, 188.59MB <span class="nb">read</span>
-  Non-2xx or 3xx responses: <span class="m">1105047</span>
-Requests/sec:  18412.50
-Transfer/sec:      3.14MB
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ./wrk --latency -d 1m -t <span class="m">10</span> -c <span class="m">100</span>  http://127.0.0.1:7777/s
+</span></span><span class="line"><span class="cl">Running 1m <span class="nb">test</span> @ http://127.0.0.1:7777/s
+</span></span><span class="line"><span class="cl">  <span class="m">10</span> threads and <span class="m">100</span> connections
+</span></span><span class="line"><span class="cl">  Thread Stats   Avg      Stdev     Max   +/- Stdev
+</span></span><span class="line"><span class="cl">    Latency     5.93ms    5.66ms 177.31ms   97.39%
+</span></span><span class="line"><span class="cl">    Req/Sec     1.85k   238.42     2.30k    69.12%
+</span></span><span class="line"><span class="cl">  Latency Distribution
+</span></span><span class="line"><span class="cl">     50%    5.16ms
+</span></span><span class="line"><span class="cl">     75%    5.85ms
+</span></span><span class="line"><span class="cl">     90%    7.06ms
+</span></span><span class="line"><span class="cl">     99%   27.34ms
+</span></span><span class="line"><span class="cl">  <span class="m">1105047</span> requests in 1.00m, 188.59MB <span class="nb">read</span>
+</span></span><span class="line"><span class="cl">  Non-2xx or 3xx responses: <span class="m">1105047</span>
+</span></span><span class="line"><span class="cl">Requests/sec:  18412.50
+</span></span><span class="line"><span class="cl">Transfer/sec:      3.14MB
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>动态 upstream</p>
 <div class="highlight"><div class="chroma">
@@ -458,22 +453,22 @@ Transfer/sec:      3.14MB
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ ./wrk --latency -d 1m -t <span class="m">10</span> -c <span class="m">100</span>  http://127.0.0.1:7777/d
-Running 1m <span class="nb">test</span> @ http://127.0.0.1:7777/d
-  <span class="m">10</span> threads and <span class="m">100</span> connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     6.33ms    3.98ms 101.19ms   96.57%
-    Req/Sec     1.68k   185.44     2.27k    77.58%
-  Latency Distribution
-     50%    5.73ms
-     75%    6.46ms
-     90%    7.28ms
-     99%   25.91ms
-  <span class="m">1005401</span> requests in 1.00m, 171.58MB <span class="nb">read</span>
-  Non-2xx or 3xx responses: <span class="m">1005401</span>
-Requests/sec:  16751.96
-Transfer/sec:      2.86MB
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ./wrk --latency -d 1m -t <span class="m">10</span> -c <span class="m">100</span>  http://127.0.0.1:7777/d
+</span></span><span class="line"><span class="cl">Running 1m <span class="nb">test</span> @ http://127.0.0.1:7777/d
+</span></span><span class="line"><span class="cl">  <span class="m">10</span> threads and <span class="m">100</span> connections
+</span></span><span class="line"><span class="cl">  Thread Stats   Avg      Stdev     Max   +/- Stdev
+</span></span><span class="line"><span class="cl">    Latency     6.33ms    3.98ms 101.19ms   96.57%
+</span></span><span class="line"><span class="cl">    Req/Sec     1.68k   185.44     2.27k    77.58%
+</span></span><span class="line"><span class="cl">  Latency Distribution
+</span></span><span class="line"><span class="cl">     50%    5.73ms
+</span></span><span class="line"><span class="cl">     75%    6.46ms
+</span></span><span class="line"><span class="cl">     90%    7.28ms
+</span></span><span class="line"><span class="cl">     99%   25.91ms
+</span></span><span class="line"><span class="cl">  <span class="m">1005401</span> requests in 1.00m, 171.58MB <span class="nb">read</span>
+</span></span><span class="line"><span class="cl">  Non-2xx or 3xx responses: <span class="m">1005401</span>
+</span></span><span class="line"><span class="cl">Requests/sec:  16751.96
+</span></span><span class="line"><span class="cl">Transfer/sec:      2.86MB
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>玩得开心 :)</p>
 <p><em>-EOF-</em></p>
@@ -606,7 +601,7 @@ Transfer/sec:      2.86MB
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

@@ -38,7 +38,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/fs-size-eta/" />
@@ -76,7 +76,6 @@ eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预�
 <meta property="og:url" content="https://n4mine.github.io/post/fs-size-eta/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2016-01-22T12:43:29+00:00" />
 <meta property="article:modified_time" content="2016-01-22T12:43:29+00:00" />
-
 <meta itemprop="name" content="动态监控磁盘分区使用ETA">
 <meta itemprop="description" content="名词解释
 eta，是estimated time of arrival的缩写，通常指灰机、轮船等的预计到达时间。
@@ -398,12 +397,12 @@ if (!doNotTrack) {
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">last(&#34;vfs.fs.size[/test,free]&#34;) / ### @1
-(
-  ( last(&#34;vfs.fs.size[/test,free]&#34;, #4) - last(&#34;vfs.fs.size[/test,free]&#34;) ) / 3 ### @2
-  + 0.0001 ### @3
-) * 2 ### @4
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">last(&#34;vfs.fs.size[/test,free]&#34;) / ### @1
+</span></span><span class="line"><span class="cl">(
+</span></span><span class="line"><span class="cl">  ( last(&#34;vfs.fs.size[/test,free]&#34;, #4) - last(&#34;vfs.fs.size[/test,free]&#34;) ) / 3 ### @2
+</span></span><span class="line"><span class="cl">  + 0.0001 ### @3
+</span></span><span class="line"><span class="cl">) * 2 ### @4
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>@1 代表某个分区的最后检测到的剩余空间<br>
 @2 / 3的原因是，last(#4) ~ last(#1)，一共是3个周期，求平均数<br>
@@ -560,7 +559,7 @@ if (!doNotTrack) {
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

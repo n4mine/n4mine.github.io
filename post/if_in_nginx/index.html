@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="场景  根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&amp;hellip;，有则upstream到指定backend 根据来源IP区分production环境和preview环境  问题  上面提到的参数可能重复出现 if不支持复杂的逻辑运算 if is evil " />
+  <meta name="description" content="场景 根据请求URI的某个参数，判断后分发到不同backend。具体来说会判断是否存在code=OVERSEA&amp;hellip;，有则upstream到指定backend 根据来源IP区分production环境和preview环境 问题 上面提到的参数可能重复出现 if不支持复杂的逻辑运算 if is evil " />
 
   <meta name="keywords" content="n4mine, blog" />
 
@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/if_in_nginx/" />
@@ -73,7 +73,6 @@ if is evil
 <meta property="og:url" content="https://n4mine.github.io/post/if_in_nginx/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2014-11-13T17:53:55+00:00" />
 <meta property="article:modified_time" content="2014-11-13T17:53:55+00:00" />
-
 <meta itemprop="name" content="nginx使用if实现多重判断case一例">
 <meta itemprop="description" content="场景
 
@@ -405,25 +404,25 @@ if (!doNotTrack) {
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">set code &#34;&#34;;
-if ( $args ~ &#34;code=[^&amp;]*.*code=[^&amp;]*&#34; ) {
-    set $code &#34;${code}Y&#34;;
-}
-
-if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
-    set $code &#34;${code}X&#34;;
-}
-
-if ( $code ~ &#34;^X$&#34; ) {
-    proxy_pass http://oversea;
-}
-
-if ( $address_type ~ &#34;lan&#34; ) {
-    proxy_pass http://lan;
-}
-
-proxy_pass http://wan;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">set code &#34;&#34;;
+</span></span><span class="line"><span class="cl">if ( $args ~ &#34;code=[^&amp;]*.*code=[^&amp;]*&#34; ) {
+</span></span><span class="line"><span class="cl">    set $code &#34;${code}Y&#34;;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
+</span></span><span class="line"><span class="cl">    set $code &#34;${code}X&#34;;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">if ( $code ~ &#34;^X$&#34; ) {
+</span></span><span class="line"><span class="cl">    proxy_pass http://oversea;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">if ( $address_type ~ &#34;lan&#34; ) {
+</span></span><span class="line"><span class="cl">    proxy_pass http://lan;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">proxy_pass http://wan;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>nginx的set指令和if指令都工作在rewrite阶段。<code>rewrite阶段的指令会按照config文件中的书写顺序依次执行</code></p>
 <p>先从最简单实现开始，最开始想到的是如下写法</p>
@@ -440,16 +439,16 @@ proxy_pass http://wan;
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
-    proxy_pass http://oversea;
-}
-
-if ( $address_type ~ &#34;lan&#34; ) {
-    proxy_pass http://lan;
-}
-
-proxy_pass http://wan;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">if ( $args ~ &#34;code=OVERSEA[^&amp;]*&#34; )  {
+</span></span><span class="line"><span class="cl">    proxy_pass http://oversea;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">if ( $address_type ~ &#34;lan&#34; ) {
+</span></span><span class="line"><span class="cl">    proxy_pass http://lan;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">proxy_pass http://wan;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>但会带来一个问题，如果请求参数有两个CODE，不管是代码写土了还是恶意，这种行为都是可能出现的。<br>
 如何解析args就成了问题。<br>
@@ -610,7 +609,7 @@ proxy_pass http://wan;
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

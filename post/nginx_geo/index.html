@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="场景  根据来源IP区分production/preview环境 根据来源IP区分限速/非限速 结合上面两者  实现  geo, map " />
+  <meta name="description" content="场景 根据来源IP区分production/preview环境 根据来源IP区分限速/非限速 结合上面两者 实现 geo, map " />
 
   <meta name="keywords" content="n4mine, blog" />
 
@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/nginx_geo/" />
@@ -72,7 +72,6 @@ geo, map
 <meta property="og:url" content="https://n4mine.github.io/post/nginx_geo/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2014-11-13T20:14:06+00:00" />
 <meta property="article:modified_time" content="2014-11-13T20:14:06+00:00" />
-
 <meta itemprop="name" content="nginx通过geo实现production/preview环境分离，限速/非限速IP分离">
 <meta itemprop="description" content="场景
 
@@ -413,38 +412,38 @@ if (!doNotTrack) {
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># ip address classfiy detail:
-# ^1 limit
-# ^0 unlimit
-# lan$ preview
-geo $white_ip_list {
-    default            1;
-
-    127.0.0.1          0;
-    10.0.0.0/8         0;
-    192.168.0.0/16     0;
-
-    1.2.3.4            0;
-    2.3.4.5            0;
-
-    10.20.30.0/24      0lan;
-    20.30.40.50        0lan;
-}
-
-# map for limit zone
-map $white_ip_list $limit_ip_list {
-    ~^1       $binary_remote_addr;
-    ~^0       &#34;&#34;;
-}
-
-limit_req_zone $limit_ip_list zone=limit_yr_sister_ip:500m rate=9999r/s;
-
-# map for preview
-map $white_ip_list $address_type {
-    default    wan;
-    ~lan$      lan;
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># ip address classfiy detail:
+</span></span><span class="line"><span class="cl"># ^1 limit
+</span></span><span class="line"><span class="cl"># ^0 unlimit
+</span></span><span class="line"><span class="cl"># lan$ preview
+</span></span><span class="line"><span class="cl">geo $white_ip_list {
+</span></span><span class="line"><span class="cl">    default            1;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    127.0.0.1          0;
+</span></span><span class="line"><span class="cl">    10.0.0.0/8         0;
+</span></span><span class="line"><span class="cl">    192.168.0.0/16     0;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    1.2.3.4            0;
+</span></span><span class="line"><span class="cl">    2.3.4.5            0;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    10.20.30.0/24      0lan;
+</span></span><span class="line"><span class="cl">    20.30.40.50        0lan;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># map for limit zone
+</span></span><span class="line"><span class="cl">map $white_ip_list $limit_ip_list {
+</span></span><span class="line"><span class="cl">    ~^1       $binary_remote_addr;
+</span></span><span class="line"><span class="cl">    ~^0       &#34;&#34;;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">limit_req_zone $limit_ip_list zone=limit_yr_sister_ip:500m rate=9999r/s;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># map for preview
+</span></span><span class="line"><span class="cl">map $white_ip_list $address_type {
+</span></span><span class="line"><span class="cl">    default    wan;
+</span></span><span class="line"><span class="cl">    ~lan$      lan;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h1 id="啰嗦一下">啰嗦一下</h1>
 <p>其实一切都写在注释里了<br>
@@ -460,8 +459,8 @@ map $white_ip_list $address_type {
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">limit_req zone=limit_yr_sister burst=5 nodelay;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">limit_req zone=limit_yr_sister burst=5 nodelay;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>production/preview分离</li>
@@ -611,7 +610,7 @@ map $white_ip_list $address_type {
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

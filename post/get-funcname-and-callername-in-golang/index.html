@@ -34,7 +34,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/get-funcname-and-callername-in-golang/" />
@@ -67,7 +67,6 @@
 <meta property="og:url" content="https://n4mine.github.io/post/get-funcname-and-callername-in-golang/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2019-08-21T17:48:57+08:00" />
 <meta property="article:modified_time" content="2019-08-21T17:48:57+08:00" />
-
 <meta itemprop="name" content="Get Funcname and Callername in Golang">
 <meta itemprop="description" content="背景
 在 golang 中，往往需要获知当前的函数名及其调用者。
@@ -373,23 +372,23 @@ if (!doNotTrack) {
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">pc</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">uintptr</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
-	<span class="nx">n</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">Callers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">pc</span><span class="p">)</span>
-	<span class="nx">frames</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">CallersFrames</span><span class="p">(</span><span class="nx">pc</span><span class="p">[:</span><span class="nx">n</span><span class="p">])</span>
-	<span class="nx">frame</span><span class="p">,</span> <span class="nx">more</span> <span class="o">:=</span> <span class="nx">frames</span><span class="p">.</span><span class="nf">Next</span><span class="p">()</span>
-	<span class="kd">var</span> <span class="nx">caller</span> <span class="kt">string</span>
-	<span class="k">if</span> <span class="nx">more</span> <span class="p">{</span>
-		<span class="nx">callerFra</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">frames</span><span class="p">.</span><span class="nf">Next</span><span class="p">()</span>
-		<span class="nx">caller</span> <span class="p">=</span> <span class="nx">callerFra</span><span class="p">.</span><span class="nx">Function</span>
-	<span class="p">}</span>
-	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">caller</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-		<span class="nx">caller</span> <span class="p">=</span> <span class="s">&#34;-&#34;</span>
-	<span class="p">}</span>
-
-	<span class="k">return</span> <span class="nx">frame</span><span class="p">.</span><span class="nx">Function</span><span class="p">,</span> <span class="nx">caller</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pc</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">uintptr</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">n</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">Callers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">pc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">frames</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">CallersFrames</span><span class="p">(</span><span class="nx">pc</span><span class="p">[:</span><span class="nx">n</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">frame</span><span class="p">,</span> <span class="nx">more</span> <span class="o">:=</span> <span class="nx">frames</span><span class="p">.</span><span class="nf">Next</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">caller</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">more</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">callerFra</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">frames</span><span class="p">.</span><span class="nf">Next</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">caller</span> <span class="p">=</span> <span class="nx">callerFra</span><span class="p">.</span><span class="nx">Function</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">caller</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">caller</span> <span class="p">=</span> <span class="s">&#34;-&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">frame</span><span class="p">.</span><span class="nx">Function</span><span class="p">,</span> <span class="nx">caller</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>测试一下</p>
 <div class="highlight"><div class="chroma">
@@ -415,26 +414,26 @@ if (!doNotTrack) {
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">A</span> <span class="kd">struct</span><span class="p">{}</span>
-
-<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
-	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
-	<span class="nx">a</span> <span class="o">:=</span> <span class="nx">A</span><span class="p">{}</span>
-	<span class="nf">x</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nf">x</span><span class="p">(</span><span class="nx">a</span> <span class="nx">A</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
-	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
-	<span class="nx">a</span><span class="p">.</span><span class="nb">print</span><span class="p">()</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="p">(</span><span class="nx">A</span><span class="p">)</span> <span class="nb">print</span><span class="p">()</span> <span class="p">{</span>
-	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
-	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">A</span> <span class="kd">struct</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">a</span> <span class="o">:=</span> <span class="nx">A</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">x</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">x</span><span class="p">(</span><span class="nx">a</span> <span class="nx">A</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">a</span><span class="p">.</span><span class="nb">print</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">A</span><span class="p">)</span> <span class="nb">print</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span> <span class="o">:=</span> <span class="nf">FuncAndCallerFunc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;in func: %v, caller is: %v\n&#34;</span><span class="p">,</span> <span class="nx">_f</span><span class="p">,</span> <span class="nx">_c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>输出为</p>
 <div class="highlight"><div class="chroma">
@@ -444,10 +443,10 @@ if (!doNotTrack) {
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">in func: main.main, <span class="nb">caller</span> is: runtime.main
-in func: main.x, <span class="nb">caller</span> is: main.main
-in func: main.A.print, <span class="nb">caller</span> is: main.x
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">in func: main.main, <span class="nb">caller</span> is: runtime.main
+</span></span><span class="line"><span class="cl">in func: main.x, <span class="nb">caller</span> is: main.main
+</span></span><span class="line"><span class="cl">in func: main.A.print, <span class="nb">caller</span> is: main.x
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><em>-EOF-</em></p>
     </div>
@@ -579,7 +578,7 @@ in func: main.A.print, <span class="nb">caller</span> is: main.x
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

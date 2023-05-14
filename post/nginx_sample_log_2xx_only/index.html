@@ -24,7 +24,7 @@
 
 <meta name="author" content="n4mine" />
   <meta name="description" content="背景 一些场景下，我们并不需要记录 nginx 所有的 2xx 日志。 但需记录所有 4xx、5xx。 网上搜索到的方案，要么不记录 2xx，要么采样所有日志，都不满足需求。 下面我们使用 ngx_lua 来达成这样的目标：
- 对于 1xx、2xx、3xx，按照一定的百分比采样 对于 4xx、5xx，100% 的记录 " />
+对于 1xx、2xx、3xx，按照一定的百分比采样 对于 4xx、5xx，100% 的记录 " />
 <meta name="keywords" content="nginx, log, 2xx" />
 
 
@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/nginx_sample_log_2xx_only/" />
@@ -72,7 +72,6 @@
 <meta property="og:url" content="https://n4mine.github.io/post/nginx_sample_log_2xx_only/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-09-11T09:50:48+08:00" />
 <meta property="article:modified_time" content="2021-09-11T09:50:48+08:00" />
-
 <meta itemprop="name" content="nginx 对 2xx 日志采样">
 <meta itemprop="description" content="背景
 一些场景下，我们并不需要记录 nginx 所有的 2xx 日志。
@@ -84,7 +83,7 @@
 对于 4xx、5xx，100% 的记录
 "><meta itemprop="datePublished" content="2021-09-11T09:50:48+08:00" />
 <meta itemprop="dateModified" content="2021-09-11T09:50:48+08:00" />
-<meta itemprop="wordCount" content="275">
+<meta itemprop="wordCount" content="274">
 <meta itemprop="keywords" content="nginx," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="nginx 对 2xx 日志采样"/>
 <meta name="twitter:description" content="背景
@@ -406,40 +405,38 @@ if (!doNotTrack) {
 </span><span class="lnt">27
 </span><span class="lnt">28
 </span><span class="lnt">29
-</span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">lua_shared_dict c 1m<span class="p">;</span>
-init_by_lua_block <span class="o">{</span>
-    ngx.shared.c:add<span class="o">(</span><span class="s2">&#34;countme&#34;</span>, 0<span class="o">)</span>
-<span class="o">}</span>
-
-server <span class="o">{</span>
-    listen 8888<span class="p">;</span>
-
-    location /logme <span class="o">{</span>
-        <span class="nb">set</span> <span class="nv">$logcon</span> 1<span class="p">;</span>
-        log_by_lua_block <span class="o">{</span>
-            <span class="nb">local</span> <span class="nv">c</span> <span class="o">=</span> ngx.shared.c
-            c:incr<span class="o">(</span><span class="s2">&#34;countme&#34;</span>, 1<span class="o">)</span>
-
-            <span class="nb">local</span> <span class="nv">ks</span> <span class="o">=</span> <span class="m">10</span> -- keep 1/10
-
-            <span class="k">if</span> <span class="o">(</span>ngx.status/100 &lt; <span class="m">4</span> and c:get<span class="o">(</span><span class="s2">&#34;countme&#34;</span><span class="o">)</span>%ks ~<span class="o">=</span> 0<span class="o">)</span>
-            <span class="k">then</span>
-                ngx.var.logcon <span class="o">=</span> <span class="m">0</span>
-            end
-        <span class="o">}</span>
-
-        access_log  /tmp/access.log main <span class="k">if</span><span class="o">=</span><span class="nv">$logcon</span><span class="p">;</span>
-        error_log  /tmp/error.log<span class="p">;</span>
-
-        <span class="k">return</span> 200<span class="p">;</span>
-        <span class="c1">#return 400;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">lua_shared_dict c 1m<span class="p">;</span>
+</span></span><span class="line"><span class="cl">init_by_lua_block <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    ngx.shared.c:add<span class="o">(</span><span class="s2">&#34;countme&#34;</span>, 0<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">server <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    listen 8888<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    location /logme <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">set</span> <span class="nv">$logcon</span> 1<span class="p">;</span>
+</span></span><span class="line"><span class="cl">        log_by_lua_block <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">local</span> <span class="nv">c</span> <span class="o">=</span> ngx.shared.c
+</span></span><span class="line"><span class="cl">            c:incr<span class="o">(</span><span class="s2">&#34;countme&#34;</span>, 1<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nb">local</span> <span class="nv">ks</span> <span class="o">=</span> <span class="m">10</span> -- keep 1/10
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span>ngx.status/100 &lt; <span class="m">4</span> and c:get<span class="o">(</span><span class="s2">&#34;countme&#34;</span><span class="o">)</span>%ks ~<span class="o">=</span> 0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">then</span>
+</span></span><span class="line"><span class="cl">                ngx.var.logcon <span class="o">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">            end
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        access_log  /tmp/access.log main <span class="k">if</span><span class="o">=</span><span class="nv">$logcon</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        error_log  /tmp/error.log<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> 200<span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#return 400;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>上面代码中，<code>ks = 10</code>，代表只记录 10% 的日志。
 测试过程就不写了，大家自己写个循环看下效果吧 :)</p>
@@ -574,7 +571,7 @@ server <span class="o">{</span>
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

@@ -37,7 +37,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/autologin-with-iterm2-coprocess/" />
@@ -73,7 +73,6 @@
 <meta property="og:url" content="https://n4mine.github.io/post/autologin-with-iterm2-coprocess/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2017-09-25T18:10:41+00:00" />
 <meta property="article:modified_time" content="2017-09-25T18:10:41+00:00" />
-
 <meta itemprop="name" content="使用iterm2的coprocess完成自动登录">
 <meta itemprop="description" content="背景
 日常工作中，经常需要通过跳板机登录线上机器。
@@ -380,14 +379,14 @@ if (!doNotTrack) {
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
-</span><span class="cp"></span><span class="nv">code</span><span class="o">=</span><span class="k">$(</span>balabala<span class="k">)</span> <span class="c1"># 生成code的shell语句</span>
-<span class="nv">pass</span><span class="o">=</span><span class="k">$(</span>labalaba<span class="k">)</span> <span class="c1"># 生成你个人密码的语句</span>
-
-<span class="nb">echo</span> <span class="si">${</span><span class="nv">code</span><span class="si">}</span>
-sleep 0.5        <span class="c1"># sleep是防止输入太快跳板机来不及反应</span>
-<span class="nb">echo</span> <span class="si">${</span><span class="nv">pass</span><span class="si">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">code</span><span class="o">=</span><span class="k">$(</span>balabala<span class="k">)</span> <span class="c1"># 生成code的shell语句</span>
+</span></span><span class="line"><span class="cl"><span class="nv">pass</span><span class="o">=</span><span class="k">$(</span>labalaba<span class="k">)</span> <span class="c1"># 生成你个人密码的语句</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="si">${</span><span class="nv">code</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">sleep 0.5        <span class="c1"># sleep是防止输入太快跳板机来不及反应</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="si">${</span><span class="nv">pass</span><span class="si">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>设置iterm2，在<code>Preferences -&gt; keys</code>或<code>Preferences -&gt; Profiles -&gt; keys</code>下，增加一组<code>Key Mappings</code><br>
 快捷键为<code>⌘\</code>(这是本人前期使用sudolikeaboss的快捷键，现在sudolikeaboss与1password配合起来有问题就放弃了)<br>
@@ -539,7 +538,7 @@ Action设置为<code>Run Coprocess</code><br>
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">

@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="n4mine" />
-  <meta name="description" content="场景  ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP " />
+  <meta name="description" content="场景 ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP " />
 
   <meta name="keywords" content="n4mine, blog" />
 
@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.111.3" />
 
 
 <link rel="canonical" href="https://n4mine.github.io/post/private-ip-or-not/" />
@@ -66,7 +66,6 @@ ngx_lua模块，判断nginx的$remote_addr取到之后是否属于私有IP
 <meta property="og:url" content="https://n4mine.github.io/post/private-ip-or-not/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2015-02-03T08:24:00+00:00" />
 <meta property="article:modified_time" content="2015-02-03T08:24:00+00:00" />
-
 <meta itemprop="name" content="lua判断是否是私有IP地址">
 <meta itemprop="description" content="场景
 
@@ -375,24 +374,24 @@ if (!doNotTrack) {
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">local current_remote_addr = &#34;192.168.1.1&#34;
-
-local ip_decimal = 0
-local postion = 3
-for i in string.gmatch(current_remote_addr, [[%d+]]) do
-    ip_decimal = ip_decimal + math.pow(256, postion) * i
-    postion = postion - 1
-end
-
-if ip_decimal &gt;= 0x7f000000 and ip_decimal &lt;= 0x7fffffff or -- 127.0.0.0 ~ 127.255.255.255
-    ip_decimal &gt;= 0x0a000000 and ip_decimal &lt;= 0x0affffff or -- 10.0.0.0 ~ 10.255.255.255
-    ip_decimal &gt;= 0xac100000 and ip_decimal &lt;= 0xac1fffff or -- 172.16.0.0 ~ 172.31.255.255
-    ip_decimal &gt;= 0xc0a80000 and ip_decimal &lt;= 0xc0a8ffff then   -- 192.168.0.0 ~ 192.168.255.255
-    print(current_remote_addr..&#34; is a private ip&#34;)
-else
-    print(current_remote_addr..&#34; is not a private ip&#34;)
-end
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">local current_remote_addr = &#34;192.168.1.1&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">local ip_decimal = 0
+</span></span><span class="line"><span class="cl">local postion = 3
+</span></span><span class="line"><span class="cl">for i in string.gmatch(current_remote_addr, [[%d+]]) do
+</span></span><span class="line"><span class="cl">    ip_decimal = ip_decimal + math.pow(256, postion) * i
+</span></span><span class="line"><span class="cl">    postion = postion - 1
+</span></span><span class="line"><span class="cl">end
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">if ip_decimal &gt;= 0x7f000000 and ip_decimal &lt;= 0x7fffffff or -- 127.0.0.0 ~ 127.255.255.255
+</span></span><span class="line"><span class="cl">    ip_decimal &gt;= 0x0a000000 and ip_decimal &lt;= 0x0affffff or -- 10.0.0.0 ~ 10.255.255.255
+</span></span><span class="line"><span class="cl">    ip_decimal &gt;= 0xac100000 and ip_decimal &lt;= 0xac1fffff or -- 172.16.0.0 ~ 172.31.255.255
+</span></span><span class="line"><span class="cl">    ip_decimal &gt;= 0xc0a80000 and ip_decimal &lt;= 0xc0a8ffff then   -- 192.168.0.0 ~ 192.168.255.255
+</span></span><span class="line"><span class="cl">    print(current_remote_addr..&#34; is a private ip&#34;)
+</span></span><span class="line"><span class="cl">else
+</span></span><span class="line"><span class="cl">    print(current_remote_addr..&#34; is not a private ip&#34;)
+</span></span><span class="line"><span class="cl">end
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><em>-EOF-</em></p>
     </div>
@@ -537,7 +536,7 @@ end
     &copy;
     
       2014 -
-    2022
+    2023
     <span class="heart">
       
       <i class="iconfont">
