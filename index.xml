@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>n4mine&#39;s blog</title>
@@ -72,13 +72,1878 @@
     </item>
     
     <item>
-      <title>Posts</title>
-      <link>https://n4mine.github.io/post/</link>
+      <title>当可观测遇到serverless</title>
+      <link>https://n4mine.github.io/post/observability_and_serverless/</link>
       <pubDate>Sun, 13 Mar 2022 16:17:20 +0800</pubDate>
       
-      <guid>https://n4mine.github.io/post/</guid>
+      <guid>https://n4mine.github.io/post/observability_and_serverless/</guid>
       
-        <description></description>
+        <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+&lt;p&gt;可观测（监控）的产品形态，注定了其数据是写 &amp;gt;&amp;gt; 读的&lt;/p&gt;
+&lt;p&gt;市面上大多数的技术，均都对写做了大量优化&lt;/p&gt;
+&lt;p&gt;而对读却往往“无能为力”，开并发似乎是人们能做到的“极限”，但还是限于单机的瓶颈&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/read_and_write.png&#34; alt=&#34;read and write&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;溯源&#34;&gt;溯源&lt;/h2&gt;
+&lt;p&gt;读不能高性能的原因，其实可以大致归为以下几点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;与局部性更高的写相比，读往往是”随机“的，而随机往往是性能受制的根本原因&lt;/li&gt;
+&lt;li&gt;即使 ssd 技术已经出现多年，但硬盘的速度仍是大多数系统的瓶颈所在，所以才有了业界的&lt;code&gt;google monarch&lt;/code&gt;, &lt;code&gt;facebook beringei&lt;/code&gt; 等基于内存的 tsdb 出现&lt;/li&gt;
+&lt;li&gt;企业发展到一定程度，成本问题就一定会摆在台面上，谈必及&lt;code&gt;ROI&lt;/code&gt;，&lt;code&gt;降本提效&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;那有什么方法/技术，是可以改善/解决这些问题的呢？&lt;/p&gt;
+&lt;h2 id=&#34;曙光&#34;&gt;曙光&lt;/h2&gt;
+&lt;p&gt;serverless，自 aws 2014 年推出 Lambda，faas 大火。&lt;/p&gt;
+&lt;p&gt;这里不细说 serverless、lambda、faas 的定义，只关注它的特性：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;事件驱动&lt;/li&gt;
+&lt;li&gt;按量收费&lt;/li&gt;
+&lt;li&gt;扩展性好&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;再结合可观测的读场景：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;非长期运行&lt;/li&gt;
+&lt;li&gt;有突发查询，并一次获取大量数据&lt;/li&gt;
+&lt;li&gt;“成本敏感”&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;似乎与 faas 的使用场景 match&lt;/p&gt;
+&lt;h2 id=&#34;业界&#34;&gt;业界&lt;/h2&gt;
+&lt;p&gt;下面看看业界是怎么使用 serverless 解决可观测数据读取能力不足的问题的。&lt;/p&gt;
+&lt;h3 id=&#34;cortex-query-frontend&#34;&gt;Cortex Query Frontend&lt;/h3&gt;
+&lt;p&gt;Cortex Query Frontend 最早在 2019 年由 Tom Wilkie 提出，其设计其实可以用下面这张图表示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/frontend.jpg&#34; alt=&#34;frontend&#34;&gt;&lt;/p&gt;
+&lt;p&gt;位于 query frontend 下方的 query 不直接提供服务，而是消费由 frontend 切割后的查询。&lt;/p&gt;
+&lt;p&gt;这让我不由想起 golang 并行的趣图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/parallelism.png&#34; alt=&#34;parallelism&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;tempo-backend-search&#34;&gt;Tempo Backend Search&lt;/h3&gt;
+&lt;p&gt;与 Cortex 的架构一脉相承，用于 trace 的 tempo 最近推出了试验性质的&lt;code&gt;Backend search&lt;/code&gt;，其中就有使用 serverless 的部分，其主要架构如下&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/tempo.jpg&#34; alt=&#34;tempo&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;honeycomb-retriever&#34;&gt;Honeycomb Retriever&lt;/h3&gt;
+&lt;p&gt;如果说，cortex, tempo 还处于比较少人使用，或是试验阶段&lt;/p&gt;
+&lt;p&gt;honeycomb 已将 lambda 用在了生产环境中，而且产出了很多生产级别的经验&lt;/p&gt;
+&lt;p&gt;honeycomb 的顶层架构图如下描述，lambda 用于查询存储在 s3 上的数据&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/hny.jpg&#34; alt=&#34;hny&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;结尾&#34;&gt;结尾&lt;/h2&gt;
+&lt;p&gt;serverless 作为近年来大火的技术/产品，很适合可观测数据查询场景使用。相信其可以在可观测领域中中大放异彩。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>读《监控的自我修养，过去十年和未来十年》有感</title>
+      <link>https://n4mine.github.io/post/reviews_of_monitoring/</link>
+      <pubDate>Sat, 19 Feb 2022 11:22:37 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/reviews_of_monitoring/</guid>
+      
+        <description>&lt;p&gt;拜读&lt;a href=&#34;https://mp.weixin.qq.com/s/iOSc4jFRRv61kPdrZ85dnQ&#34;&gt;《监控的自我修养，过去十年和未来十年》&lt;/a&gt;，有一些感想。&lt;/p&gt;
+&lt;p&gt;从 falcon 的最早的用户，到成为 falcon 的开发，再到基于 vm 底层存储打造全新的监控架构体系。一恍7、8年过去了：）&lt;/p&gt;
+&lt;p&gt;prometheus 流行的原因，其实是抱对了大腿，赶上了好时代，随着 k8s 的普及，云、云原生被越来越多人提及。
+尤其行业内，言必及 prometheus，连我们从未使用过 prometheus 的同学，都开始聊联邦，聊 remote_write/read。&lt;/p&gt;
+&lt;p&gt;prometheus 虽流行，但自身的一些固定甚至是固执的范式，和初期单机版的定位，使得后来者诸如 thanos/cortex/vm/m3 等解决方案日趋受欢迎。
+尤其 vm 在入口支持 pull + push 的方式，解决了 prometheus 在数据摄入逻辑固执己见带来的业内采集方式的纠结甚至是口水战。当然最近 2 年也看到 prometheus 有了一些“改进”。&lt;/p&gt;
+&lt;p&gt;很高兴看到 Nightingale 在架构方面的转变，敢于推陈出新，离云原生监控更近了一步。&lt;/p&gt;
+&lt;p&gt;个人斗胆对云原生监控的技术做一下未来“预测”:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;监控架构的内部技术闭环是监控能够云原生的重要抓手&lt;/li&gt;
+&lt;li&gt;pull+push 采集在未来缺一不可，东风压倒不了西风，一味痴迷其一的，定会食其恶果&lt;/li&gt;
+&lt;li&gt;报警会逐渐聚焦在 slo 上，而非面面俱到&lt;/li&gt;
+&lt;li&gt;虽然各种成本在云时代有所下降。采集的内容仍不会“应收尽收”，也不会像现在这样“高度抽象”。起码在存储架构有突破之前，成本仍是制约采集内容向“应收尽收”所谓可观测目标的最大“障碍”&lt;/li&gt;
+&lt;li&gt;MTL(metrics, traces, logging) 的打通是过去和未来几年的最重要的产品形态&lt;/li&gt;
+&lt;li&gt;相对报警能力，多样化的看图产品会变得愈发被需要&lt;/li&gt;
+&lt;li&gt;多副本的内存 TSDB + 廉价长期存储会变的越来越流行&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>nginx 对 2xx 日志采样</title>
+      <link>https://n4mine.github.io/post/nginx_sample_log_2xx_only/</link>
+      <pubDate>Sat, 11 Sep 2021 09:50:48 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/nginx_sample_log_2xx_only/</guid>
+      
+        <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;一些场景下，我们并不需要记录 nginx 所有的 2xx 日志。
+但需记录&lt;code&gt;所有&lt;/code&gt; 4xx、5xx。
+网上搜索到的方案，要么不记录 2xx，要么采样所有日志，都不满足需求。
+下面我们使用 &lt;code&gt;ngx_lua&lt;/code&gt; 来达成这样的目标：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;对于 1xx、2xx、3xx，按照一定的百分比采样&lt;/li&gt;
+&lt;li&gt;对于 4xx、5xx，100% 的记录&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;直接上代码:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lua_shared_dict c 1m&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;init_by_lua_block &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ngx.shared.c:add&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;countme&amp;#34;&lt;/span&gt;, 0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;server &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    listen 8888&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    location /logme &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$logcon&lt;/span&gt; 1&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        log_by_lua_block &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;local&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; ngx.shared.c
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            c:incr&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;countme&amp;#34;&lt;/span&gt;, 1&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;local&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;ks&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt; -- keep 1/10
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ngx.status/100 &amp;lt; &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; and c:get&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;countme&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;%ks ~&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ngx.var.logcon &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            end
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        access_log  /tmp/access.log main &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$logcon&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        error_log  /tmp/error.log&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; 200&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;#return 400;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;上面代码中，&lt;code&gt;ks = 10&lt;/code&gt;，代表只记录 10% 的日志。
+测试过程就不写了，大家自己写个循环看下效果吧 :)&lt;/p&gt;
+&lt;p&gt;玩得开心 :)&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>用 map 实现 nginx 的动态 upstream</title>
+      <link>https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/</link>
+      <pubDate>Mon, 16 Mar 2020 18:40:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/nginx-dynamic-upstream-use-map/</guid>
+      
+        <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;在我们的场景下，nginx 的 upstream servers 是一堆容器。
+容器的主机名不变，但其 ip 可能发生变化。
+我希望在容器 ip 发生变化时，无需变更 nginx 的配置。&lt;/p&gt;
+&lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
+&lt;p&gt;直接上代码&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-nginx&#34; data-lang=&#34;nginx&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;map&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$x&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$backend&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kn&#34;&gt;1&lt;/span&gt;       &lt;span class=&#34;n&#34;&gt;server1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;12345&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kn&#34;&gt;2&lt;/span&gt;       &lt;span class=&#34;n&#34;&gt;server2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;12345&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kn&#34;&gt;3&lt;/span&gt;       &lt;span class=&#34;n&#34;&gt;server3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;12345&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kn&#34;&gt;default&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;backupserver&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;12345&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;server&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kn&#34;&gt;listen&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;7777&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kn&#34;&gt;location&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/d&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kn&#34;&gt;resolver&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;114&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;.114.114.114&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;valid=60s&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;ipv6=off&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kn&#34;&gt;set_by_lua_block&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$x&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;math.random(3)&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;s&#34;&gt;proxy_pass&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;http://&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$backend&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;做一下性能测试&lt;/p&gt;
+&lt;p&gt;静态 upstream&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ ./wrk --latency -d 1m -t &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt; -c &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt;  http://127.0.0.1:7777/s
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Running 1m &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt; @ http://127.0.0.1:7777/s
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt; threads and &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt; connections
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Thread Stats   Avg      Stdev     Max   +/- Stdev
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Latency     5.93ms    5.66ms 177.31ms   97.39%
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Req/Sec     1.85k   238.42     2.30k    69.12%
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Latency Distribution
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     50%    5.16ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     75%    5.85ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     90%    7.06ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     99%   27.34ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;m&#34;&gt;1105047&lt;/span&gt; requests in 1.00m, 188.59MB &lt;span class=&#34;nb&#34;&gt;read&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Non-2xx or 3xx responses: &lt;span class=&#34;m&#34;&gt;1105047&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Requests/sec:  18412.50
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Transfer/sec:      3.14MB
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;动态 upstream&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ ./wrk --latency -d 1m -t &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt; -c &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt;  http://127.0.0.1:7777/d
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Running 1m &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt; @ http://127.0.0.1:7777/d
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt; threads and &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt; connections
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Thread Stats   Avg      Stdev     Max   +/- Stdev
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Latency     6.33ms    3.98ms 101.19ms   96.57%
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Req/Sec     1.68k   185.44     2.27k    77.58%
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Latency Distribution
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     50%    5.73ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     75%    6.46ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     90%    7.28ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     99%   25.91ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;m&#34;&gt;1005401&lt;/span&gt; requests in 1.00m, 171.58MB &lt;span class=&#34;nb&#34;&gt;read&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Non-2xx or 3xx responses: &lt;span class=&#34;m&#34;&gt;1005401&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Requests/sec:  16751.96
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Transfer/sec:      2.86MB
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;玩得开心 :)&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>Get Funcname and Callername in Golang</title>
+      <link>https://n4mine.github.io/post/get-funcname-and-callername-in-golang/</link>
+      <pubDate>Wed, 21 Aug 2019 17:48:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/get-funcname-and-callername-in-golang/</guid>
+      
+        <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;在 golang 中，往往需要获知当前的函数名及其调用者。&lt;/p&gt;
+&lt;p&gt;例如在监控场景，自动获取函数名的需求比较常见。&lt;/p&gt;
+&lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
+&lt;p&gt;直接上代码&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;FuncAndCallerFunc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;pc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;make&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;([]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;uintptr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;runtime&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Callers&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;pc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;frames&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;runtime&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;CallersFrames&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;pc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[:&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;more&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;frames&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Next&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;kd&#34;&gt;var&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;caller&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;more&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;nx&#34;&gt;callerFra&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;frames&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Next&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;nx&#34;&gt;caller&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;callerFra&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Function&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;caller&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;nx&#34;&gt;caller&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;-&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;frame&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Function&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;caller&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;测试一下&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;A&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;struct&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;_f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;FuncAndCallerFunc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;fmt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;in func: %v, caller is: %v\n&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;A&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nf&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;A&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;_f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;FuncAndCallerFunc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;fmt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;in func: %v, caller is: %v\n&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;A&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;_f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;FuncAndCallerFunc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;fmt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;in func: %v, caller is: %v\n&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;输出为&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;in func: main.main, &lt;span class=&#34;nb&#34;&gt;caller&lt;/span&gt; is: runtime.main
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;in func: main.x, &lt;span class=&#34;nb&#34;&gt;caller&lt;/span&gt; is: main.main
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;in func: main.A.print, &lt;span class=&#34;nb&#34;&gt;caller&lt;/span&gt; is: main.x
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>15 分钟了解容器</title>
+      <link>https://n4mine.github.io/post/understand-container-in-15-minutes/</link>
+      <pubDate>Sat, 27 Jul 2019 20:02:57 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/understand-container-in-15-minutes/</guid>
+      
+        <description>&lt;h2 id=&#34;什么是容器&#34;&gt;什么是容器？&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/upgrade-vr.png&#34; alt=&#34;upgrade vr&#34;&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;所谓容器，其实就像上图:&lt;br&gt;
+把 VR 玩家放在一个其以为是家的地方(&lt;code&gt;chroot&lt;/code&gt;)，创造目标所需环境(&lt;code&gt;namespaces&lt;/code&gt;)，再定期定量的提供水、食物(&lt;code&gt;cgroups&lt;/code&gt;)供其维续生命。&lt;/p&gt;
+&lt;p&gt;chroot、namespace、cgroups，就是容器的核心技术。&lt;/p&gt;
+&lt;p&gt;本文将使用几个有限的命令，用 15 分钟的时间，让读者直观的了解&lt;code&gt;容器&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;chroot&#34;&gt;chroot&lt;/h2&gt;
+&lt;p&gt;chroot 比较简单，不演示了。&lt;/p&gt;
+&lt;h2 id=&#34;namespaces&#34;&gt;namespaces&lt;/h2&gt;
+&lt;p&gt;namespaces，&lt;a href=&#34;https://en.wikipedia.org/wiki/Linux_namespaces&#34;&gt;wikipedia&lt;/a&gt; 定义: &lt;code&gt;Namespaces are a feature of the Linux kernel that partitions kernel resources such that one set of processes sees one set of resources while another set of processes sees a different set of resources.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;文档见 &lt;a href=&#34;https://lwn.net/Articles/531114/&#34;&gt;namespaces&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;不同的&lt;code&gt;进程&lt;/code&gt;，可以处于不同的 namespaces 中，这样它们就被隔离了。&lt;/p&gt;
+&lt;p&gt;namespaces 从类型来讲，分为 6 种，分别用于不同场景。这 6 种 namespaces 分别是:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;宏定义&lt;/th&gt;
+&lt;th&gt;隔离内容&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Mount namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWNS&lt;/td&gt;
+&lt;td&gt;Mount points&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;UTS namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWUTS&lt;/td&gt;
+&lt;td&gt;Hostname and NIS domain name&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;IPC namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWIPC&lt;/td&gt;
+&lt;td&gt;System V IPC, POSIX message queues&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;PID namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWPID&lt;/td&gt;
+&lt;td&gt;Process IDs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Network namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWNET&lt;/td&gt;
+&lt;td&gt;Network devices, stacks, ports, etc.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;User namespaces&lt;/td&gt;
+&lt;td&gt;CLONE_NEWUSER&lt;/td&gt;
+&lt;td&gt;User and group IDs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;uts-namespaces&#34;&gt;uts namespaces&lt;/h3&gt;
+&lt;p&gt;我们先从最简单的 &lt;code&gt;uts namespaces&lt;/code&gt;开始。&lt;/p&gt;
+&lt;p&gt;下面开始我们的第一个目标：隔离&lt;code&gt;hostname&lt;/code&gt;。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;查看当前 namespaces 的 hostname 和当前进程所在的 namespaces:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# hostname&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;outside
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# readlink /proc/$$/ns/uts&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uts:&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;4026531838&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;解除 namespaces share, 创建新的进程:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# unshare --uts /bin/sh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# hostname inside
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# hostname
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;inside
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# readlink /proc/&lt;span class=&#34;nv&#34;&gt;$$&lt;/span&gt;/ns/uts
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uts:&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;4026532328&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# &lt;span class=&#34;nb&#34;&gt;exit&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;以上可看到，新的 hostname 在内部已经生效，并且内部进程的 uts namespaces 已发生变化(&lt;code&gt;4026531838&lt;/code&gt; -&amp;gt; &lt;code&gt;4026532328&lt;/code&gt;)。&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;验证外部的 namespaces，其 hostname 未受到影响:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# hostname&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;outside
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;那是如何实现的？下例说明:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# strace -fe unshare,execve unshare --uts  /bin/sh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;execve&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;/usr/bin/unshare&amp;#34;&lt;/span&gt;, &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;unshare&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;--uts&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;/bin/sh&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;, &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;/* &lt;span class=&#34;m&#34;&gt;27&lt;/span&gt; vars */&lt;span class=&#34;o&#34;&gt;])&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;unshare&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;CLONE_NEWUTS&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;                   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# &amp;lt;-- 关键点&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;execve&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;/bin/sh&amp;#34;&lt;/span&gt;, &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;/bin/sh&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;, &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;/* &lt;span class=&#34;m&#34;&gt;27&lt;/span&gt; vars */&lt;span class=&#34;o&#34;&gt;])&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;对于&lt;code&gt;unshare(2)&lt;/code&gt;, 请参考 &lt;a href=&#34;http://man7.org/linux/man-pages/man2/unshare.2.html&#34;&gt;man page&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;pid-namespaces&#34;&gt;pid namespaces&lt;/h3&gt;
+&lt;p&gt;如果只是修改 hostname 而不影响宿主，那也没什么意思。下面我们来看看如何隔离&lt;code&gt;pid 资源&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;实现目标：在新的进程中看到&lt;code&gt;全新&lt;/code&gt;的&lt;code&gt;一套&lt;/code&gt; &lt;code&gt;pids&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# unshare --fork --pid --mount-proc  /bin/sh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# ps
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   PID TTY          TIME CMD
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; pts/5    00:00:00 sh
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; pts/5    00:00:00 ps
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如此，我们就在新的 namespaces 中，隔离了 pids，在这个&lt;code&gt;容器&lt;/code&gt;内部看来，就是全新的一套 pids(第一个 pid 为 1)。&lt;/p&gt;
+&lt;p&gt;如何实现的呢？仍使用&lt;code&gt;strace&lt;/code&gt;验证:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# strace -fe unshare,execve,mount unshare --fork --pid --mount-proc  /bin/sh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;execve&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;/usr/bin/unshare&amp;#34;&lt;/span&gt;, &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;unshare&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;--fork&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;--pid&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;--mount-proc&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;/bin/sh&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;, &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;/* &lt;span class=&#34;m&#34;&gt;27&lt;/span&gt; vars */&lt;span class=&#34;o&#34;&gt;])&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;unshare&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;CLONE_NEWNS&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;CLONE_NEWPID&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;       &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# &amp;lt;-- 关键点&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Process &lt;span class=&#34;m&#34;&gt;97554&lt;/span&gt; attached
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;pid 97554&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; mount&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;none&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;/proc&amp;#34;&lt;/span&gt;, NULL, MS_REC&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;MS_PRIVATE, NULL&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;pid 97554&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; mount&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;proc&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;/proc&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;proc&amp;#34;&lt;/span&gt;, MS_NOSUID&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;MS_NODEV&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;MS_NOEXEC, NULL&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;pid 97554&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; execve&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;/bin/sh&amp;#34;&lt;/span&gt;, &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;/bin/sh&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;, &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;/* &lt;span class=&#34;m&#34;&gt;27&lt;/span&gt; vars */&lt;span class=&#34;o&#34;&gt;])&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;cgroups&#34;&gt;cgroups&lt;/h2&gt;
+&lt;p&gt;cgroups，&lt;a href=&#34;https://en.wikipedia.org/wiki/Cgroups&#34;&gt;wikipedia&lt;/a&gt; 定义: &lt;code&gt;cgroups is a Linux kernel feature that limits, accounts for, and isolates the resource usage (CPU, memory, disk I/O, network, etc.) of a collection of processes&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;我们只需要知道 cgroups，能限制资源就行了。下面我们来直观感受一下 cgroup 的功能。&lt;/p&gt;
+&lt;p&gt;限制目标: &lt;code&gt;进程数&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;新启动一个&lt;code&gt;sh&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# sh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$$&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;14838&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# &amp;lt;-- 记住这个 pid&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;先挂载 cgroups(pids子系统):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir -p cgroup/pids&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# mount -t cgroup -o pids pids ./cgroup/pids&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;配置 cgroups:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# cd ./cgroup/pids/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside pids&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir x&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside pids&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# cd x&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside x&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# echo 3 &amp;gt; pids.max # &amp;lt;-- 限制只能启动 3 个进程&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;将上面的 sh 加入到我们新建立的 cgroups 中(默认也影响其子进程):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside x&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# echo 14838 &amp;gt; cgroup.procs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;下面来看看效果:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# pstree -p &lt;span class=&#34;nv&#34;&gt;$$&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;14838&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;───pstree&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;15421&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# sleep &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# &amp;lt;-- 启动第 1 个进程&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;1&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;15427&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# sleep &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# &amp;lt;-- 启动第 2 个进程&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;2&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;15429&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh-4.2# sleep &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# &amp;lt;-- 第 3 个进程启动失败, 因为最开始的 sh 进程也算&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh: fork: retry: Resource temporarily unavailable
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh: fork: retry: Resource temporarily unavailable
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh: fork: retry: Resource temporarily unavailable
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh: fork: retry: Resource temporarily unavailable
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh: fork: Resource temporarily unavailable
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以查看一下当前的&lt;code&gt;pids&lt;/code&gt;数量:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@outside x&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# cat pids.current&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# &amp;lt;-- 的确是 3 个&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;以上使用&lt;code&gt;unshare&lt;/code&gt;命令与&lt;code&gt;cgroups&lt;/code&gt;，初步了解了容器的几个基本技术。&lt;/p&gt;
+&lt;p&gt;关于容器更深入的内容，有待读者自己去学习。&lt;/p&gt;
+&lt;p&gt;玩得开心 :)&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>LTTB 降采样算法初试</title>
+      <link>https://n4mine.github.io/post/lttb-downsample/</link>
+      <pubDate>Thu, 25 Jul 2019 17:44:41 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/lttb-downsample/</guid>
+      
+        <description>&lt;h2 id=&#34;降采样&#34;&gt;降采样&lt;/h2&gt;
+&lt;p&gt;什么是降采样？在时序数据应用场景中，降采样通常是将&lt;code&gt;原始&lt;/code&gt;的 N 个数据点，通过某种算法计算，得到 1 个数据点，并在较长周期保存曲线趋势的算法。&lt;/p&gt;
+&lt;p&gt;降采样带来的好处：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;降低成本。例如将原来的 6 个数据点，降低为 1 个数据点。如此压缩比就是 6:1。而在一些复杂的场景下，6:1 已经是一个很高的比例。&lt;/li&gt;
+&lt;li&gt;减少计算。降采后，前端的绘图速度和资源占用也会得到极大的优化。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;降采样算法&#34;&gt;降采样算法&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;求平均&lt;/code&gt;是一个常见的降采算法，例如我写的一个 &lt;a href=&#34;https://github.com/devtoolkits/downsample&#34;&gt;demo&lt;/a&gt;，就是将 N 个点求平均，得到 1 个新的数据点的实现。&lt;/p&gt;
+&lt;p&gt;例如原始数据(周期为 10s)为&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Point&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;Point&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;0.5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;Point&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;0.3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;Point&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;0.4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;降采后(周期为 15s)的结果为&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Point&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;Point&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;0.4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;Point&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;25&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;0.4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;题外话：为什么上述实现的时间戳是向过去时间对齐的？
+主要原因是便于理解，例如当前时间是 &lt;code&gt;21:28:35&lt;/code&gt;，在周期是 &lt;code&gt;30s&lt;/code&gt; 的情况下，向过去时间对齐的结果是 &lt;code&gt;21:28:30&lt;/code&gt;，而向未来时间对齐，结果则是 &lt;code&gt;21:29:00&lt;/code&gt;，&lt;code&gt;21:29:00&lt;/code&gt; 是未来的时间，很难向用户解释。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;那么&lt;code&gt;求平均&lt;/code&gt;降采算法的问题是什么？我想放一张图会很直观(&lt;code&gt;以下数据均来自线上生产环境&lt;/code&gt;)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_avg_60s.png&#34; alt=&#34;origin vs avg 60s&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上图中，将原始曲线的 6 个点，降采为 1 个点。&lt;/p&gt;
+&lt;p&gt;红色是原始曲线，绿色是经过平均降采算法后的曲线。&lt;/p&gt;
+&lt;p&gt;可以看出，细节&lt;code&gt;全部丢失&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;那么，有没有一种算法，可以兼顾&lt;code&gt;保留细节&lt;/code&gt;与&lt;code&gt;达到降采目的&lt;/code&gt;的效果呢？&lt;/p&gt;
+&lt;h2 id=&#34;lttb&#34;&gt;LTTB&lt;/h2&gt;
+&lt;p&gt;LTTB(Largest Triangle Three Buckets) &lt;a href=&#34;https://skemman.is/bitstream/1946/15343/3/SS_MSthesis.pdf&#34;&gt;论文链接&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;其实一句话就可以概括这个算法的功能：&lt;strong&gt;使用较少的数据点，保持原始曲线的&lt;code&gt;视觉特性&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;那么效果是否如此，看下图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_60s.png&#34; alt=&#34;origin vs lttb 60s&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上图中，红色是原始曲线，绿色则是经过 LTTB 算法降采后的曲线。&lt;/p&gt;
+&lt;p&gt;可以看出，细节&lt;code&gt;得以保留&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;到这里，效果就已经验证。这个算法是满足我们的需求的。&lt;/p&gt;
+&lt;p&gt;那么在追求更高压缩比的场景下，LTTB 的表现又如何？&lt;/p&gt;
+&lt;h2 id=&#34;lttb-在不同-threshold-下的表现&#34;&gt;LTTB 在不同 threshold 下的表现&lt;/h2&gt;
+&lt;h3 id=&#34;原始-10s---降采至-60s&#34;&gt;原始 10s -&amp;gt; 降采至 60s&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_60s.png&#34; alt=&#34;origin vs lttb 60s&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;压缩比 6:1&lt;/li&gt;
+&lt;li&gt;绝大部分&lt;code&gt;细节&lt;/code&gt;均得以保留&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;原始-10s---降采至-90s&#34;&gt;原始 10s -&amp;gt; 降采至 90s&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_90s.png&#34; alt=&#34;origin vs lttb 90s&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;压缩比 9:1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;原始-10s---降采至-180s&#34;&gt;原始 10s -&amp;gt; 降采至 180s&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_180s.png&#34; alt=&#34;origin vs lttb 180s&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;压缩比 18:1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;原始-10s---降采至-300s&#34;&gt;原始 10s -&amp;gt; 降采至 300s&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_lttb_300s.png&#34; alt=&#34;origin vs lttb 300s&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;压缩比 30:1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在降采至 300s时，虽然很多细节都已丢失。但这时候的&lt;code&gt;平均&lt;/code&gt;降采算法又是什么样的？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/mix_origin_avg_300s.png&#34; alt=&#34;origin vs avg 300s&#34;&gt;&lt;/p&gt;
+&lt;p&gt;已经完全看不出原来曲线的样子，只能大概的看出一个&lt;code&gt;趋势&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;本文没有什么高深的内容，只是从一个用户的角度，简单的考察一下 LTTB 这个算法，在不同场景下的表现。&lt;/p&gt;
+&lt;p&gt;总体来说是可以作为生产环境下的降采算法的，比&lt;code&gt;平均&lt;/code&gt;降采算法要优秀得多。&lt;/p&gt;
+&lt;p&gt;附: 相关代码均已放在 &lt;a href=&#34;https://github.com/n4mine/lttb-practice&#34;&gt;github&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>cacheserver - 内存TSDB的设计思想</title>
+      <link>https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/</link>
+      <pubDate>Mon, 22 Jul 2019 22:14:31 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/cacheserver-in-memory-tsdb-design/</guid>
+      
+        <description>&lt;h2 id=&#34;cacheserver是什么&#34;&gt;cacheserver是什么?&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;基于facebook 的 gorilla paper 的一个服务。在内存中实现的，一个高性能、高压缩比的时序数据库&lt;/li&gt;
+&lt;li&gt;其原理在以前的blog中有过描述, 见 &lt;a href=&#34;https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0&#34;&gt;Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;本文主要描述在设计 cacheserver 过程中的一些思考&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/cacheserver.png&#34; alt=&#34;cacheserver&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;核心架构&#34;&gt;核心架构&lt;/h2&gt;
+&lt;p&gt;如上图&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;instance: cacheserver的实例&lt;/li&gt;
+&lt;li&gt;shard: 一个 cacheserver instance 内的多组series chunks&lt;/li&gt;
+&lt;li&gt;chunks: chunk slice&lt;/li&gt;
+&lt;li&gt;chunk: 一段时间的(ts, value)数据&lt;/li&gt;
+&lt;li&gt;series: 一条监控曲线&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下面依次介绍以上每个组件, 详细的内容仍可到 &lt;a href=&#34;https://n4mine.github.io/post/in-memory-tsdb/#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0&#34;&gt;Falcon 存储优化: 高性能内存 TSDB 的诞生#数据模型的实现&lt;/a&gt; 中查看。&lt;/p&gt;
+&lt;h3 id=&#34;instance&#34;&gt;instance&lt;/h3&gt;
+&lt;p&gt;instance 即 cacheserver 部署的实例。&lt;/p&gt;
+&lt;p&gt;集群还是分片？分片。&lt;/p&gt;
+&lt;h3 id=&#34;shard&#34;&gt;shard&lt;/h3&gt;
+&lt;p&gt;为什么需要 shard？分片锁降低锁冲突。&lt;/p&gt;
+&lt;h3 id=&#34;chunkschunk&#34;&gt;chunks/chunk&lt;/h3&gt;
+&lt;p&gt;chunk 是真正存放 series 数据的结构。chunk 内存放 series 的 bit 流。
+chunks 只是 chunk 的 slice，使用 ringbuffer 技术，这样可以使用固定空间来存储多个 chunk。&lt;/p&gt;
+&lt;h2 id=&#34;设计思想&#34;&gt;设计思想&lt;/h2&gt;
+&lt;h3 id=&#34;为什么独立成一个服务而不是嵌入到现有存储中&#34;&gt;为什么独立成一个服务，而不是嵌入到现有存储中&lt;/h3&gt;
+&lt;p&gt;设计之初，cacheserver 的定位就是一个独立服务。
+这样它可以与&lt;code&gt;graph&lt;/code&gt;互相兜底。
+例如&lt;code&gt;graph&lt;/code&gt;挂掉了，仍可以调用cacheserver来给用户呈现最近的数据。而&lt;code&gt;graph&lt;/code&gt;本身就是cacheserver的主存。&lt;/p&gt;
+&lt;h3 id=&#34;为什么将数据放在内存中&#34;&gt;为什么将数据放在内存中&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;快&lt;/li&gt;
+&lt;li&gt;gorilla 论文实现的算法压缩比高(11:1)，存放热数据，内存已经足够&lt;/li&gt;
+&lt;li&gt;redis？据了解，&lt;code&gt;baidu&lt;/code&gt;内部的tsdb。热数据就是放在&lt;code&gt;redis&lt;/code&gt;中的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;怎么解决-series-爆炸问题&#34;&gt;怎么解决 series 爆炸问题&lt;/h3&gt;
+&lt;p&gt;周期检测, 不活跃数据直接从内存中清除&lt;/p&gt;
+&lt;h3 id=&#34;怎么解决-series-identify&#34;&gt;怎么解决 series identify&lt;/h3&gt;
+&lt;p&gt;什么是&lt;code&gt;series identify&lt;/code&gt;, 即根据tags搜索对应的 series。
+cacheserver 不解决这个问题！这是索引要解决的问题, 本质上是一个搜索问题，不该在这里解决。
+cacheserver 中，每个series都是用户定义的，没有业务含义。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>浅谈监控层次模型</title>
+      <link>https://n4mine.github.io/post/monitoring-system-hierarchy/</link>
+      <pubDate>Thu, 18 Jul 2019 15:37:11 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/monitoring-system-hierarchy/</guid>
+      
+        <description>&lt;p&gt;&lt;!-- raw HTML omitted --&gt;开局一张图，剩下全靠编。&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/monitoring_system_hierarchy.png&#34; alt=&#34;Monitoring System Hierarchy&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;监控系统从使用者角度，一般可分为客户和开发同学&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;客户，只关注业务&lt;/li&gt;
+&lt;li&gt;开发同学，关注应用、服务与&lt;!-- raw HTML omitted --&gt;基础设施&lt;!-- raw HTML omitted --&gt;（9102年了，不应该再关注，下文详谈）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对监控的使用方式应该是 &lt;code&gt;Top-down&lt;/code&gt; 的，而不应该是 &lt;code&gt;Bottom-up&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;监控开发者在建立其基础框架后，应尽快满足用户 &lt;code&gt;Top-down&lt;/code&gt; 的需求&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;实时聚合，无论是效率还是成本，一定是无法满足需求的（例如动辄单次上万条曲线的实时计算）&lt;/li&gt;
+&lt;li&gt;预聚合是业界的趋势，例如 prometheus 的 &lt;code&gt;recording rules&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;drill down&lt;/code&gt; 一定是解决开发同学使用监控系统最大痛点的有效手段&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;问题在哪里？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;监控系统只提供数值型的一条条曲线，而开发同学想在曲线上看 &lt;code&gt;raw logs&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;开发同学想上报 traceID。而携带 traceID 的曲线可能会打爆监控系统的时序数据库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如何解？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;监控系统提供能力（异构的存储模型），能从应用曲线下钻到服务，再到下游服务。见上图红框的 &lt;code&gt;drill down&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为什么说开发同学同学不应该再关注基础设施？上图到基础设置的 &lt;code&gt;drill down&lt;/code&gt; 为何是灰色？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;单体时代早已过去，如今已经是容器化时代，十个八个的实例挂掉，不应该影响全局&lt;/li&gt;
+&lt;li&gt;应该关注什么？
+&lt;ul&gt;
+&lt;li&gt;应用是否健康&lt;/li&gt;
+&lt;li&gt;SLO 是否达标&lt;/li&gt;
+&lt;li&gt;本季度还有多少分钟的不可用时长供你&lt;code&gt;挥霍&lt;/code&gt;，用于创新与开拓&lt;/li&gt;
+&lt;li&gt;至于单个实例用多少内存、cpu 是否掉底，随它去吧&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;未来的监控应该是什么样的？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;drilllllllllll down&lt;/code&gt;, 甚至 down 到 log（开发同学的最爱）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;observability&lt;/code&gt; 是大势所趋&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>Falcon 存储优化: 高性能内存 TSDB 的诞生</title>
+      <link>https://n4mine.github.io/post/in-memory-tsdb/</link>
+      <pubDate>Mon, 04 Mar 2019 14:48:36 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/in-memory-tsdb/</guid>
+      
+        <description>&lt;h2 id=&#34;tsdb&#34;&gt;TSDB&lt;/h2&gt;
+&lt;p&gt;先说 TSDB（时序数据库）是什么，下面的定义引用自 &lt;a href=&#34;https://en.wikipedia.org/wiki/Time_series_database&#34;&gt;Wikipedia&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A time series database (TSDB) is a software system that is optimized for handling time series data, arrays of numbers indexed by time (a datetime or a datetime range).&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;Influxdb&lt;/code&gt;，&lt;code&gt;Graphite&lt;/code&gt;，&lt;code&gt;RRDtool&lt;/code&gt;，&lt;code&gt;OpenTSDB&lt;/code&gt;等都是当下流行的TSDB实现。&lt;/p&gt;
+&lt;p&gt;TSDB 多应用于监控系统等场景。&lt;/p&gt;
+&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+&lt;p&gt;我曾提过，我司的监控系统，其存储部分的核心是以 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus&#34;&gt;open-falcon&lt;/a&gt; 为蓝本开发的。&lt;/p&gt;
+&lt;p&gt;虽然对以&lt;code&gt;RRDtool&lt;/code&gt;为核心的&lt;code&gt;graph&lt;/code&gt;做了一些优化，但其先天的不足，实难扭转对其&lt;code&gt;高资源需求&lt;/code&gt;，&lt;code&gt;低性能产出&lt;/code&gt;的差评。&lt;/p&gt;
+&lt;h3 id=&#34;graph-之殇&#34;&gt;graph 之殇&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;graph 的&lt;code&gt;io&lt;/code&gt;资源需求，就我司的监控体量来讲，graph 实例的 iops 峰值高达&lt;code&gt;50k+&lt;/code&gt;，在我司 graph 使用的机型是使用了 nvme 磁盘的最高配机型，所以经常在申请预算时被 challenge。究其根本，无非是使用了&lt;code&gt;单 series 单文件&lt;/code&gt;的存储模型。&lt;/li&gt;
+&lt;li&gt;cache 的数据结构选型，graph 选用了&lt;code&gt;container/list&lt;/code&gt;作为其核心数据结构。在小型项目中，&lt;code&gt;container/list&lt;/code&gt;是用于队列场景的常用选型之一。但其临时内存的消耗也非常可观，参见 &lt;a href=&#34;https://idea.popcount.org/2014-02-28-improving-containerlist/&#34;&gt;improving-containerlist&lt;/a&gt; 所述。&lt;/li&gt;
+&lt;li&gt;TSDB 的核心，无非就是 &lt;code&gt;key&lt;/code&gt; + &lt;code&gt;(t, v)...&lt;/code&gt; 这种结构，无论以何种方式组织这几者，例如行式、列式等。都必须有方法来生成&lt;code&gt;key&lt;/code&gt;，即对&lt;code&gt;series&lt;/code&gt;的唯一标识。在&lt;code&gt;graph&lt;/code&gt;中大量使用&lt;code&gt;sha1&lt;/code&gt;, &lt;code&gt;md5&lt;/code&gt;这种&lt;code&gt;加密hash&lt;/code&gt;来参与&lt;code&gt;key&lt;/code&gt;的生成，这是极大的浪费，杀鸡用了牛刀。&lt;/li&gt;
+&lt;li&gt;仍然讨论&lt;code&gt;key&lt;/code&gt;。graph 对于 &lt;code&gt;tsdb series&lt;/code&gt; 的标识，使用了&lt;code&gt;labels&lt;/code&gt;，所谓 labels，即 &lt;code&gt;k1=v1, k2=v2...&lt;/code&gt; 这种键值对。而 graph 中对于 key 与 labels 的映射，是通过对 labels 进行&lt;code&gt;字符串连接&lt;/code&gt; + &lt;code&gt;sort()&lt;/code&gt; + &lt;code&gt;md5()&lt;/code&gt;生成的。这种转换（&lt;code&gt;map &amp;lt;-&amp;gt; string&lt;/code&gt;），在整个读、写路径中，在各个模块中都大量存在。而这几种操作要么是高内存耗用，要么是 CPU 杀手。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;随着监控数据的不断增长，在 series 到达&lt;code&gt;3亿+&lt;/code&gt;的时候，graph 的内存、cpu 等指标值都很不乐观，io 更是居高不下。随之而来的，查询 latency 逐渐升高，看图、大盘等功能体验变差。&lt;/p&gt;
+&lt;p&gt;面临如上压力，我们进行了一系列分析，根据统计，我们的查询请求，有&lt;code&gt;80%&lt;/code&gt;都是查询最近 2 小时数据的请求。这也是&lt;code&gt;graph&lt;/code&gt;的最大压力来源。&lt;/p&gt;
+&lt;p&gt;因此，我们需要的，是一个&lt;code&gt;简单&lt;/code&gt;、&lt;code&gt;高性能&lt;/code&gt;、&lt;code&gt;易维护&lt;/code&gt;的模块，一个针对短期数据的高性能读写方案。&lt;/p&gt;
+&lt;h3 id=&#34;柳暗花明&#34;&gt;柳暗花明&lt;/h3&gt;
+&lt;p&gt;在做调研的时候，发现了 &lt;a href=&#34;https://fabxc.org/tsdb/&#34;&gt;Writing a Time Series Database from Scratch&lt;/a&gt; 这篇文章，这是 prometheus 作者在发布 prometheus 新版存储引擎期间释出的文章。文章本身内容非常好，强烈大家多多研读。&lt;/p&gt;
+&lt;p&gt;而这篇文章最吸引我的，却是下面这句话:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Facebook’s paper on their Gorilla TSDB describes a similar chunk-based approach and &lt;a href=&#34;http://www.vldb.org/pvldb/vol8/p1816-teller.pdf&#34;&gt;introduces a compression format&lt;/a&gt; that reduces 16 byte samples to an average of 1.37 bytes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;我们知道，作为时序数据库的基本组成，&lt;code&gt;(t, v)&lt;/code&gt; 代表最基本的一个点。在内存中一般占用&lt;code&gt;16 bytes&lt;/code&gt;，而如果能压缩到&lt;code&gt;1.37 bytes&lt;/code&gt;，这个压缩比是非常高的。&lt;/p&gt;
+&lt;p&gt;阅读 facebook 的这篇paper，&lt;a href=&#34;http://www.vldb.org/pvldb/vol8/p1816-teller.pdf&#34;&gt;Gorilla: A Fast, Scalable, In-Memory Time Series Database&lt;/a&gt;。总结其实现高压缩比的主要抓手如下:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用 dod（delta of delta）编码，压缩 &lt;code&gt;timestamp&lt;/code&gt;。原来需要存储 &lt;code&gt;1551532883, 1551532890, 1551532900, 1551532910&lt;/code&gt;，编码后只需要存储 &lt;code&gt;1551532883, 7, 3, 0&lt;/code&gt; 即可，压缩效果可见一斑。而在 falcon 的体系中，因为有前置模块（transfer）做了时间戳取余对齐，所以 dod 算法的效果非常好。&lt;/li&gt;
+&lt;li&gt;使用 XOR 编码，压缩 &lt;code&gt;value&lt;/code&gt;。其依据是一条 series，在相邻时间戳的&lt;code&gt;value&lt;/code&gt;在大部分时候变化不大。XOR 编码，如果相邻时间戳的两个 &lt;code&gt;value&lt;/code&gt;相同，那么存储 &amp;lsquo;0&amp;rsquo;，只占用 1 bit，在编码前则要占用 2 个&lt;code&gt;float64&lt;/code&gt;的空间。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;除了高压缩比，&lt;code&gt;gorilla&lt;/code&gt;描述的 &lt;code&gt;In-Memory TSDB&lt;/code&gt;架构也非常的值得借鉴，典型的&lt;code&gt;数据分片&lt;/code&gt; + &lt;code&gt;多blocks轮转&lt;/code&gt; 的结构。建议多读几遍 paper 学习一下。&lt;/p&gt;
+&lt;h2 id=&#34;cacheserver-的诞生&#34;&gt;cacheserver 的诞生&lt;/h2&gt;
+&lt;h3 id=&#34;压缩算法的实现&#34;&gt;压缩算法的实现&lt;/h3&gt;
+&lt;p&gt;paper 也读了，原理也明白了，接下来当然就是实现。不重复造轮子，一直以来是我等的优良传统。祭出 &lt;!-- raw HTML omitted --&gt;gayhub&lt;!-- raw HTML omitted --&gt; github 来搜索现成的轮子。找到了 &lt;a href=&#34;https://github.com/dgryski/go-tsz&#34;&gt;dgryski/go-tsz&lt;/a&gt; 这个库，其完整实现了 facebook 的 paper 中描述的&lt;code&gt;(t, v)&lt;/code&gt; 编码这一部分。这位 &lt;a href=&#34;https://github.com/dgryski&#34;&gt;Damian Gryski&lt;/a&gt; 实现过很多优秀的算法，值得 &lt;code&gt;follow&lt;/code&gt;。但是这个库有一个小问题，由于关键的 struct 的一些字段没有导出，不满足 golang 的 rpc 规范要求。所以进行了一些小改动，放在了 &lt;a href=&#34;https://github.com/devtoolkits/go-tsz&#34;&gt;devtoolkits/go-tsz&lt;/a&gt; 。&lt;/p&gt;
+&lt;h3 id=&#34;数据模型的实现&#34;&gt;数据模型的实现&lt;/h3&gt;
+&lt;p&gt;为了便于理解，我们自底向上描述 cacheserver 的数据模型。&lt;/p&gt;
+&lt;h4 id=&#34;series-数据流&#34;&gt;series 数据流&lt;/h4&gt;
+&lt;p&gt;最底层的数据，就是1个 series 的数据流(bits)，是该 series 的&lt;code&gt;(t, v)...&lt;/code&gt;经过编码得来的。&lt;/p&gt;
+&lt;h4 id=&#34;chunkchunks&#34;&gt;chunk/chunks&lt;/h4&gt;
+&lt;p&gt;所谓chunk，就是一个&lt;code&gt;时间窗口&lt;/code&gt;内的某个 series 的 bit 流数据，而 chunks 顾名思义，就是多个 chunk 的封装。一般来说，chunk 的时间窗口越长，产出的压缩结果越小，考虑编解码效率等因素，时间窗口的设置可参考如下原则:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;测试在不同时间窗口之下，平均每个 &lt;code&gt;(t, v)&lt;/code&gt; 的占用空间。根据&lt;code&gt;facebook&lt;/code&gt;的测试结果，时间窗口设置为 &lt;code&gt;120 分钟&lt;/code&gt;，平均每个&lt;code&gt;(t, v)&lt;/code&gt;的占用空间为大概 &lt;code&gt;1.37bytes&lt;/code&gt;。而更大的时间窗口压缩效果就不太明显了。经过简单测试后，cacheserver的 chunk 时间窗口也设置为 120 分钟。&lt;/li&gt;
+&lt;li&gt;理论上，chunks 就是包含了 chunk 的 slice，但频繁进行 append 的 slice，对 gc 是不友好的。所以需要有一个机制来保证，不需要的 chunk，可以被&lt;code&gt;清理&lt;/code&gt;掉。cacheserver 中的 chunks 使用了 &lt;code&gt;Ringbuffer&lt;/code&gt; 结构来存储 chunk，使用&lt;code&gt;固定的空间&lt;/code&gt;来存储多个时间窗口的 series 数据流。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这部分的实现，大部分借鉴了 &lt;a href=&#34;https://github.com/grafana/metrictank/blob/master/mdata/aggmetric.go&#34;&gt;grafana/metrictank&lt;/a&gt;，感兴趣的同学可以去看一下。&lt;/p&gt;
+&lt;h4 id=&#34;cache-结构&#34;&gt;cache 结构&lt;/h4&gt;
+&lt;p&gt;上面对于 1 条 series 的结构已经描述完毕。下面来说多条 series 的存储，也就是对多个 &lt;code&gt;key&lt;/code&gt; + &lt;code&gt;(t, v)...&lt;/code&gt; 的存储设计，这种场景，使用 golang 的&lt;code&gt;map&lt;/code&gt;数据结构当然最合适不过。&lt;/p&gt;
+&lt;p&gt;但还有一个问题，cacheserver 的每个实例，设计目标是要能存储 &lt;code&gt;1000w ~ 2000w&lt;/code&gt; 条 series。这个量级，使用 map 光存储没有问题，但这个 map 还要有大量的读/写操作，所以一定会用到读写锁。在我们的业务场景中，1次查询几千几万条 series 的场景有很多，再加上源源不断的写操作，这样锁的竞争会非常激烈。如何解决这个问题？&lt;/p&gt;
+&lt;p&gt;常见的做法是使用&lt;code&gt;分片锁&lt;/code&gt;。所谓分片锁，就是将 map 的 key 做&lt;code&gt;分片&lt;/code&gt;，然后包括读/写等操作，都先通过&lt;code&gt;分片&lt;/code&gt;算法，寻找 key 所在的分片，然后再对得到的分片加锁。&lt;/p&gt;
+&lt;p&gt;以读为例，从原始的 &lt;code&gt;RLock -&amp;gt; Read -&amp;gt; RUnlock&lt;/code&gt; ，经过分片锁的优化之后，变成 &lt;code&gt;getShard -&amp;gt; shard.RLock -&amp;gt; Read -&amp;gt; shard.RUnlock&lt;/code&gt; 。后者在高并发的场景下，效率会高很多。&lt;/p&gt;
+&lt;p&gt;分片的算法，也很重要，如果&lt;code&gt;key&lt;/code&gt;是整型，那么直接按照分片数求余即可。但我们的&lt;code&gt;key&lt;/code&gt;是字符串，字符串到整数类型的转换方法有很多，我们需要的是一个&lt;code&gt;速度快&lt;/code&gt;、&lt;code&gt;占用内存低&lt;/code&gt;的方式，核心代码如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fnv32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;key&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint32&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;hash&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;uint32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2166136261&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;kd&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;prime32&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;uint32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;16777619&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;nx&#34;&gt;hash&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;prime32&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;nx&#34;&gt;hash&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;^=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;uint32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;hash&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;以上就是 cacheserver 核心的数据模型，下面从读写路径2个角度来简要地描述一下具体的数据流。&lt;/p&gt;
+&lt;h4 id=&#34;写路径&#34;&gt;写路径&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;rpc Call&lt;/code&gt; &amp;ndash;&amp;gt; &lt;code&gt;cache getshard&lt;/code&gt; &amp;ndash;&amp;gt; &lt;code&gt;chunks push&lt;/code&gt; &amp;ndash;&amp;gt; &lt;code&gt;chunk locate&lt;/code&gt; &amp;ndash;&amp;gt; &lt;code&gt;chunk push&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;读路径&#34;&gt;读路径&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;rpc Call&lt;/code&gt; &amp;ndash;&amp;gt; &lt;code&gt;cache getshard&lt;/code&gt; &amp;ndash;&amp;gt; &lt;code&gt;chunks get&lt;/code&gt; &amp;ndash;&amp;gt; &lt;code&gt;chunk locate&lt;/code&gt; &amp;ndash;&amp;gt; &lt;code&gt;get Iters&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;解压-iters-的时机&#34;&gt;解压 Iters 的时机&lt;/h4&gt;
+&lt;p&gt;在读路径中，获取到的是 &lt;code&gt;Iter&lt;/code&gt;，即包含&lt;code&gt;(t, v)...&lt;/code&gt;数据的&lt;code&gt;压缩包&lt;/code&gt;，那么这个压缩包应该在哪里解开，有2种选择:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;由 &lt;code&gt;rpc server&lt;/code&gt;，即 &lt;code&gt;cacheserver&lt;/code&gt; 解压。&lt;/li&gt;
+&lt;li&gt;由 &lt;code&gt;rpc client&lt;/code&gt; 解压。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;在 server 中解压的好处是，client 可以拿到明文的 &lt;code&gt;(t, v)...&lt;/code&gt; 数据，直观、方便。&lt;br&gt;
+在 client 中解压的好处是，节省 server 的资源。&lt;/p&gt;
+&lt;p&gt;再三考虑，为节省 cacheserver 的资源开销，我们采用后者，即在 &lt;code&gt;rpc client&lt;/code&gt; 中做解压动作。后来 uber 开源的&lt;code&gt;m3db&lt;/code&gt;，也涉及到这方面的描述，和我的想法不谋而合，以下引用自 uber blog 的文章 &lt;a href=&#34;https://eng.uber.com/billion-data-point-challenge/&#34;&gt;The Billion Data Point Challenge: Building a Query Engine for High Cardinality Time Series Data&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;One key insight from our evaluation process was that we shouldn’t decompress data on fetch if we are dealing with storage backends that keep data compressed internally, which is exactly how M3DB stores data. If we delay the decompression as long as possible, we might be able to reduce our memory footprint.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;rpc-encodedecode&#34;&gt;rpc encode/decode&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;gob&lt;/code&gt;作为 golang 默认的 rpc 编解码方案，其性能是相对低下的，在使用 pprof 生成的火焰图中，大量宽大的 gob encode/decode 调用也证明了这一点。在 cacheserver 中，使用 &lt;a href=&#34;https://msgpack.org/&#34;&gt;msgpack&lt;/a&gt; 编解码，看中的就是其 &lt;code&gt;It&#39;s like JSON. but fast and small.&lt;/code&gt; 的特点。&lt;/p&gt;
+&lt;h3 id=&#34;key-的组成&#34;&gt;key 的组成&lt;/h3&gt;
+&lt;p&gt;上文提过，graph 的&lt;code&gt;key&lt;/code&gt;是由&lt;code&gt;labels&lt;/code&gt;组合计算而成，且带有业务意义。&lt;code&gt;cacheserver&lt;/code&gt;不同，&lt;code&gt;key&lt;/code&gt;只是标识 series，不带有任何的业务意义，只需上下游模块（transfer 和 query）达成共识即可，cacheserver 不关心。这样除了更具通用型，分离了存储与索引的耦合，也降低了在既有方案中对&lt;code&gt;map &amp;lt;-&amp;gt; string&lt;/code&gt;的转换带来的不必要开销。&lt;/p&gt;
+&lt;h3 id=&#34;为什么不落盘&#34;&gt;为什么不落盘&lt;/h3&gt;
+&lt;p&gt;如上文描述，我们整个架构都是基于&lt;code&gt;内存&lt;/code&gt;的，并没有涉及到&lt;code&gt;持久化&lt;/code&gt;的任何描述。原因有几点:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;持久化会加大 cacheserver 的复杂度，持久化就要考虑文件读写、WAL 等，相对会比较麻烦。开发成本和时间成本都比较高。&lt;/li&gt;
+&lt;li&gt;持久化后，那么 cacheserver 将成为一个完备的TSDB，这不是我们的初衷。我会在下一章节详细描述。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;与graph的关系及相关统计数据&#34;&gt;与graph的关系及相关统计数据&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;cacheserver&lt;/code&gt; 的设计初衷，是对 graph 的一个补充。目标是产出一个&lt;code&gt;高性能&lt;/code&gt;，&lt;code&gt;低成本&lt;/code&gt;，&lt;code&gt;提供热数据查询&lt;/code&gt;的服务，降低 graph 的压力。而 graph 作为永久存储方案，实现诸如&lt;code&gt;将采&lt;/code&gt;、&lt;code&gt;归档&lt;/code&gt;、&lt;code&gt;持久化&lt;/code&gt;等逻辑。&lt;/p&gt;
+&lt;p&gt;在读链路，先读 cacheserver，如果 cacheserver &lt;code&gt;数据不足&lt;/code&gt;或者&lt;code&gt;出现异常&lt;/code&gt;，再从 graph 读取。&lt;/p&gt;
+&lt;p&gt;写链路则沿用 open-falcon 的设计，在 transfer 中进行双写，写入 graph 的同时，也写入 cacheserver。&lt;/p&gt;
+&lt;p&gt;我们部署了&lt;code&gt;20&lt;/code&gt;个实例:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;存储了 &lt;code&gt;2亿活跃 series&lt;/code&gt;，平均每个实例存储 &lt;code&gt;1000w series&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;共使用内存不到 &lt;code&gt;1 TB&lt;/code&gt;，平均每个实例不到 &lt;code&gt;50 GB&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;查询 &lt;code&gt;latency(tp95)&lt;/code&gt;在&lt;code&gt;200ms&lt;/code&gt;以下&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;结尾&#34;&gt;结尾&lt;/h2&gt;
+&lt;p&gt;以上，就是一个高性能内存TSDB诞生的故事，欢迎指正。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>Falcon存储做过的那些优化</title>
+      <link>https://n4mine.github.io/post/optimize-falcon-graph/</link>
+      <pubDate>Thu, 21 Feb 2019 15:03:20 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/optimize-falcon-graph/</guid>
+      
+        <description>&lt;p&gt;我司监控系统的底层存储架构使用的是 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus&#34;&gt;open-falcon&lt;/a&gt;，作为非常流行的中小企业监控解决方案，open-falcon非常优秀。&lt;/p&gt;
+&lt;p&gt;但在我司，指标量一度达到3亿+，且受限于成本等原因。falcon的存储组件就暴露出了一些性能问题。&lt;/p&gt;
+&lt;p&gt;本文从一个开发者的角度，阐述自本人接手以来对 &lt;code&gt;graph&lt;/code&gt;(open-falcon的存储组件) 做过的一些优化工作，欢迎各位指正。&lt;/p&gt;
+&lt;h2 id=&#34;多路io&#34;&gt;多路I/O&lt;/h2&gt;
+&lt;h3 id=&#34;背景&#34;&gt;背景&lt;/h3&gt;
+&lt;p&gt;2017年下半年。&lt;/p&gt;
+&lt;p&gt;当时我们看图的latency tp95一直在&lt;code&gt;5s&lt;/code&gt;以上，为了提升用户体验，要将这个延迟降下来。此为背景。&lt;/p&gt;
+&lt;h3 id=&#34;分析&#34;&gt;分析&lt;/h3&gt;
+&lt;p&gt;graph的查询逻辑是，先读cache，cache不满足再从RRD文件中获取。&lt;/p&gt;
+&lt;p&gt;因此我们在代码中埋点，分别统计了&lt;code&gt;readFromCache&lt;/code&gt;和&lt;code&gt;readFromRRD&lt;/code&gt;的latency，结果&lt;code&gt;readFromCache&lt;/code&gt;的tp95在300ms左右，而&lt;code&gt;readFromRRD&lt;/code&gt;的对应值则达到了1s+。&lt;/p&gt;
+&lt;p&gt;所以接下来重点跟进方向就是&lt;code&gt;读取RRD文件&lt;/code&gt;的逻辑。从代码上看，从RRD文件获取数据的读路径如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;api/graph.go::*Graph.Query(...)  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--&amp;gt; rrdtool/rrdtool.go::Fetch(...)  
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;参见 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/api/graph.go#L125&#34;&gt;api/graph.go&lt;/a&gt; 和 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/rrdtool/rrdtool.go#L186&#34;&gt;rrdtool/rrdtool.go&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;然后&lt;code&gt;rrdtool.go/sync_disk.go::ioWorker()&lt;/code&gt;从&lt;code&gt;io_task_chan&lt;/code&gt;获取对应&lt;code&gt;task&lt;/code&gt;后进行I/O操作。&lt;/p&gt;
+&lt;p&gt;参见 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus/blob/369c060d6426948214cd10984f4309f810ae9fc5/modules/graph/rrdtool/sync_disk.go#L89&#34;&gt;rrdtool/sync_disk.go&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;读路径经过&lt;code&gt;pprof&lt;/code&gt;分析后，并没有耗时太多的地方。&lt;/p&gt;
+&lt;p&gt;而经过分析&lt;code&gt;ioWorker()&lt;/code&gt;这个函数，发现 &lt;code&gt;ioWorker()&lt;/code&gt; 只有&lt;code&gt;1个goroutine&lt;/code&gt;在工作。而如果只是为了避免同时读写同一RRD文件这么做，似乎有些太低效了。&lt;/p&gt;
+&lt;p&gt;有了这样的思路后，问题就变成了如何拆分I/O，使得一把锁变成多把锁。当时在组内有2种思路:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;进行读写拆分&lt;/li&gt;
+&lt;li&gt;按&lt;code&gt;series ID&lt;/code&gt;进行拆分&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果按照读写拆分，就由1路I/O变成了2路I/O，读 + 写。这样的拆分，在读写拆分仍不能满足性能的需求时，不可避免的要进行再次拆分。而且，读写2路拆分，要考虑对一个RRD文件的同时读写问题，就变得更加复杂了。&lt;/p&gt;
+&lt;p&gt;基于上面的考虑，决定按照&lt;code&gt;series ID&lt;/code&gt;进行I/O拆分。代码很简单，参见 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus/compare/23001be...20084b4&#34;&gt;这个diff&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;而优化后的效果，如下图所示。tp95 latency的值达到了预期。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/graph_tp95.png&#34; alt=&#34;多路I/O效果&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;小结&#34;&gt;小结&lt;/h3&gt;
+&lt;p&gt;其实，理解多路I/O的优化思路很简单，如下图所示，从只能1个1个投入的存钱罐，变为多路分拣的硬币分拣机。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/m_io.png&#34; alt=&#34;多路I/O思路&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;sprint问题&#34;&gt;Sprint问题&lt;/h2&gt;
+&lt;h3 id=&#34;背景-1&#34;&gt;背景&lt;/h3&gt;
+&lt;p&gt;同样是2017年下半年。&lt;/p&gt;
+&lt;p&gt;早期graph为了方便，在代码的很多地方使用&lt;code&gt;fmt.Sprintf&lt;/code&gt;函数，而这个函数的性能是很烂的。&lt;/p&gt;
+&lt;h3 id=&#34;分析-1&#34;&gt;分析&lt;/h3&gt;
+&lt;p&gt;直接show一个benchmark:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;func Benchmark_sprintf(b *testing.B) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	for i := 0; i &amp;lt; b.N; i++ {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		a := fmt.Sprintf(&amp;#34;a%s&amp;#34;, &amp;#34;a&amp;#34;)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		_ = a
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;func Benchmark_add(b *testing.B) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	for i := 0; i &amp;lt; b.N; i++ {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		a := &amp;#34;a&amp;#34; + &amp;#34;a&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		_ = a
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;bench的结果:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ go test -run &amp;#39;^$&amp;#39; -benchmem  -bench .
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;goos: darwin
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;goarch: amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Benchmark_sprintf-4   	20000000	        83.0 ns/op	       2 B/op	       1 allocs/op
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Benchmark_add-4       	2000000000	         0.34 ns/op	       0 B/op	       0 allocs/op
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PASS
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ok  	_/tmp/cat	2.484s
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看出，对于字符串的连接，使用&lt;code&gt;+&lt;/code&gt;比使用&lt;code&gt;Sprintf&lt;/code&gt;性能要好上2个数量级，同时减少了内存分配。&lt;/p&gt;
+&lt;h3 id=&#34;小结-1&#34;&gt;小结&lt;/h3&gt;
+&lt;p&gt;优化的效果参见 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus/pull/287/files&#34;&gt;这个PR&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;对于golang等gc类语言来说，&lt;code&gt;减少内存分配次数&lt;/code&gt;、&lt;code&gt;复用对象&lt;/code&gt;等，是减轻gc压力非常有效的手段。&lt;a href=&#34;https://github.com/open-falcon/falcon-plus/pull/393&#34;&gt;这个PR&lt;/a&gt; 也佐证了这个理论。&lt;/p&gt;
+&lt;h2 id=&#34;hash不均问题&#34;&gt;hash不均问题&lt;/h2&gt;
+&lt;h3 id=&#34;背景-2&#34;&gt;背景&lt;/h3&gt;
+&lt;p&gt;2018年上半年。&lt;/p&gt;
+&lt;p&gt;在解决了latency高等问题之后，又遇到了新的问题。graph的实例，流量非常不均匀。&lt;code&gt;points_in&lt;/code&gt;这个代表每秒进入graph实例点数的指标，在不同实例间相差很大，最大的值是最小值的2倍以上。&lt;/p&gt;
+&lt;h3 id=&#34;分析-2&#34;&gt;分析&lt;/h3&gt;
+&lt;p&gt;使用一个小demo描述这个问题:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;package&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;main&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;s&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;s&#34;&gt;&amp;#34;strconv&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;s&#34;&gt;&amp;#34;stathat.com/c/consistent&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;consistent&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;New&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;NumberOfReplicas&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;500&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;nodeCnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;50&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;nodeCnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;nx&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Add&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;node-&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;strconv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Itoa&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;testNum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5000000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;make&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;map&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;testNum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;node&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;err&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Get&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;strconv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Itoa&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;err&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;nil&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			&lt;span class=&#34;nx&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;node&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;node&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;k&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;v&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;range&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;nx&#34;&gt;fmt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;node: %v, count: %v\n&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;k&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;v&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;了解 &lt;code&gt;open-falcon&lt;/code&gt; 的同学可能知道，&lt;code&gt;open-falcon&lt;/code&gt; 监控数据点的写路径，是将监控数据点的&lt;code&gt;series ID&lt;/code&gt;通过&lt;code&gt;一致性哈希&lt;/code&gt;计算，再push到对应的graph实例。而上述代码，就是写路径&lt;code&gt;GetNodes&lt;/code&gt;(获取graph实例) 的核心逻辑。&lt;/p&gt;
+&lt;p&gt;上面将实例数设置为&lt;code&gt;50&lt;/code&gt;，样本数设置为&lt;code&gt;500w&lt;/code&gt;，虚拟节点则与&lt;code&gt;open-falcon&lt;/code&gt;的官方设置相同，设置为&lt;code&gt;500&lt;/code&gt;。那么这50个实例，分配结果是如何的呢？&lt;/p&gt;
+&lt;p&gt;为了方便，直接看最大值和最小值的差异。结果如下，最小值为&lt;code&gt;65286&lt;/code&gt;，最大值为&lt;code&gt;134657&lt;/code&gt;。相差较大，graph实例的流量差异，就是从这里产生的。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ go run hash.go | sort -nk 4 | gsed -n -e &amp;#39;1p&amp;#39; -e &amp;#39;$p&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;node: node-18, count: 65286
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;node: node-7, count: 134657
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;而经过验证，简单的将虚拟节点的数量提高，并不会提高均匀度。以下是将虚拟节点设置为&lt;code&gt;10000&lt;/code&gt;的结果:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ go run hash.go | sort -nk 4 | gsed -n -e &amp;#39;1p&amp;#39; -e &amp;#39;$p&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;node: node-15, count: 80273
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;node: node-27, count: 126070
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;open-falcon&lt;/code&gt; 使用的一致性哈希实现是 &lt;a href=&#34;https://github.com/stathat/consistent&#34;&gt;stathat/consistent&lt;/a&gt;，一个非常简单的一致性hash实现，其hash算法使用的是 &lt;a href=&#34;https://github.com/stathat/consistent/blob/master/consistent.go#L244&#34;&gt;crc32&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;在非加密hash算法的实现中，crc32无论是在性能还是均匀度上都不是优选。下面对比了几种常见的hash算法在性能上的差异:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ go test -run &amp;#39;^$&amp;#39; -benchmem  -bench .
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;goos: darwin
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;goarch: amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Benchmark_crcHashKeyByString-4        	20000000	        74.0 ns/op	      64 B/op	       1 allocs/op
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Benchmark_fnv32HashKeyByString-4      	500000000	         3.76 ns/op	       0 B/op	       0 allocs/op
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Benchmark_murmur32HashKeyByString-4   	100000000	        23.8 ns/op	       0 B/op	       0 allocs/op
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Benchmark_sha1-4                      	 5000000	       392 ns/op	      96 B/op	       2 allocs/op
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PASS
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ok  	_/tmp/hash	8.541s
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看到，相对&lt;code&gt;fnv32&lt;/code&gt;和&lt;code&gt;murmur32&lt;/code&gt;，&lt;code&gt;crc32&lt;/code&gt;在性能方面完败。&lt;/p&gt;
+&lt;p&gt;最后还加入了&lt;code&gt;sha1&lt;/code&gt;的对比，相对于非加密hash算法，&lt;code&gt;sha1&lt;/code&gt;的性能更弱一些。&lt;/p&gt;
+&lt;p&gt;除了考量性能，还需要看各个hash算法均匀度，是否满足需求。以下是在上述模拟场景之下，几个流行hash算法的&lt;code&gt;均匀度&lt;/code&gt;对比结果，仍是模拟500w样本，使用50个node，计算结果:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;murmur32 &amp;gt; fnv1 &amp;gt; fnv1a &amp;gt; xxHash &amp;gt; crc32
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;上述结果，表现最差的是&lt;code&gt;crc32&lt;/code&gt;，表现最好的是&lt;code&gt;murmur32&lt;/code&gt;。因为时间久远，具体的结果没有记录下来，感兴趣的同学可以自行验证。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;BTW，上述结果只代表本文所述环境，不具通用性。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;小结-2&#34;&gt;小结&lt;/h3&gt;
+&lt;p&gt;综合性能和均匀度2个方面的考量，最终我们选用了&lt;code&gt;murmur32&lt;/code&gt;替换原有的&lt;code&gt;crc32&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;虚拟节点数则设置为10000。经过验证，虚拟节点数从500到10000，计算进入graph实例的样本数的方差值，后者是前者的&lt;code&gt;1/5&lt;/code&gt;，会更均匀一些。而更高的虚拟节点数，虽然能得到更均匀的结果，但初始化的时间开销会增加很多，例如10000个虚拟节点需要13s左右，而20000个虚拟节点则需要28s，设置为50000个虚拟节点，则需要75s。&lt;/p&gt;
+&lt;p&gt;下图是优化的效果对比，可以看到在切换前后，进入graph实例的点数均匀程度，有了明显的提升。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/hash_change.png&#34; alt=&#34;hash优化&#34;&gt;&lt;/p&gt;
+&lt;p&gt;替换的过程也不麻烦，感兴趣的可以参考 &lt;a href=&#34;https://n4mine.github.io/post/open-falcon-change-hash-algorithm/&#34;&gt;open-falcon 更换hash算法&lt;/a&gt; 一文。&lt;/p&gt;
+&lt;h2 id=&#34;内存泄漏问题&#34;&gt;内存&amp;quot;泄漏&amp;quot;问题&lt;/h2&gt;
+&lt;h3 id=&#34;背景-3&#34;&gt;背景&lt;/h3&gt;
+&lt;p&gt;2018年下半年。&lt;/p&gt;
+&lt;p&gt;经过上述的几番优化，graph已经解决了因单路I/O导致的I/O瓶颈，替换掉了浪费性能的&lt;code&gt;Sprintf&lt;/code&gt;，更换了更优更均匀的&lt;code&gt;murmur32&lt;/code&gt; hash算法。&lt;/p&gt;
+&lt;p&gt;但仍有一个问题一直在困扰着我，如鲠在喉。那就是随着时间的增长，graph实例的内存使用量会&lt;code&gt;慢慢的&lt;/code&gt;涨上来。&lt;/p&gt;
+&lt;h3 id=&#34;分析-3&#34;&gt;分析&lt;/h3&gt;
+&lt;p&gt;既然是慢慢的涨，那首先考虑到的肯定是内存泄漏问题。&lt;/p&gt;
+&lt;p&gt;经过对heap的&lt;code&gt;inuse&lt;/code&gt;分析之后，发现问题出在graph的&lt;code&gt;cache&lt;/code&gt;逻辑。graph的&lt;code&gt;cache&lt;/code&gt;是只增加不减少的，也就是说，所有series，无论是活跃的还是不活跃的，都会一直常驻于堆内存中。&lt;/p&gt;
+&lt;p&gt;找到问题点，就很好解决了。解决方案如下:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;干掉无用的 &lt;a href=&#34;https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/api/graph.go#L123&#34;&gt;History store&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;对&lt;a href=&#34;https://github.com/open-falcon/falcon-plus/blob/master/modules/graph/store/store.go#L29&#34;&gt; cache对象&lt;/a&gt;，做定期清理，例如&lt;code&gt;每30分钟清理过去12小时不活跃的series&lt;/code&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如下图描述的是过去4个月graph实例的内存使用情况，前面3个&lt;code&gt;红框&lt;/code&gt;的内存都是缓慢增长的，而&lt;code&gt;绿框&lt;/code&gt;位置则是优化后的效果，已经相对平稳:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://n4mine.github.io/img/graph_mem.png&#34; alt=&#34;graph内存&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;小结-3&#34;&gt;小结&lt;/h3&gt;
+&lt;p&gt;优化要结合业务特点进行。&lt;/p&gt;
+&lt;p&gt;是的，这个小结只有上面这么一句话 :)。&lt;/p&gt;
+&lt;h2 id=&#34;结尾了&#34;&gt;结尾了&lt;/h2&gt;
+&lt;p&gt;对于监控系统的优化，还在进行中。当然也有很多case没有放在这里。&lt;/p&gt;
+&lt;p&gt;例如使用基于 &lt;a href=&#34;https://www.vldb.org/pvldb/vol8/p1816-teller.pdf&#34;&gt;Gorilla&lt;/a&gt; 开发的cacheserver，承载了50%以上的查询请求，latency却仅是graph的&lt;code&gt;1/10&lt;/code&gt;等。&lt;/p&gt;
+&lt;p&gt;这些优化留待后续再慢慢分享吧。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>监控系统构建实践之传输篇</title>
+      <link>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-transfer/</link>
+      <pubDate>Wed, 05 Dec 2018 14:43:45 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-transfer/</guid>
+      
+        <description>&lt;p&gt;在上一篇文章采集篇的事情做完后，源数据就已经有了，但应该如何上报到存储就是接下来要考虑到的事情。&lt;br&gt;
+本文结合我司在传输链路的建设，简述一下期间的一点思考。&lt;/p&gt;
+&lt;p&gt;先来说传输链路的实现方式，业界关于传输的实现主要有2种:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;推模型&lt;/li&gt;
+&lt;li&gt;拉模型&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;推模型&#34;&gt;推模型&lt;/h3&gt;
+&lt;p&gt;推模型典型的系统代表就是&lt;code&gt;open-falcon&lt;/code&gt;，即agent通过rpc将采集到的数据推给上游。&lt;/p&gt;
+&lt;h3 id=&#34;拉模型&#34;&gt;拉模型&lt;/h3&gt;
+&lt;p&gt;拉模型是&lt;code&gt;prometheus&lt;/code&gt;带起的节奏, 即每个target提供一个&lt;code&gt;/metrics&lt;/code&gt;的接口，由中心主动并定期的去&lt;code&gt;scrape&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;关于两个模型的对比, 网上有很多争论。但实际上在不同的场景下，使用的模型是不同的，没有银弹。&lt;/p&gt;
+&lt;p&gt;也如 &lt;a href=&#34;https://www.slideshare.net/GianlucaArbezzano/monitoring-pull-vs-push-influxdb-and-prometheus&#34;&gt;这个slide&lt;/a&gt; 所述，“no winner”&lt;/p&gt;
+&lt;p&gt;而在我司的实现方式，在传输模块和采集之间，有一层queue，用于解耦。&lt;br&gt;
+目前这个queue的选型是 &lt;a href=&#34;https://github.com/nsqio/nsq&#34;&gt;nsq&lt;/a&gt;。之所以使用nsq而不是其他的消息队列, 因为建立传输链路时本人还未加入，所以以下均属个人猜测:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;nsq轻小易维护。最小部署只需&lt;code&gt;nsqd&lt;/code&gt;、&lt;code&gt;nsqlookup&lt;/code&gt; 2个二进制文件就可以快速部署。&lt;/li&gt;
+&lt;li&gt;当年有同事做相关分享时，有人问为什么不用kafka。&lt;br&gt;
+其实关于这类问题，还是那个答案，没有银弹，够用即可。&lt;br&gt;
+永远没有依靠一种技术就吃遍天下的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;传输的功能&#34;&gt;传输的功能&lt;/h3&gt;
+&lt;p&gt;传输最主要的功能，当然就是把采集端的数据打入存储。&lt;/p&gt;
+&lt;p&gt;除此之外，我司的传输链路还加入了以下的功能:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;filter: 过滤特征比较明显的垃圾指标&lt;/li&gt;
+&lt;li&gt;quota: 限制增长量急、速度快的上报&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;另外，传输还有2点功能需要描述一下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;传输应提供基于queue的订阅功能，即除了api等方式提供数据查询的功能之外，也提供流式的数据接口(当然前提是在根源做好垃圾指标的防范工作)。&lt;br&gt;
+但我司目前是没有提供这样的功能的。原因？因为这样势必会带来queue的运维成本。而且现在的相关需求不强烈，以后相关需求较多时，再行考虑。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;这里存在一个涉及采集、传输、存储、查询的数据流转问题，我们知道凡是时序数据都可以抽象为KV对的组合，例如&lt;code&gt;name=cpu.idle.core core=1 instance=job1 timestamp=1500000000 value=1.234&lt;/code&gt; 这样的一个point，其中&lt;code&gt;name=cpu.idle.core core=1 instance=job1&lt;/code&gt; 这部分可以称为&lt;code&gt;meta data&lt;/code&gt;, 这个信息会被整个系统系统使用。&lt;br&gt;
+而我们的存储又是使用的&lt;code&gt;open-falcon&lt;/code&gt;的&lt;code&gt;query/transfer+graph&lt;/code&gt;的老几套。由于种种原因，在系统内部充斥着KV map和uuid(排序过的KVs 生成的字符串)的相互转换代码。如此造成了极大的性能损耗。&lt;br&gt;
+一个解决办法是，在采集端，就计算好每个指标的uuid, 及对应的meta数据。这样任意环节均可取用，而即使整个链路中都携带meta数据和uuid。也好过大几百甚至上千&lt;code&gt;ns/op&lt;/code&gt;的计算开销和相同量级的&lt;code&gt;B/op&lt;/code&gt;内存开销。&lt;br&gt;
+这部分内容也会在存储篇再次谈及。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;传输部分就说到这里，下一篇会说说存储。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>计算进程的CPU占用率</title>
+      <link>https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/</link>
+      <pubDate>Tue, 03 Jul 2018 11:28:34 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/calculate-the-cpu-usage-of-a-process/</guid>
+      
+        <description>&lt;h2 id=&#34;基于procpidstat和procstat计算指定进程的cpu利用率&#34;&gt;基于/proc/[pid]/stat和/proc/stat计算指定进程的cpu利用率&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/sh
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;corenum&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;nproc --all&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;xxx
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;pidof &lt;span class=&#34;nv&#34;&gt;$p&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;p_totaltime1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;{print $14+$15}&amp;#39;&lt;/span&gt; /proc/&lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;/stat&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;totaltime1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i++){sum+=$i}}}END{print sum}&amp;#39;&lt;/span&gt; /proc/stat&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sleep &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 为什么是3, 要得到与top相同的结果&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;p_totaltime2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;{print $14+$15}&amp;#39;&lt;/span&gt; /proc/&lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;/stat&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;totaltime2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;{if($1==&amp;#34;cpu&amp;#34;){for(i=2;i&amp;lt;=NF;i++){sum+=$i}}}END{print sum}&amp;#39;&lt;/span&gt; /proc/stat&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;BEGIN{print &amp;#39;&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$p_totaltime2&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$p_totaltime1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;)*100/(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$totaltime2&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$totaltime1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;)*&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$corenum&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;}&amp;#39;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$res&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;相对应的top命令&#34;&gt;相对应的top命令&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;p=xxx; top -p $(pidof $p) -b
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>监控系统构建实践-采集篇</title>
+      <link>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-collector/</link>
+      <pubDate>Mon, 30 Apr 2018 17:12:45 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/the-practice-of-buiding-monitoring-system-collector/</guid>
+      
+        <description>&lt;h2 id=&#34;写在前面&#34;&gt;写在前面&lt;/h2&gt;
+&lt;p&gt;监控系统这个话题很大。&lt;br&gt;
+但一个基本的监控系统归纳起来，无非也就是数据采集、传输、存储、查询这么几个部分。&lt;br&gt;
+本文尝试从宏观上分析这几个模块在实践上遇到的一些问题，在我司的&lt;del&gt;最佳实践&lt;/del&gt;解法，及本人对各个模块在实践中的一些思考。&lt;/p&gt;
+&lt;h2 id=&#34;采集&#34;&gt;采集&lt;/h2&gt;
+&lt;p&gt;可以说，凡采集必定有一个(多个)采集agent在后台工作。&lt;br&gt;
+而采集从数据来源上分类，分为2种:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;预定义指标&lt;/li&gt;
+&lt;li&gt;自定义指标&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;预定义指标&#34;&gt;预定义指标&lt;/h3&gt;
+&lt;p&gt;凡是预置在采集agent内部的，例如cpu、mem、io等基础资源，都可归于预定义指标。&lt;/p&gt;
+&lt;p&gt;预定义指标有2个重要的特点:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;数量可控&lt;/li&gt;
+&lt;li&gt;增加预定义指标相对较贵&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;code&gt;数量可控&lt;/code&gt;是指，无论是&lt;code&gt;cpu.idle&lt;/code&gt;、&lt;code&gt;io.util&lt;/code&gt;这些固定数量的指标，还是&lt;code&gt;disk.used{mount=/}&lt;/code&gt;、&lt;code&gt;cpu.idle.core{core=1}&lt;/code&gt;这些变化范围有限的指标, 都是有限数量的指标。&lt;/p&gt;
+&lt;p&gt;还有一类指标，虽然来源是用户自定义，但反映在指标量上，也应该归于预定义指标的范畴。例如端口监控、进程监控等。每增加一个端口监控，那么只会多产出一个指标。每增加一个进程监控，也只会多出有限的几个指标，例如proc1.cpu、proc1.mem.used等。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;预定义指标的增加&lt;/code&gt;，因为是预置在采集agent中的采集，所以预定义指标的增加就相对麻烦一些。&lt;br&gt;
+例如原来有cpu.idle、cpu.user、cpu.sys了，但现在推进虚拟化，需要增加cpu.steal，而面对已经在线上几万、甚至是几十万台已经部署好了的agent，在存在网络分区、差异化配置等场景下的升级，就成为了一个问题。&lt;br&gt;
+这个升级的动作在我司曾进行了几个月之久，原因就是业务线对监控对依赖太重了，重到有任何的风吹草动，都可能引起业务&lt;code&gt;恐慌&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;一个解决方案是，如果有&lt;code&gt;配置化采集目标&lt;/code&gt;的手段，这个痛就可以大大缓解了。当然这也只是一个脑洞，目前还未看到有类似此类解法的实现。&lt;/p&gt;
+&lt;h3 id=&#34;自定义指标&#34;&gt;自定义指标&lt;/h3&gt;
+&lt;p&gt;说完了预定义指标，再来说自定义指标。&lt;/p&gt;
+&lt;p&gt;相对预定义指标，自定义指标的一大特点也是令人头疼的特点就是，自定义指标的&lt;code&gt;数量完全不受控&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;例如在我司，可以看到各种令人哭笑不得的指标:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;带有session id、订单id及各种id的指标。这种指标往往一个tag key中就有几十万、上百万的tag value&lt;/li&gt;
+&lt;li&gt;带有tcp source端临时端口的指标&lt;/li&gt;
+&lt;li&gt;带有公网上尝试sql注入、尝试寻找管理后台入口的url的指标&lt;/li&gt;
+&lt;li&gt;将响应时间作为tag value的指标&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我司的指标量曾有几千万增长/天的记录。对于整个监控系统尤其时序数据库和监控开发同学来说，都是灾难。&lt;/p&gt;
+&lt;p&gt;可以说，对于现有的任何时序数据库来讲，上述的几种指标，都是令人头疼和难以处理的。&lt;/p&gt;
+&lt;p&gt;如何应对这种低质量指标(我们定义为垃圾指标)数量的快速增长。回顾我司的监控系统发展，大概经历了这么几个阶段:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;重启存储模块&lt;/li&gt;
+&lt;li&gt;黑名单机制&lt;/li&gt;
+&lt;li&gt;拦截机制&lt;/li&gt;
+&lt;li&gt;quota机制&lt;/li&gt;
+&lt;li&gt;智能拦截&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;在我司还是使用&lt;code&gt;influxdb&lt;/code&gt;作为存储模块的时代，存储很容易被这种突然增长的指标搞挂掉，那么解决办法是什么，&lt;code&gt;重启influxdb...&lt;/code&gt;，除了重启存储模块， 面对这种垃圾指标上报，我们当时可以说没有有效的办法。&lt;/p&gt;
+&lt;p&gt;随着监控系统的重构、升级，在完成基于&lt;code&gt;open-falcon&lt;/code&gt;存储的监控系统重构后，我们随之也建设了一套黑名单机制，在传输链路中插入了一个过滤逻辑。在基于增量统计的&lt;code&gt;统计模块&lt;/code&gt;发现垃圾指标后，我们手工配置在黑名单系统中，这样对应的指标就不能再上报。&lt;/p&gt;
+&lt;p&gt;但黑名单机制仍然需要&lt;code&gt;人工介入&lt;/code&gt;，所以有了接下来的&lt;code&gt;拦截机制&lt;/code&gt;，即发现了垃圾指标后，对这个指标&lt;code&gt;自动&lt;/code&gt;进行&lt;code&gt;随机丢弃&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;但这种方式是有问题的，指标量仍然在&lt;code&gt;缓慢&lt;/code&gt;的增长，而且对用户来说也非常不友好。&lt;br&gt;
+此时，&lt;code&gt;quota机制&lt;/code&gt;成为我们治理垃圾指标的另一个选择。&lt;br&gt;
+quota机制很简单，甚至说是粗暴。即在某个&lt;code&gt;维度&lt;/code&gt;上，只能上报&lt;code&gt;指定数量的指标&lt;/code&gt;。&lt;br&gt;
+大于这个数量的新增指标，那么直接被丢弃。而原来未触发上限的指标，仍可继续上报。&lt;/p&gt;
+&lt;p&gt;quota机制一方面可以减轻监控系统的压力，另一方面，也能push用户自己提高上报的监控指标的质量。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;智能拦截&lt;/code&gt;这个方向，是我们一直努力但又由于种种原因而未施行的方向。其难度与反爬虫和接入层的waf都是相当的。&lt;/p&gt;
+&lt;p&gt;可以看出，整个对于垃圾指标的拦截、治理总结起来有2点:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;拦截的动作，越靠近采集层越好。当垃圾数据已经走遍奇经八脉到了存储了，治理这个话题差不多就成为一个伪话题了。做系统的一定要&lt;code&gt;把风险扼杀于萌芽状态&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;人是不靠谱的。不管是忙于业务还是其他什么原因，用户从来都不会&lt;code&gt;主动&lt;/code&gt;提升监控指标的质量。&lt;br&gt;
+对于这些用户来讲，监控系统和&lt;code&gt;casual sexual behavior&lt;/code&gt;很像，从来都不会考虑与其&lt;code&gt;稳定发展&lt;/code&gt;，而在&lt;code&gt;需要的时候&lt;/code&gt;又希望其能给自己带来惊喜。&lt;br&gt;
+我想，很多的基础组件/服务，都会受到用户如此的看待吧。&lt;em&gt;sigh&amp;hellip;&lt;/em&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;篇尾语&#34;&gt;篇尾语&lt;/h2&gt;
+&lt;p&gt;本文是&amp;lt;监控系统构建实践&amp;gt;系列的第一篇，以后还会有传输篇、存储篇、查询篇、报警篇等系列文章，敬请期待 。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>Open-Falcon更换hash算法</title>
+      <link>https://n4mine.github.io/post/open-falcon-change-hash-algorithm/</link>
+      <pubDate>Sat, 10 Mar 2018 17:06:29 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/open-falcon-change-hash-algorithm/</guid>
+      
+        <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+&lt;p&gt;原生的open-falcon使用一致性哈希来进行存储的分片。其使用到的一致性哈希算法库是&lt;a href=&#34;https://github.com/stathat/consistent&#34;&gt;github.com/stathat/consistent&lt;/a&gt;&lt;br&gt;
+这个库使用了CRC32作为hash算法。CRC32用于一致性哈希时，结果是非常不均匀的。&lt;br&gt;
+而且open-falcon只使用500个虚拟节点，统计进到graph的点数速度，标准差结果甚至到了15k+。&lt;br&gt;
+更换hash算法成为当务之急。&lt;/p&gt;
+&lt;p&gt;我们将&lt;code&gt;CRC32 + 500虚拟节点&lt;/code&gt;，变成了&lt;code&gt;murmur3 + 10000虚拟节点&lt;/code&gt;, 看官可能觉得在跑着业务的系统上，难度很高，而实际上整个过程简单的一逼&lt;/p&gt;
+&lt;h2 id=&#34;方案&#34;&gt;方案&lt;/h2&gt;
+&lt;p&gt;得益于open-falcon的自动扩容(即graph的merge逻辑), 更换hash算法不过是另外一种意义上的扩容罢了，整个过程如下:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;更改transfer和query的一致性哈希算法。graph merge逻辑部分的hash算法和虚拟节点个数保持不变&lt;/li&gt;
+&lt;li&gt;开启graph的merge开关&lt;/li&gt;
+&lt;li&gt;上线graph&lt;/li&gt;
+&lt;li&gt;同时上线transfer和query&lt;/li&gt;
+&lt;li&gt;关闭graph merge开关，重新上线graph&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;经统计，进到graph的点数速度标准差结果变为原来的1/10&lt;/p&gt;
+&lt;p&gt;完成了。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>使用sync.Pool引起的case一例</title>
+      <link>https://n4mine.github.io/post/a-case-when-using-sync.pool/</link>
+      <pubDate>Tue, 27 Feb 2018 15:12:20 +0800</pubDate>
+      
+      <guid>https://n4mine.github.io/post/a-case-when-using-sync.pool/</guid>
+      
+        <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+&lt;p&gt;open-falcon的graph模块占用内存太多, 即发起了graph的内存优化，在上线过程中发生了曲线值异常的问题&lt;/p&gt;
+&lt;h2 id=&#34;过程&#34;&gt;过程&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-       v := smodel.GraphItemPoint{}.New(item)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       v := smodel.NewPointObjFromPool(item)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       defer smodel.PutPointObjBack2Pool(v)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    this.L.PushFront(v)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;上述代码中, &lt;code&gt;PushFront&lt;/code&gt;是每个点到来都需要操作的函数, 即每上报一个点, &lt;code&gt;smodel.GraphItemPoint{}.New(item)&lt;/code&gt; 都需要执行一次&lt;br&gt;
+因为这里是一个临时对象，所以尝试使用对象池来优化(虽然后面证明优化无效，但整个过程值得分享)，以期望减少内存的分配及申请对象的次数，进而减少gc&lt;/p&gt;
+&lt;p&gt;注意上面的&lt;code&gt;this.L.PushFront(v)&lt;/code&gt;，这里是一个关键点&lt;/p&gt;
+&lt;p&gt;另外为对象池增加了helper函数，方便进行对象的Get和Put操作，如下&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+var pointObjPool = sync.Pool{New: func() interface{} { return &amp;amp;GraphItemPoint{} }}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+func NewPointObjFromPool(item *cmodel.GraphItem) *GraphItemPoint {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       ret := pointObjPool.Get().(*GraphItemPoint)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       if item == nil {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+               return nil
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       ret.Timestamp = item.Timestamp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       ret.Value = item.Value
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       return ret
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+func PutPointObjBack2Pool(p *GraphItemPoint) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+       pointObjPool.Put(p)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在这种场景下，使用sync.Pool对象池Get一个新的对象后，使用this.L.PushFront将对象的地址（因为返回的是一个指针），放在了内存cache中。&lt;/p&gt;
+&lt;p&gt;当执行查询操作时，在内存cache中获取到的是一个地址，将这个地址解引用获取内容时，就会出现问题。&lt;/p&gt;
+&lt;p&gt;因为这个对象地址是从对象池申请的，该地址在执行Put操作后，对于对象池而言就没什么用了。&lt;br&gt;
+而对象池的再次Get操作，很有可能分配出相同的地址。而在实际业务中，这个地址是有意义的，所以造成了从地址解引用实际内容时出现了问题。&lt;/p&gt;
+&lt;p&gt;整个过程有些类似C里面野指针的概念。&lt;/p&gt;
+&lt;h2 id=&#34;解决&#34;&gt;解决&lt;/h2&gt;
+&lt;p&gt;如果从对象池获取值而非指针的话，那么这个问题就解了，如下&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;func (this *SafeLinkedList) PushFront(item *cmodel.GraphItem) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    if item == nil {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        return
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    v := smodel.NewPointObjFromPool()
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    v.Timestamp = item.Timestamp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    v.Value = item.Value
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    this.L.PushFront(&amp;amp;v)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    smodel.PutPointObjBack2Pool(v)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;关于对象池的更改，如下&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;func NewPointObjFromPool() GraphItemPoint {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    return pointObjPool.Get().(GraphItemPoint)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;func PutPointObjBack2Pool(p GraphItemPoint) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    pointObjPool.Put(p)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>通过pprof获取golang gc信息</title>
+      <link>https://n4mine.github.io/post/get-golang-gc-info-by-pprof/</link>
+      <pubDate>Sat, 04 Nov 2017 10:23:25 +0000</pubDate>
+      
+      <guid>https://n4mine.github.io/post/get-golang-gc-info-by-pprof/</guid>
+      
+        <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;服务在开启了pprof的情况下，可以使用如下方式，简单粗暴的的获取gc情况&lt;/p&gt;
+&lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;_lastNumGC&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;_first&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; : &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;curl -s 127.0.0.1:6071/debug/pprof/heap?debug&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; tail -22&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;_NumGC&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$r&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; sed &lt;span class=&#34;s1&#34;&gt;&amp;#39;s/#/\n#/g&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;s2&#34;&gt;&amp;#34;^# NumGC&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;{print $NF}&amp;#39;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;NumGC&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;$&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;_NumGC&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; - &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;_lastNumGC&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;_first&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;NumGC&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;0&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;_first&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;false&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;_lastNumGC&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;_NumGC&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;PauseNs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$r&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; sed &lt;span class=&#34;s1&#34;&gt;&amp;#39;s/#/\n#/g&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;s1&#34;&gt;&amp;#39;^# PauseNs&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep -Eo &lt;span class=&#34;s1&#34;&gt;&amp;#39;\[.*\]&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; sed -e &lt;span class=&#34;s1&#34;&gt;&amp;#39;s/\[//&amp;#39;&lt;/span&gt; -e &lt;span class=&#34;s1&#34;&gt;&amp;#39;s/\]//&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;  sed &lt;span class=&#34;s1&#34;&gt;&amp;#39;s/ /\n/g&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;{ sum+=$0; if ($0&amp;gt;0){count+=1} } END {printf &amp;#34;%.f\n&amp;#34;,sum/count}&amp;#39;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;NumGC: &amp;#34;&lt;/span&gt; &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;NumGC&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;PauseNs_Avg: &amp;#34;&lt;/span&gt; &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;PauseNs&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sleep &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>使用iterm2的coprocess完成自动登录</title>
+      <link>https://n4mine.github.io/post/autologin-with-iterm2-coprocess/</link>
+      <pubDate>Mon, 25 Sep 2017 18:10:41 +0000</pubDate>
+      
+      <guid>https://n4mine.github.io/post/autologin-with-iterm2-coprocess/</guid>
+      
+        <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;日常工作中，经常需要通过跳板机登录线上机器。&lt;br&gt;
+而为了安全起见，系统部的同学又启用了otp，动态生成code&lt;br&gt;
+给经常登录线上机器的使用者，带来了很大不便&lt;/p&gt;
+&lt;p&gt;作为iterm2的使用者，其coprocess的功能，可以实现自动登录，极大减少了手工输入动态密码及个人密码的次数。&lt;br&gt;
+什么是iterm2的coprocess，可参见其官方说明 &lt;a href=&#34;https://www.iterm2.com/documentation-coprocesses.html&#34;&gt;coprocesses&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;实现&#34;&gt;实现&lt;/h1&gt;
+&lt;p&gt;一般的跳板机都是先让用户输入动态密码，然后输入个人密码。&lt;br&gt;
+那么我们可以写个脚本如下，假设脚本名字为&lt;code&gt;fillme&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;code&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;balabala&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 生成code的shell语句&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;pass&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;labalaba&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 生成你个人密码的语句&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;code&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sleep 0.5        &lt;span class=&#34;c1&#34;&gt;# sleep是防止输入太快跳板机来不及反应&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;pass&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;设置iterm2，在&lt;code&gt;Preferences -&amp;gt; keys&lt;/code&gt;或&lt;code&gt;Preferences -&amp;gt; Profiles -&amp;gt; keys&lt;/code&gt;下，增加一组&lt;code&gt;Key Mappings&lt;/code&gt;&lt;br&gt;
+快捷键为&lt;code&gt;⌘\&lt;/code&gt;(这是本人前期使用sudolikeaboss的快捷键，现在sudolikeaboss与1password配合起来有问题就放弃了)&lt;br&gt;
+Action设置为&lt;code&gt;Run Coprocess&lt;/code&gt;&lt;br&gt;
+然后将第三个参数设置为上述脚本fillme的绝对路径&lt;/p&gt;
+&lt;p&gt;接下来，就可以在跳板机的提示符下，按对应的快捷键输入动态口令及密码了。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>organizing golang projects and dependencies</title>
+      <link>https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</link>
+      <pubDate>Sun, 15 Jan 2017 14:49:18 +0000</pubDate>
+      
+      <guid>https://n4mine.github.io/post/organizing-golang-projects-and-dependencies/</guid>
+      
+        <description>&lt;h1 id=&#34;背景&#34;&gt;背景&lt;/h1&gt;
+&lt;p&gt;golang的依赖一直是让人头疼的问题, 大家对其自有的package管理也是褒贬不一&lt;br&gt;
+而对于一个公司内部项目来讲, 主要的需求有以下几点&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;方便的依赖包版本管理&lt;/li&gt;
+&lt;li&gt;方便协同开发&lt;/li&gt;
+&lt;li&gt;尽可能不依赖其编译所在环境&lt;/li&gt;
+&lt;li&gt;除基础包之外, 第三方包尽可能的自包含&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;基于此, 有了本文, 打算以最小的环境变更及工具, 打造一个可协同工作的golang projects&lt;/p&gt;
+&lt;h1 id=&#34;依赖工具&#34;&gt;依赖工具&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://glide.sh&#34;&gt;glide&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;优势&#34;&gt;优势&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;不依赖默认GOPATH，只需设置GOPATH为&lt;strong&gt;当前目录及指定子目录&lt;/strong&gt;即可。即项目无需放在默认$GOPATH下面&lt;/li&gt;
+&lt;li&gt;经测试支持go 1.5, go1.6, go1.7
+&lt;ul&gt;
+&lt;li&gt;go 1.5需&lt;code&gt;unset GO15VENDOREXPERIMENT&lt;/code&gt;或者设置&lt;code&gt;GO15VENDOREXPERIMENT=1&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;不依赖GOROOT
+&lt;ul&gt;
+&lt;li&gt;当然使用&lt;code&gt;godef&lt;/code&gt;等工具还是需要设置GOROOT的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;项目创建者&#34;&gt;项目创建者&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;export GOPATH=$PWD:$PWD/deps
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir -p deps
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ln -sf ../vendor deps/src
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;glide init --non-interactive
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;glide install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h1 id=&#34;项目协同者&#34;&gt;项目协同者&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;glide install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h1 id=&#34;依赖已有的包&#34;&gt;依赖已有的包&lt;/h1&gt;
+&lt;p&gt;可能一些包你已经下载过了，例如golang.org/x/ 下的一系列包，不想再辛苦重新下载，可以使用&lt;code&gt;glide mirrors&lt;/code&gt;，然后再&lt;code&gt;glide install&lt;/code&gt;即可&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;glide mirror set https://gopkg.in/go-playground/validator.v8 file:///path/to/gopkg.in/go-playground/validator.v8 --vcs git
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;glide mirror set https://gopkg.in/yaml.v2 file:///path/to/gopkg.in/yaml.v2 --vcs git
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h1 id=&#34;锁定依赖包的版本&#34;&gt;锁定依赖包的版本&lt;/h1&gt;
+&lt;p&gt;当执行&lt;code&gt;glide up&lt;/code&gt;时，glide的思路是更新你项目的所有依赖到最新版本。这个结果往往不是我们想要的，生产环境中往往只是依赖一个稳定的版本。&lt;br&gt;
+&lt;a href=&#34;https://github.com/multiplay/glide-pin&#34;&gt;glide-pin&lt;/a&gt; 是一个glide的插件，提供了从lock文件转换成yaml文件的功能。&lt;br&gt;
+可以利用这个工具，生成具有具体版本的glide.yaml文件，就能达到锁定依赖包版本的目的。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-EOF-&lt;/em&gt;&lt;/p&gt;</description>
       
     </item>
     
